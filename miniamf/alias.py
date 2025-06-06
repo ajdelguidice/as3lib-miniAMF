@@ -7,9 +7,7 @@ Class alias base functionality.
 @since: 0.6
 """
 
-from __future__ import absolute_import
 import inspect
-import six
 
 import miniamf
 from . import util
@@ -31,12 +29,12 @@ class ClassAlias(object):
     """
 
     def __init__(self, klass, alias=None, **kwargs):
-        if not isinstance(klass, six.class_types):
+        if not isinstance(klass, type):
             raise TypeError("klass must be a class type, got %r" % klass)
 
         # In Python 2, both byte and Unicode string types have .decode
         # methods.  In Python 3, only byte strings do.
-        if alias is None or isinstance(alias, six.text_type):
+        if alias is None or isinstance(alias, str):
             pass
         elif hasattr(alias, "decode"):
             alias = alias.decode("utf-8")
@@ -127,7 +125,7 @@ class ClassAlias(object):
             self.decodable_properties.update(self.klass.__slots__)
             self.encodable_properties.update(self.klass.__slots__)
 
-        for k, v in six.iteritems(self.klass.__dict__):
+        for k, v in self.klass.__dict__.items():
             if not isinstance(v, property):
                 continue
 
@@ -304,10 +302,7 @@ class ClassAlias(object):
     def __bytes__(self):
         return self.alias.encode('utf-8')
 
-    if six.PY3:
-        __str__ = __unicode__
-    else:
-        __str__ = __bytes__
+    __str__ = __unicode__
 
     def __repr__(self):
         k = self.__class__
@@ -321,11 +316,11 @@ class ClassAlias(object):
         )
 
     def __eq__(self, other):
-        if isinstance(other, six.string_types):
+        if isinstance(other, str):
             return self.alias == other
         elif isinstance(other, self.__class__):
             return self.klass == other.klass
-        elif isinstance(other, six.class_types):
+        elif isinstance(other, type):
             return self.klass == other
         else:
             return False
@@ -442,7 +437,7 @@ class ClassAlias(object):
         if self.synonym_attrs:
             missing = object()
 
-            for k, v in six.iteritems(self.synonym_attrs):
+            for k, v in self.synonym_attrs.items():
                 value = attrs.pop(k, missing)
 
                 if value is missing:
@@ -513,7 +508,7 @@ class ClassAlias(object):
         if self.synonym_attrs:
             missing = object()
 
-            for k, v in six.iteritems(self.synonym_attrs):
+            for k, v in self.synonym_attrs.items():
                 value = attrs.pop(v, missing)
 
                 if value is missing:

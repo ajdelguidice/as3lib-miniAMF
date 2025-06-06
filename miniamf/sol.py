@@ -14,10 +14,8 @@ a per-domain basis.
 @since: 0.1
 """
 
-from __future__ import absolute_import
 import miniamf
 from miniamf import util
-import six
 
 #: Magic Number - 2 bytes
 HEADER_VERSION = b'\x00\xbf'
@@ -120,7 +118,7 @@ def encode(name, values, strict=True, encoding=miniamf.AMF0):
     stream.write(PADDING_BYTE * 3)
     stream.write_uchar(encoding)
 
-    for n, v in six.iteritems(values):
+    for n, v in values.items():
         encoder.serialiseString(n)
         encoder.writeElement(v)
 
@@ -146,7 +144,7 @@ def load(name_or_file):
     f = name_or_file
     opened = False
 
-    if isinstance(name_or_file, six.string_types):
+    if isinstance(name_or_file, str):
         f = open(name_or_file, "rb")
         opened = True
     elif not hasattr(f, "read"):
@@ -155,7 +153,7 @@ def load(name_or_file):
     name, values = decode(f.read())
     s = SOL(name)
 
-    for n, v in six.iteritems(values):
+    for n, v in values.items():
         s[n] = v
 
     if opened is True:
@@ -174,7 +172,7 @@ def save(sol, name_or_file, encoding=miniamf.AMF0):
     f = name_or_file
     opened = False
 
-    if isinstance(name_or_file, six.string_types):
+    if isinstance(name_or_file, str):
         f = open(name_or_file, "wb+")
         opened = True
     elif not hasattr(f, "write"):

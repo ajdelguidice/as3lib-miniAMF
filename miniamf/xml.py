@@ -9,7 +9,6 @@ Provides XML support.
 
 #: list of supported third party packages that support the C{etree}
 #: interface. At least enough for our needs anyway.
-from __future__ import absolute_import
 ETREE_MODULES = [
     'defusedxml.cElementTree',
     'defusedxml.ElementTree',

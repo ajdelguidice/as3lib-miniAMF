@@ -16,11 +16,7 @@ LocalConnection, SharedObjects and other classes in the Adobe Flash Player.
     <http://osflash.org/documentation/amf>}
 """
 
-from __future__ import absolute_import
-
 import datetime
-import six
-from six.moves import range
 
 import miniamf
 from . import util, codec, xml
@@ -247,7 +243,7 @@ class Decoder(codec.Decoder):
 
         attrs = self.readObjectAttributes(obj)
 
-        for key, value in six.iteritems(attrs):
+        for key, value in attrs.items():
             try:
                 key = int(key)
             except ValueError:
@@ -489,7 +485,7 @@ class Encoder(codec.Encoder):
         """
         Similar to L{writeString} but does not encode a type byte.
         """
-        if isinstance(s, six.text_type):
+        if isinstance(s, str):
             s = self.context.getBytesForString(s)
 
         l = len(s)
@@ -556,12 +552,12 @@ class Encoder(codec.Encoder):
         int_items = []
         str_items = []
 
-        for k, v in six.iteritems(o):
-            if isinstance(k, six.integer_types):
-                int_items.append((six.text_type(k).encode("utf-8"), v))
-            elif isinstance(k, six.text_type):
+        for k, v in o.items():
+            if isinstance(k, int):
+                int_items.append((str(k).encode("utf-8"), v))
+            elif isinstance(k, str):
                 str_items.append((k.encode("utf-8"), v))
-            elif isinstance(k, six.binary_type):
+            elif isinstance(k, bytes):
                 str_items.append((k, v))
             else:
                 raise miniamf.EncodeError(
@@ -596,7 +592,7 @@ class Encoder(codec.Encoder):
             # list comprehensions to save the day
             max_index = max([
                 y[0] for y in o.items()
-                if isinstance(y[0], six.integer_types)
+                if isinstance(y[0], int)
             ])
 
             if max_index < 0:
@@ -685,7 +681,7 @@ class Encoder(codec.Encoder):
 
         data = xml.tostring(e)
 
-        if isinstance(data, six.text_type):
+        if isinstance(data, str):
             data = data.encode('utf-8')
 
         self.stream.write_ulong(len(data))
@@ -740,10 +736,10 @@ class RecordSet(object):
         )
 
         if self.service is not None:
-            ret.update({'serviceName': six.text_type(self.service['name'])})
+            ret.update({'serviceName': str(self.service['name'])})
 
         if self.id is not None:
-            ret.update({'id': six.text_type(self.id)})
+            ret.update({'id': str(self.id)})
 
         return ret
 

@@ -5,10 +5,8 @@
 Provides basic functionality for all miniamf.amf?.[De|E]ncoder classes.
 """
 
-from __future__ import absolute_import
 import types
 import datetime
-import six
 
 import miniamf
 from miniamf import util, xml
@@ -230,7 +228,7 @@ class Context(object):
         try:
             alias = self._class_aliases[klass] = miniamf.get_class_alias(klass)
         except miniamf.UnknownClassAlias:
-            if isinstance(klass, six.string_types):
+            if isinstance(klass, str):
                 raise
 
             # no alias has been found yet .. check subclasses
@@ -291,7 +289,7 @@ class _Codec(object):
 
     def __init__(self, stream=None, context=None, strict=False,
                  timezone_offset=None, forbid_dtd=True, forbid_entities=True):
-        if isinstance(stream, six.binary_type) or stream is None:
+        if isinstance(stream, bytes) or stream is None:
             stream = util.BufferedByteStream(stream)
 
         self.stream = stream
@@ -514,15 +512,15 @@ class Encoder(_Codec):
         t = type(data)
 
         # try types that we know will work
-        if t is six.binary_type or issubclass(t, six.binary_type):
+        if t is bytes or issubclass(t, bytes):
             return self.writeBytes
-        if t is six.text_type or issubclass(t, six.text_type):
+        if t is str or issubclass(t, str):
             return self.writeString
         elif t is bool:
             return self.writeBoolean
         elif t is float:
             return self.writeNumber
-        elif t in six.integer_types:
+        elif t is int:
             return self.writeNumber
         elif t in (list, tuple):
             return self.writeList
@@ -536,7 +534,7 @@ class Encoder(_Codec):
             return self.writeXML
 
         # check for any overridden types
-        for type_, func in six.iteritems(miniamf.TYPE_MAP):
+        for type_, func in miniamf.TYPE_MAP.items():
             try:
                 if isinstance(data, type_):
                     return _CustomTypeFunc(self, func)
@@ -548,7 +546,7 @@ class Encoder(_Codec):
             return self.writeSequence
 
         # now try some types that won't encode
-        if t in six.class_types:
+        if t is type:
             # can't encode classes
             return None
         elif isinstance(data, FUNC_TYPES):

@@ -22,11 +22,7 @@ only in ActionScript 3.0, such as L{ByteArray} and L{ArrayCollection}.
 
 """
 
-from __future__ import absolute_import
-
 import datetime
-import six
-from six.moves import range
 import zlib
 
 import miniamf
@@ -245,7 +241,7 @@ class DataOutput(object):
         @see: U{Supported character sets on Adobe Help (external)
             <http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/charset-codes.html>}
         """
-        if isinstance(value, six.text_type):
+        if isinstance(value, str):
             value = value.encode(charset)
 
         self.stream.write(value)
@@ -297,7 +293,7 @@ class DataOutput(object):
         @type value: string
         @param value: The string value to be written.
         """
-        if not isinstance(value, six.binary_type):
+        if not isinstance(value, bytes):
             value = value.encode("utf-8")
 
         self.stream.write_ushort(len(value))
@@ -311,7 +307,7 @@ class DataOutput(object):
         @type value: string
         @param value: The string value to be written.
         """
-        if not isinstance(value, six.binary_type):
+        if not isinstance(value, bytes):
             value = value.encode("utf-8")
 
         self.stream.write(value)
@@ -673,7 +669,7 @@ class Context(codec.Context):
 
         @raise TypeError: The parameter C{s} is not a byte string.
         """
-        if not isinstance(s, six.binary_type):
+        if not isinstance(s, bytes):
             raise TypeError
 
         if len(s) == 0:
@@ -1083,7 +1079,7 @@ class Encoder(codec.Encoder):
         """
         t = type(data)
 
-        if t in six.integer_types:
+        if t is int:
             return self.writeInteger
         elif t is ByteArray:
             return self.writeByteArray
@@ -1178,7 +1174,7 @@ class Encoder(codec.Encoder):
         @type   s: string
         @param  s: The string data to be encoded to the AMF3 data stream.
         """
-        if not isinstance(s, six.binary_type):
+        if not isinstance(s, bytes):
             s = self.context.getBytesForString(s)
 
         self.serialiseBytes(s)
@@ -1292,9 +1288,9 @@ class Encoder(codec.Encoder):
         str_keys = []
 
         for x in n.keys():
-            if isinstance(x, six.integer_types):
+            if isinstance(x, int):
                 int_keys.append(x)
-            elif isinstance(x, six.string_types):
+            elif isinstance(x, str):
                 str_keys.append(x)
             else:
                 raise ValueError("Non integer/string key value found in dict")
@@ -1313,7 +1309,7 @@ class Encoder(codec.Encoder):
         # If integer keys don't start at 0, they will be treated as strings
         if len(int_keys) > 0 and int_keys[0] != 0:
             for x in int_keys:
-                str_keys.append(six.text_type(x))
+                str_keys.append(str(x))
                 del int_keys[int_keys.index(x)]
 
         self._writeInteger(len(int_keys) << 1 | REFERENCE_BIT)
@@ -1422,9 +1418,9 @@ class Encoder(codec.Encoder):
 
                 for key in keys:
                     value = attrs[key]
-                    if isinstance(key, six.integer_types):
-                        key = six.text_type(key)
-                    elif not isinstance(key, six.string_types):
+                    if isinstance(key, int):
+                        key = str(key)
+                    elif not isinstance(key,str):
                         raise miniamf.EncodeError(
                             'Unable to encode %r (key %r not supported)'
                             % (obj, key))
