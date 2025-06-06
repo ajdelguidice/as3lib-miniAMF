@@ -13,35 +13,6 @@ try:
 except:
     have_cython = False
 
-
-name = "Mini-AMF"
-description = "AMF serialization and deserialization support for Python"
-url = "https://github.com/zackw/mini-amf"
-author = "Zack Weinberg, The PyAMF Project"
-author_email = "zackw@panix.com"
-license = "MIT License"
-
-classifiers = """
-Intended Audience :: Developers
-Intended Audience :: Information Technology
-License :: OSI Approved :: MIT License
-Natural Language :: English
-Operating System :: OS Independent
-Programming Language :: C
-Programming Language :: Python
-Programming Language :: Cython
-Programming Language :: Python :: 2.7
-Topic :: Internet :: WWW/HTTP :: WSGI :: Application
-Topic :: Software Development :: Libraries :: Python Modules
-Development Status :: 5 - Production/Stable
-"""
-
-keywords = """
-amf amf0 amf3 actionscript air flash flashplayer bytearray recordset
-decoder encoder sharedobject lso sol
-"""
-
-
 class AccelFeature(Feature):
     def __init__(self, have_cython):
         self.have_cython = have_cython
@@ -120,44 +91,11 @@ def get_version():
 
     return u''.join(v)
 
-
-# Note: this logic is duplicated in doc/conf.py.
-# We only want the flair on the Github page.
-def get_long_description():
-    with open(os.path.join(os.path.dirname(__file__),
-                           "README.rst"), "rt") as f:
-        text = f.read()
-        cut = text.find("\nAutomatic build statuses\n")
-        if cut != -1:
-            return text[:cut]
-
-
 def setup_package():
     setup(
-        name=name,
-        version=get_version(),
-        description=description,
-        long_description=get_long_description(),
-        url=url,
-        author=author,
-        author_email=author_email,
-        keywords=keywords.split(),
-        license=license,
-        packages=[
-            "miniamf", "miniamf._accel", "miniamf.adapters", "miniamf.util"
-        ],
-        install_requires=["six", "defusedxml"],
         features={"accel": AccelFeature(have_cython)},
         test_suite="tests",
         zip_safe=True,
-        extras_require={
-            "docs": [
-                "sphinx >= 1.5",
-            ]
-        },
-        classifiers=[
-            l for l in (ll.strip() for ll in classifiers.splitlines()) if l
-        ],
     )
 
 
