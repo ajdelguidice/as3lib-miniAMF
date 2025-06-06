@@ -234,7 +234,7 @@ def _join(parts):
     for p in parts:
         if isinstance(p, int):
             ret.append(p)
-        elif not isinstance(p, int):
+        elif not isinstance(p, str):
             ret.extend(_join(p))
         else:
             ret.extend(p)
