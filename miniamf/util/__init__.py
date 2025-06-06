@@ -7,12 +7,9 @@ AMF Utilities.
 @since: 0.1.0
 """
 
-from __future__ import absolute_import
-
 import calendar
 import datetime
 import inspect
-import six
 
 import miniamf
 
@@ -22,7 +19,7 @@ import miniamf
 # trouble.
 try:
     from .._accel.util import BufferedByteStream
-except Exception:
+except (ImportError,ModuleNotFoundError):
     from .pure import BufferedByteStream
 
 
@@ -100,7 +97,7 @@ def set_attrs(obj, attrs):
     if hasattr(obj, '__setitem__'):
         o = type(obj).__setitem__
 
-    for k, v in six.iteritems(attrs):
+    for k, v in attrs.items():
         o(obj, k, v)
 
 
@@ -108,7 +105,7 @@ def get_class_alias(klass):
     """
     Tries to find a suitable L{miniamf.ClassAlias} subclass for C{klass}.
     """
-    for k, v in six.iteritems(miniamf.ALIAS_TYPES):
+    for k, v in miniamf.ALIAS_TYPES.items():
         for kl in v:
             try:
                 if issubclass(klass, kl):
@@ -153,7 +150,7 @@ def get_class_meta(klass):
     @rtype: C{dict}
     @since: 0.5
     """
-    if not isinstance(klass, six.class_types) or klass is object:
+    if not isinstance(klass, type) or klass is object:
         raise TypeError('klass must be a class object, got %r' % type(klass))
 
     meta = {

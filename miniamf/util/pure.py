@@ -11,11 +11,8 @@ Do not reference directly, use L{miniamf.util.BufferedByteStream} instead.
 @since: 0.6
 """
 
-from __future__ import absolute_import
-
 import struct
-import six
-
+import io
 
 def _get_endian_system():
     encoded = struct.pack("@I", 0x01020304)
@@ -109,7 +106,7 @@ class BufferedByteStream(object):
         """
 
         self.endian = endian
-        self._buf = six.BytesIO()
+        self._buf = io.BytesIO()
         self._len = 0
         self.append(data)
 
@@ -250,7 +247,7 @@ class BufferedByteStream(object):
             return
 
         odata = data
-        if not isinstance(data, (six.binary_type, six.text_type, bytearray)):
+        if not isinstance(data, (bytes, str, bytearray)):
             if hasattr(data, "getvalue"):
                 data = data.getvalue()
             elif (hasattr(data, "read") and
@@ -259,12 +256,12 @@ class BufferedByteStream(object):
                 with Excursion(data):
                     data = data.read()
 
-        if isinstance(data, six.text_type):
+        if isinstance(data, str):
             data = data.encode("utf-8")
         elif isinstance(data, bytearray):
-            data = six.binary_type(data)
+            data = bytes(data)
 
-        if not isinstance(data, six.binary_type):
+        if not isinstance(data, bytes):
             raise TypeError("expected a string or filelike, not %r"
                             % odata)
 
@@ -312,7 +309,7 @@ class BufferedByteStream(object):
         @raise TypeError: Unexpected type for int C{c}.
         @raise OverflowError: Not in range.
         """
-        if not isinstance(c, six.integer_types):
+        if not isinstance(c, int):
             raise TypeError("expected an int, got %r" % type(c))
 
         if not 0 <= c <= 255:
@@ -335,7 +332,7 @@ class BufferedByteStream(object):
         @raise TypeError: Unexpected type for int C{c}.
         @raise OverflowError: Not in range.
         """
-        if not isinstance(c, six.integer_types):
+        if not isinstance(c, int):
             raise TypeError("expected an int, got %r" % type(c))
 
         if not -128 <= c <= 127:
@@ -358,7 +355,7 @@ class BufferedByteStream(object):
         @raise TypeError: Unexpected type for int C{s}.
         @raise OverflowError: Not in range.
         """
-        if not isinstance(s, six.integer_types):
+        if not isinstance(s, int):
             raise TypeError("expected an int, got %r" % (type(s),))
 
         if not 0 <= s <= 65535:
@@ -381,7 +378,7 @@ class BufferedByteStream(object):
         @raise TypeError: Unexpected type for int C{s}.
         @raise OverflowError: Not in range.
         """
-        if not isinstance(s, six.integer_types):
+        if not isinstance(s, int):
             raise TypeError("expected an int, got %r" % (type(s),))
 
         if not -32768 <= s <= 32767:
@@ -404,7 +401,7 @@ class BufferedByteStream(object):
         @raise TypeError: Unexpected type for int C{l}.
         @raise OverflowError: Not in range.
         """
-        if not isinstance(l, six.integer_types):
+        if not isinstance(l, int):
             raise TypeError("expected an int, got %r" % (type(l),))
 
         if not 0 <= l <= 4294967295:
@@ -427,7 +424,7 @@ class BufferedByteStream(object):
         @raise TypeError: Unexpected type for int C{l}.
         @raise OverflowError: Not in range.
         """
-        if not isinstance(l, six.integer_types):
+        if not isinstance(l, int):
             raise TypeError("expected an int, got %r" % (type(l),))
 
         if not -2147483648 <= l <= 2147483647:
@@ -462,7 +459,7 @@ class BufferedByteStream(object):
         @raise TypeError: Unexpected type for int C{n}.
         @raise OverflowError: Not in range.
         """
-        if not isinstance(n, six.integer_types):
+        if not isinstance(n, int):
             raise TypeError("expected an int, got %r" % (type(n),))
 
         if not 0 <= n <= 0xffffff:
@@ -500,7 +497,7 @@ class BufferedByteStream(object):
         @raise TypeError: Unexpected type for int C{n}.
         @raise OverflowError: Not in range.
         """
-        if not isinstance(n, six.integer_types):
+        if not isinstance(n, int):
             raise TypeError("expected an int, got %r" % (type(n),))
 
         if not -8388608 <= n <= 8388607:
@@ -572,10 +569,10 @@ class BufferedByteStream(object):
         @param u: string
         @raise TypeError: Unexpected type for C{u}
         """
-        if isinstance(u, six.text_type):
+        if isinstance(u, str):
             u = u.encode("utf-8")
         elif isinstance(u, bytearray):
-            u = six.binary_type(u)
-        if not isinstance(u, six.binary_type):
+            u = bytes(u)
+        if not isinstance(u, bytes):
             raise TypeError("Expected a string, got %r" % (u,))
         self.write(u)
