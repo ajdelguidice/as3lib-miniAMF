@@ -7,7 +7,6 @@ U{collections<http://docs.python.org/library/collections.html>} adapter module.
 @since: 0.5
 """
 
-from __future__ import absolute_import
 import collections
 
 import miniamf

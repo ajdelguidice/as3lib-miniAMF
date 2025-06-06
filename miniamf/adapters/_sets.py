@@ -7,8 +7,6 @@ Adapter for the stdlib C{sets} module.
 @since: 0.4
 """
 
-from __future__ import absolute_import
-
 import miniamf
 
 

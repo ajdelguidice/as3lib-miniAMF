@@ -7,7 +7,6 @@ C{weakref} support.
 @since: 0.6.2
 """
 
-from __future__ import absolute_import
 import weakref
 
 import miniamf

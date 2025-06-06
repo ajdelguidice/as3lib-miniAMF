@@ -7,7 +7,6 @@ Adapter for the U{decimal<http://docs.python.org/library/decimal.html>} module.
 @since: 0.4
 """
 
-from __future__ import absolute_import
 import decimal
 
 import miniamf
