@@ -53,16 +53,6 @@ def get_version():
     from ast import literal_eval
     import re
 
-    try:
-        unicode
-    except NameError:
-        unicode = str
-
-    try:
-        int_types = (int, long)
-    except NameError:
-        int_types = (int,)
-
     with open(os.path.join(os.path.dirname(__file__),
                            "miniamf/_version.py"), "rt") as f:
         vdat = f.read()
@@ -79,14 +69,14 @@ def get_version():
     v = []
     first = True
     for x in vtuple:
-        if not first and isinstance(x, int_types):
+        if not first and isinstance(x, int):
             v.append(u'.')
-        if isinstance(x, unicode):
+        if isinstance(x, str):
             v.append(x)
         elif isinstance(x, bytes):
             v.append(x.decode("utf-8"))
         else:
-            v.append(unicode(x))
+            v.append(str(x))
         first = False
 
     return u''.join(v)
