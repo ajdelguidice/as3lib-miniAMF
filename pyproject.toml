@@ -19,7 +19,6 @@ classifiers = [
 requires-python = ">=3.7"
 dependencies = [
     "setuptools",
-    "six",
     "difusedxml"
 ]
 packages=["miniamf", "miniamf._accel", "miniamf.adapters", "miniamf.util"]
