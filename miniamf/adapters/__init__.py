@@ -46,8 +46,13 @@ def register_adapters():
     if adapters_registered is True:
         return
 
-    import pkg_resources
-    packageDir = pkg_resources.resource_filename('miniamf', 'adapters')
+    import importlib.resources as importlib_resources
+    from contextlib import ExitStack
+    import atexit
+    file_manager = ExitStack()
+    atexit.register(file_manager.close)
+    ref = importlib_resources.files('miniamf') / 'adapters'
+    packageDir = file_manager.enter_context(importlib_resources.as_file(ref))
 
     for f in glob.glob(os.path.join(packageDir, '*.py')):
         mod = os.path.basename(f).split(os.path.extsep, 1)[0]
