@@ -7,8 +7,6 @@ Tests for AMF utilities.
 @since: 0.1.0
 """
 
-import six
-from six.moves import range
 import unittest
 
 import miniamf
@@ -235,7 +233,7 @@ class ContextTestCase(unittest.TestCase):
         s = b'foo'
         u = self.context.getStringForBytes(s)
 
-        self.assertTrue(isinstance(u, six.text_type))
+        self.assertTrue(isinstance(u, str))
         self.assertEqual(u, s.decode('ascii'))
 
         i = self.context.getStringForBytes(s)
@@ -253,7 +251,7 @@ class ContextTestCase(unittest.TestCase):
 
         b = self.context.getBytesForString(s)
 
-        self.assertTrue(isinstance(b, six.binary_type))
+        self.assertTrue(isinstance(b, bytes))
         self.assertEqual(b, s.encode('ascii'))
 
         i = self.context.getBytesForString(s)

@@ -8,7 +8,6 @@ Tests miniamf.util.imports
 """
 
 import os.path
-import six
 import sys
 import unittest
 
@@ -44,7 +43,7 @@ class ImportsTestCase(unittest.TestCase):
 
     def _clearModules(self, *args):
         for mod in args:
-            for k, v in six.iteritems(sys.modules.copy()):
+            for k, v in sys.modules.copy().items():
                 if k.startswith(mod) or k == 'tests.%s' % (mod,):
                     del sys.modules[k]
 

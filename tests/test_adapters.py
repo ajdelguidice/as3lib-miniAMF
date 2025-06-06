@@ -7,8 +7,6 @@ Tests for the adapters module.
 @since: 0.3.1
 """
 
-from __future__ import absolute_import
-
 import os
 import sys
 

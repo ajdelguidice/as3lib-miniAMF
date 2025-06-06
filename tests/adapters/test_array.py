@@ -7,7 +7,6 @@ Tests for the L{array} L{miniamf.adapters._array} module.
 @since: 0.5
 """
 
-from __future__ import absolute_import
 import array
 import unittest
 

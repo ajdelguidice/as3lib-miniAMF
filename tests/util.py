@@ -8,7 +8,6 @@ Test utilities.
 """
 
 import copy
-import six
 import unittest
 
 import miniamf
@@ -86,7 +85,7 @@ class DecoderMixIn(object):
         pass
 
     def decode(self, bytes, raw=False):
-        if not isinstance(bytes, six.string_types):
+        if not isinstance(bytes, str):
             bytes = _join(bytes)
 
         self.buf.seek(0, 0)
@@ -137,7 +136,7 @@ class ClassCacheClearingTestCase(unittest.TestCase):
     def assertEncodes(self, obj, buffer, encoding=miniamf.AMF3):
         bytes = miniamf.encode(obj, encoding=encoding).getvalue()
 
-        if isinstance(buffer, six.string_types):
+        if isinstance(buffer, str):
             self.assertEqual(bytes, buffer)
 
             return
@@ -145,7 +144,7 @@ class ClassCacheClearingTestCase(unittest.TestCase):
         self.assertBuffer(bytes, buffer)
 
     def assertDecodes(self, bytes, cb, encoding=miniamf.AMF3, raw=False):
-        if not isinstance(bytes, six.string_types):
+        if not isinstance(bytes, str):
             bytes = _join(bytes)
 
         ret = list(miniamf.decode(bytes, encoding=encoding))
@@ -233,9 +232,9 @@ def _join(parts):
     ret = bytearray()
 
     for p in parts:
-        if isinstance(p, six.integer_types):
+        if isinstance(p, int):
             ret.append(p)
-        elif not isinstance(p, six.string_types):
+        elif not isinstance(p, int):
             ret.extend(_join(p))
         else:
             ret.extend(p)

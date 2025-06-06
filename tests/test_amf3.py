@@ -9,11 +9,8 @@ Tests for AMF3 Implementation.
 @since: 0.1.0
 """
 
-from __future__ import absolute_import
-
 import datetime
 import math
-from six.moves import range
 import unittest
 
 import miniamf

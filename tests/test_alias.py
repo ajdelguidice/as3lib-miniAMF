@@ -11,9 +11,6 @@ makes sense to have them in one file.
 
 """
 
-from __future__ import absolute_import
-
-import six
 import unittest
 
 import miniamf
@@ -121,8 +118,8 @@ class ClassAliasTestCase(ClassCacheClearingTestCase):
 
         x = ClassAlias(Eggs, b'org.example.eggs.Eggs')
 
-        self.assertEqual(six.text_type(x), u'org.example.eggs.Eggs')
-        self.assertEqual(six.binary_type(x), b'org.example.eggs.Eggs')
+        self.assertEqual(str(x), u'org.example.eggs.Eggs')
+        self.assertEqual(bytes(x), b'org.example.eggs.Eggs')
 
     def test_unicode_alias(self):
         class Ham(object):
@@ -130,8 +127,8 @@ class ClassAliasTestCase(ClassCacheClearingTestCase):
 
         x = ClassAlias(Ham, u'org.example.jamón.Jamón')
 
-        self.assertEqual(six.text_type(x), u'org.example.jamón.Jamón')
-        self.assertEqual(six.binary_type(x),
+        self.assertEqual(str(x), u'org.example.jamón.Jamón')
+        self.assertEqual(bytes(x),
                          b'org.example.jam\xc3\xb3n.Jam\xc3\xb3n')
 
     def test_eq(self):

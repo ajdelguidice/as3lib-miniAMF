@@ -5,7 +5,6 @@
 Tests for L{miniamf.version}
 """
 
-from six import text_type
 import unittest
 
 from miniamf import versions
@@ -38,11 +37,11 @@ class VersionTestCase(unittest.TestCase):
         v1 = V(0, 1)
 
         self.assertEqual(v1, (0, 1))
-        self.assertEqual(text_type(v1), u"0.1")
+        self.assertEqual(str(v1), u"0.1")
 
         v2 = V(3, 2, 1, u"final")
 
         self.assertEqual(v2, (3, 2, 1, u"final"))
-        self.assertEqual(text_type(v2), u"3.2.1final")
+        self.assertEqual(str(v2), u"3.2.1final")
 
         self.assertTrue(v2 > v1)

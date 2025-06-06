@@ -9,8 +9,6 @@ Tests for AMF0 Implementation.
 @since: 0.1.0
 """
 
-from __future__ import absolute_import
-
 import datetime
 import math
 import unittest

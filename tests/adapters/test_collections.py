@@ -7,7 +7,6 @@ Tests for the L{collections} L{miniamf.adapters._collections} module.
 @since: 0.5
 """
 
-from __future__ import absolute_import
 import collections
 import unittest
 

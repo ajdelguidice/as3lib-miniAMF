@@ -7,7 +7,6 @@ Mini-AMF weakref adapter tests.
 @since 0.6.2
 """
 
-from __future__ import absolute_import
 import unittest
 import weakref
 

@@ -9,9 +9,7 @@ Tests for Local Shared Object (LSO) Implementation.
 @since: 0.1.0
 """
 
-from __future__ import absolute_import
-
-from six import BytesIO
+from io import BytesIO
 import tempfile
 import unittest
 import warnings
