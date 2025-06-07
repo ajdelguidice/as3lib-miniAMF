@@ -9,7 +9,7 @@ authors = [{name = "ajdelguidice", email = "ajdelguidice@gmail.com"}]
 description = "A fork of Mini-AMF using up to date dependencies."
 readme = {file = "README.md", content-type = "text/markdown"}
 license = "MIT"
-license-files = ["LICENSE"]
+license-files = ["LICENSE.txt"]
 keywords = ["amf", "amf0", "amf3", "actionscript", "air", "flash", "flashplayer", "bytearray", "recordset", "decoder", "encoder", "sharedobject", "lso", "sol"]
 classifiers = [
     "Operating System :: OS Independent",
@@ -31,14 +31,12 @@ docs = ["sphinx >= 1.5"]
 
 [tool.setuptools]
 packages=["miniamf", "miniamf._accel", "miniamf.adapters", "miniamf.util"]
-ext-modules = [
-    {name = "miniamf._accel.util", sources = ["miniamf/_accel/util.pyx"]},
-    {name = "miniamf._accel.codec", sources = ["miniamf/_accel/codec.pyx"]},
-    {name = "miniamf._accel.amf0", sources = ["miniamf/_accel/amf0.pyx"]},
-    {name = "miniamf._accel.amf3", sources = ["miniamf/_accel/amf3.pyx"]}
-
-
-]
+#ext-modules = [
+#    {name = "miniamf._accel.util", sources = ["miniamf/_accel/util.pyx"]},
+#    {name = "miniamf._accel.codec", sources = ["miniamf/_accel/codec.pyx"]},
+#    {name = "miniamf._accel.amf0", sources = ["miniamf/_accel/amf0.pyx"]},
+#    {name = "miniamf._accel.amf3", sources = ["miniamf/_accel/amf3.pyx"]}
+#]
 
 [tool.tox]
 legacy_tox_ini = """
