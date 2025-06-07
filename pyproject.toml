@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools", "wheel"]
+requires = ["setuptools", "wheel", "cython"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -19,7 +19,8 @@ classifiers = [
 requires-python = ">=3.7"
 dependencies = [
     "setuptools",
-    "difusedxml"
+    "difusedxml",
+    "cython"
 ]
 packages=["miniamf", "miniamf._accel", "miniamf.adapters", "miniamf.util"]
 
@@ -28,3 +29,31 @@ Homepage = "https://github.com/ajdelguidice/as3lib-miniAMF"
 
 [pyproject.optional-dependencies]
 docs = ["sphinx >= 1.5"]
+
+[tool.tox]
+legacy_tox_ini = """
+    [tox]
+    envlist = py{27,34,35,36}-cy{y,n}
+    toxworkdir = {env:TOX_WORK_DIR:.tox}
+    skip_missing_interpreters = True
+
+    [testenv]
+    passenv = TRAVIS TRAVIS_JOB_ID TRAVIS_BRANCH
+
+    basepython =
+        py27: python2.7
+        py34: python3.4
+        py35: python3.5
+        py36: python3.6
+
+    deps =
+        coverage
+        coveralls
+        flake8
+        cyy: Cython
+
+    commands =
+        flake8
+        coverage run --source=miniamf setup.py test
+        - coveralls
+"""
