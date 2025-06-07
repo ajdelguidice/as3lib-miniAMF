@@ -12,6 +12,10 @@ import os.path
 import glob
 
 from miniamf.util import imports
+import importlib.resources as importlib_resources
+from contextlib import ExitStack
+import atexit
+
 
 __all__ = [
     'register_adapters',
@@ -45,9 +49,6 @@ def register_adapters():
     if adapters_registered is True:
         return
 
-    import importlib.resources as importlib_resources
-    from contextlib import ExitStack
-    import atexit
     file_manager = ExitStack()
     atexit.register(file_manager.close)
     ref = importlib_resources.files('miniamf') / 'adapters'
