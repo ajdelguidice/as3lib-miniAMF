@@ -4,42 +4,8 @@
 # See LICENSE.txt for details.
 
 import os.path
-from setuptools import Feature, setup
+from setuptools import setup
 import sys
-
-try:
-    from Cython.Build import cythonize
-    have_cython = True
-except:
-    have_cython = False
-
-class AccelFeature(Feature):
-    def __init__(self, have_cython):
-        self.have_cython = have_cython
-        self.extensions = []
-
-        Feature.__init__(
-            self,
-            description="optional C accelerator modules (broken)",
-            standard=False,
-            available=have_cython,
-            ext_modules=self.extensions
-        )
-
-    def include_in(self, dist):
-        if not self.have_cython:
-            sys.stderr.write(
-                "ERROR: Cython is required to compile accelerator modules.\n")
-            sys.exit(1)
-
-        sys.stderr.write(
-            "WARNING: Accelerator modules are broken.\n"
-            "WARNING: You should only use --with-accel "
-            "if you are trying to fix them.\n")
-
-        self.extensions.extend(cythonize("miniamf/_accel/*.pyx"))
-        Feature.include_in(self, dist)
-
 
 def get_version():
     """
@@ -83,7 +49,6 @@ def get_version():
 
 def setup_package():
     setup(
-        features={"accel": AccelFeature(have_cython)},
         test_suite="tests",
         zip_safe=True,
     )

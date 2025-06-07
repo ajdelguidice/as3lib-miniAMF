@@ -30,10 +30,18 @@ Homepage = "https://github.com/ajdelguidice/as3lib-miniAMF"
 [pyproject.optional-dependencies]
 docs = ["sphinx >= 1.5"]
 
+[tool.setuptools]
+ext-modules = [
+    {name = "miniamf._accel.amf0", sources = ["miniamf._accel.amf0.pyx"]},
+    {name = "miniamf._accel.amf3", sources = ["miniamf._accel.amf3.pyx"]},
+    {name = "miniamf._accel.codec", sources = ["miniamf._accel.codec.pyx"]},
+    {name = "miniamf._accel.util", sources = ["miniamf._accel.util.pyx"]}
+]
+
 [tool.tox]
 legacy_tox_ini = """
     [tox]
-    envlist = py{27,34,35,36}-cy{y,n}
+    envlist = py{37,38,39,310}-cy{y,n}
     toxworkdir = {env:TOX_WORK_DIR:.tox}
     skip_missing_interpreters = True
 
@@ -41,10 +49,10 @@ legacy_tox_ini = """
     passenv = TRAVIS TRAVIS_JOB_ID TRAVIS_BRANCH
 
     basepython =
-        py27: python2.7
-        py34: python3.4
-        py35: python3.5
-        py36: python3.6
+        py37: python3.7
+        py38: python3.8
+        py39: python3.9
+        py310: python3.10
 
     deps =
         coverage
