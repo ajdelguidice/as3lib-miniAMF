@@ -49,7 +49,6 @@ def get_version():
 
 def setup_package():
     setup(
-        test_suite="tests",
         zip_safe=True,
     )
 
