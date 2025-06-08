@@ -16,8 +16,6 @@ cdef extern from "datetime.h":
     int PyDate_CheckExact(object)
     int PyTime_CheckExact(object)
 
-cdef extern from "Python.h":
-    bint PyClass_Check(object)
 
 from miniamf._accel.util cimport cBufferedByteStream, BufferedByteStream
 
@@ -132,7 +130,7 @@ cdef class IndexedCollection(object):
         if p is None:
             return -1
 
-        return <Py_ssize_t>PyInt_AS_LONG(<object>p)
+        return <Py_ssize_t>PyLong_AsLong(<object>p)
 
     cpdef Py_ssize_t append(self, object obj) except -1:
         self._increase_size()
@@ -563,7 +561,7 @@ cdef class Encoder(Codec):
         """
         cdef int ret = 1
 
-        if PyString_Check(element):
+        if PyBytes_Check(element):
             ret = self.writeBytes(element)
         elif PyUnicode_Check(element):
             ret = self.writeString(element)
@@ -571,7 +569,7 @@ cdef class Encoder(Codec):
             ret = self.writeNull(element)
         elif PyBool_Check(element):
             ret = self.writeBoolean(element)
-        elif PyInt_CheckExact(element):
+        elif PyLong_CheckExact(element):
             ret = self.writeInt(element)
         elif PyLong_CheckExact(element):
             ret = self.writeLong(element)
@@ -609,7 +607,7 @@ cdef class Encoder(Codec):
             raise miniamf.EncodeError("Cannot encode functions %r" % (
                 element,
             ))
-        elif PyClass_Check(element) or PyType_CheckExact(element):
+        elif PyType_Check(element) or PyType_CheckExact(element):
             raise miniamf.EncodeError("Cannot encode class objects %r" % (
                 element,
             ))
@@ -677,7 +675,7 @@ cdef class Encoder(Codec):
 
         self.stream.read(&buf, end_pos - start_pos)
 
-        return PyString_FromStringAndSize(buf, end_pos - start_pos)
+        return PyBytes_FromStringAndSize(buf, end_pos - start_pos)
 
     def __iter__(self):
         return self
