@@ -295,7 +295,7 @@ cdef class Decoder(codec.Decoder):
         size >>= 1
         key = self.readString()
 
-        if PyUnicode_GetSize(key) == 0:
+        if PyUnicode_GetLength(key) == 0:
             # integer indexes only -> python list
             result = []
             self.context.addObject(result)
@@ -308,7 +308,7 @@ cdef class Decoder(codec.Decoder):
         tmp = miniamf.MixedArray()
         self.context.addObject(tmp)
 
-        while PyUnicode_GetSize(key):
+        while PyUnicode_GetLength(key):
             tmp[key] = self.readElement()
             key = self.readString()
 
@@ -331,7 +331,7 @@ cdef class Decoder(codec.Decoder):
         cdef object alias = None
         cdef Py_ssize_t i
 
-        if PyUnicode_GET_SIZE(name) == 0:
+        if PyUnicode_GetLength(name) == 0:
             name = miniamf.ASObject
 
         try:
@@ -442,7 +442,7 @@ cdef class Decoder(codec.Decoder):
         cdef object s
 
         self.stream.read(&buf, ref)
-        s = PyString_FromStringAndSize(buf, ref)
+        s = PyUnicode_FromStringAndSize(buf, ref) #!Ref might need to be converted to Py_ssize_t
 
         x = xml.fromstring(
             s,
@@ -474,7 +474,7 @@ cdef class Decoder(codec.Decoder):
         ref >>= 1
 
         self.stream.read(&buf, ref)
-        s = PyString_FromStringAndSize(buf, ref)
+        s = PyBytes_FromStringAndSize(buf, ref)#!Ref might need to be converted to Py_ssize_t
 
         if zlib:
             if ref > 2 and buf[0] == '\x78' and buf[1] == '\x9c':
@@ -558,10 +558,10 @@ cdef class Encoder(codec.Encoder):
         cdef bint is_unicode = 0
 
         if PyUnicode_Check(u):
-            l = PyUnicode_GET_SIZE(u)
+            l = PyUnicode_GetLength(u)
             is_unicode = 1
-        elif PyString_Check(u):
-            l = PyString_GET_SIZE(u)
+        elif PyBytes_Check(u):
+            l = PyBytes_GET_SIZE(u)
         else:
             raise TypeError('Expected str or unicode')
 
@@ -579,11 +579,12 @@ cdef class Encoder(codec.Encoder):
 
         if is_unicode:
             u = self.context.getBytesForString(u)
-            l = PyString_GET_SIZE(u)
+            l = PyUnicode_GetLength(u)
 
         _encode_integer(self.stream, (l << 1) | REFERENCE_BIT)
-
-        return self.stream.write(PyString_AS_STRING(u), l)
+        if is_unicode:
+            return self.stream.write(PyUnicode_AsUTF8String(u), l)
+        return self.stream.write(PyBytes_AS_STRING(u), l)
 
     cdef int writeString(self, object s) except -1:
         self.writeType(TYPE_STRING)
@@ -594,7 +595,7 @@ cdef class Encoder(codec.Encoder):
         self.serialiseString(s)
 
     cdef int writeInt(self, object n) except -1:
-        cdef long x = PyInt_AS_LONG(n)
+        cdef long x = n
 
         if x < MIN_29B_INT or x > MAX_29B_INT:
             return self.writeNumber(float(n))
@@ -701,7 +702,7 @@ cdef class Encoder(codec.Encoder):
             self.stream.write(&REF_CHAR, 1)
 
         for key, value in obj.iteritems():
-            if PyInt_Check(key) or PyLong_Check(key):
+            if PyLong_Check(key):
                 key = str(key)
 
             self.serialiseString(key)
@@ -731,7 +732,7 @@ cdef class Encoder(codec.Encoder):
         str_keys = []
 
         for x in keys:
-            if isinstance(x, (int, long)):
+            if isinstance(x, int):
                 int_keys.append(x)
             elif isinstance(x, (str, unicode)):
                 str_keys.append(x)
@@ -879,10 +880,10 @@ cdef class Encoder(codec.Encoder):
         self.context.addObject(obj)
 
         buf = str(obj)
-        l = PyString_GET_SIZE(buf)
+        l = PyUnicode_GetLength(buf)
 
         _encode_integer(self.stream, (l << 1) | REFERENCE_BIT)
-        self.stream.write(PyString_AS_STRING(buf), l)
+        self.stream.write(PyUnicode_AsUTF8String(buf), l)
 
         return 0
 
@@ -900,13 +901,13 @@ cdef class Encoder(codec.Encoder):
 
         s = xml.tostring(obj).encode('utf-8')
 
-        if not PyString_CheckExact(s):
+        if not PyUnicode_CheckExact(s):
             raise TypeError('Expected string from xml serialization')
 
-        i = PyString_GET_SIZE(s)
+        i = PyUnicode_GetLength(s)
 
         _encode_integer(self.stream, (i << 1) | REFERENCE_BIT)
-        self.stream.write(PyString_AS_STRING(s), i)
+        self.stream.write(PyUnicode_AsUTF8String(s), i)
 
         return 0
 

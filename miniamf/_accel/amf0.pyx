@@ -229,7 +229,7 @@ cdef class Decoder(codec.Decoder):
         l = self.stream.read_ulong()
 
         self.stream.read(&b, l)
-        s = PyString_FromStringAndSize(b, <Py_ssize_t>l)
+        s = PyBytes_FromStringAndSize(b, <Py_ssize_t>l)
 
         if bytes:
             return s
@@ -406,7 +406,7 @@ cdef class Encoder(codec.Encoder):
         """
         Write a string of bytes to the data stream.
         """
-        cdef Py_ssize_t l = PyString_GET_SIZE(s)
+        cdef Py_ssize_t l = PyBytes_GET_SIZE(s)
 
         if l > 0xffff:
             self.writeType(TYPE_LONGSTRING)
@@ -418,7 +418,7 @@ cdef class Encoder(codec.Encoder):
         else:
             self.stream.write_ushort(l)
 
-        return self.stream.write(PyString_AS_STRING(s), l)
+        return self.stream.write(PyBytes_AS_STRING(s), l)
 
     cdef int writeString(self, u) except -1:
         """
@@ -435,14 +435,14 @@ cdef class Encoder(codec.Encoder):
         if PyUnicode_CheckExact(u):
             u = self.context.getBytesForString(u)
 
-        cdef Py_ssize_t l = PyString_GET_SIZE(u)
+        cdef Py_ssize_t l = PyUnicode_GetLength(u)
 
         if l > 0xffff:
             self.stream.write_ulong(l)
         else:
             self.stream.write_ushort(l)
 
-        return self.stream.write(PyString_AS_STRING(u), l)
+        return self.stream.write(PyUnicode_AsUTF8String(u), l)
 
     cdef int writeXML(self, e) except -1:
         """
@@ -455,14 +455,14 @@ cdef class Encoder(codec.Encoder):
         if isinstance(data, unicode):
             data = data.encode('utf-8')
 
-        if not PyString_CheckExact(data):
+        if not PyUnicode_CheckExact(data):
             raise TypeError('expected str from xml.tostring')
 
-        cdef Py_ssize_t l = PyString_GET_SIZE(data)
+        cdef Py_ssize_t l = PyUnicode_GetLength(data)
 
         self.stream.write_ulong(l)
 
-        return self.stream.write(PyString_AS_STRING(data), l)
+        return self.stream.write(PyUnicode_AsUTF8String(data), l)
 
     cdef int writeDateTime(self, d) except -1:
         if self.timezone_offset is not None:
@@ -492,7 +492,7 @@ cdef class Encoder(codec.Encoder):
         @param o: The C{dict} data to be encoded to the AMF0 data stream.
         """
         for key, value in attrs.iteritems():
-            if PyInt_Check(key) or PyLong_Check(key):
+            if PyLong_Check(key):
                 key = str(key)
 
             self.serialiseString(key)
@@ -552,7 +552,7 @@ cdef class Encoder(codec.Encoder):
         try:
             # list comprehensions to save the day
             max_index = max([y[0] for y in o.items()
-                if isinstance(y[0], (int, long))])
+                if isinstance(y[0], int)])
 
             if max_index < 0:
                 max_index = 0
