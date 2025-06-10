@@ -418,7 +418,7 @@ cdef class Encoder(codec.Encoder):
         else:
             self.stream.write_ushort(l)
 
-        return self.stream.write(PyBytes_AS_STRING(s), l)
+        return self.stream.write(PyBytes_FromString(s), l)
 
     cdef int writeString(self, u) except -1:
         """
@@ -435,14 +435,14 @@ cdef class Encoder(codec.Encoder):
         if PyUnicode_CheckExact(u):
             u = self.context.getBytesForString(u)
 
-        cdef Py_ssize_t l = PyUnicode_GetLength(u)
+        cdef Py_ssize_t l = PyBytes_GET_SIZE(u)
 
         if l > 0xffff:
             self.stream.write_ulong(l)
         else:
             self.stream.write_ushort(l)
 
-        return self.stream.write(PyUnicode_AsUTF8String(u), l)
+        return self.stream.write(PyBytes_AsString(u), l)
 
     cdef int writeXML(self, e) except -1:
         """
@@ -462,7 +462,7 @@ cdef class Encoder(codec.Encoder):
 
         self.stream.write_ulong(l)
 
-        return self.stream.write(PyUnicode_AsUTF8String(data), l)
+        return self.stream.write(PyUnicode_AsUTF8String(data), l) #!Might be wrong
 
     cdef int writeDateTime(self, d) except -1:
         if self.timezone_offset is not None:

@@ -56,7 +56,7 @@ cdef object ByteArrayType = amf3.ByteArray
 cdef object DataInput = amf3.DataInput
 cdef object DataOutput = amf3.DataOutput
 cdef str empty_string = str('')
-cdef unicode empty_unicode = empty_string.decode('utf-8')
+cdef unicode empty_unicode = ''
 cdef object undefined = miniamf.Undefined
 
 
@@ -442,7 +442,7 @@ cdef class Decoder(codec.Decoder):
         cdef object s
 
         self.stream.read(&buf, ref)
-        s = PyUnicode_FromStringAndSize(buf, ref) #!Ref might need to be converted to Py_ssize_t
+        s = PyBytes_FromStringAndSize(buf, ref) #!The pure python version loads this as bytes, I'm not sure if that is correct in this context
 
         x = xml.fromstring(
             s,
@@ -474,7 +474,7 @@ cdef class Decoder(codec.Decoder):
         ref >>= 1
 
         self.stream.read(&buf, ref)
-        s = PyBytes_FromStringAndSize(buf, ref)#!Ref might need to be converted to Py_ssize_t
+        s = PyBytes_FromStringAndSize(buf, ref) #!Read as bytes in pure python
 
         if zlib:
             if ref > 2 and buf[0] == '\x78' and buf[1] == '\x9c':
@@ -579,12 +579,11 @@ cdef class Encoder(codec.Encoder):
 
         if is_unicode:
             u = self.context.getBytesForString(u)
-            l = PyUnicode_GetLength(u)
+            l = PyBytes_GET_SIZE(u)
 
         _encode_integer(self.stream, (l << 1) | REFERENCE_BIT)
-        if is_unicode:
-            return self.stream.write(PyUnicode_AsUTF8String(u), l)
-        return self.stream.write(PyBytes_AS_STRING(u), l)
+
+        return self.stream.write(PyBytes_AsString(u), l)
 
     cdef int writeString(self, object s) except -1:
         self.writeType(TYPE_STRING)
@@ -595,7 +594,7 @@ cdef class Encoder(codec.Encoder):
         self.serialiseString(s)
 
     cdef int writeInt(self, object n) except -1:
-        cdef long x = n
+        cdef long x = PyLong_AsLong(n)
 
         if x < MIN_29B_INT or x > MAX_29B_INT:
             return self.writeNumber(float(n))
@@ -883,7 +882,7 @@ cdef class Encoder(codec.Encoder):
         l = PyUnicode_GetLength(buf)
 
         _encode_integer(self.stream, (l << 1) | REFERENCE_BIT)
-        self.stream.write(PyUnicode_AsUTF8String(buf), l)
+        self.stream.write(PyUnicode_AsUTF8String(buf), l) #!Pure python writes bytes here. Should this be PyBytes_FromString instead?
 
         return 0
 

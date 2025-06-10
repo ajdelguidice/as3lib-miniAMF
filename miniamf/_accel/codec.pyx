@@ -16,7 +16,6 @@ cdef extern from "datetime.h":
     int PyDate_CheckExact(object)
     int PyTime_CheckExact(object)
 
-
 from miniamf._accel.util cimport cBufferedByteStream, BufferedByteStream
 
 import types
@@ -130,7 +129,7 @@ cdef class IndexedCollection(object):
         if p is None:
             return -1
 
-        return <Py_ssize_t>PyLong_AsLong(<object>p)
+        return <Py_ssize_t>PyLong_AsLong(<object>p) #!This is probably wrong
 
     cpdef Py_ssize_t append(self, object obj) except -1:
         self._increase_size()
@@ -303,19 +302,20 @@ cdef class Context(object):
 
         return u
 
-    cpdef str getBytesForString(self, object u):
+    cpdef bytes getBytesForString(self, object u):
         """
         Returns the corresponding utf-8 encoded string for a given unicode
         object. If there is no string, one is encoded.
 
         @since: 0.6
         """
+
         cdef object ret = self._strings.get(u, None)
 
         if ret is not None:
             return ret
 
-        cdef str s = u.encode('utf-8')
+        cdef bytes s = u.encode('utf-8')
 
         self.unicodes[s] = u
         self._strings[u] = s
@@ -569,8 +569,8 @@ cdef class Encoder(Codec):
             ret = self.writeNull(element)
         elif PyBool_Check(element):
             ret = self.writeBoolean(element)
-        elif PyLong_CheckExact(element):
-            ret = self.writeInt(element)
+        #elif PyInt_CheckExact(element):
+        #    ret = self.writeInt(element)
         elif PyLong_CheckExact(element):
             ret = self.writeLong(element)
         elif PyFloat_CheckExact(element):
@@ -607,7 +607,7 @@ cdef class Encoder(Codec):
             raise miniamf.EncodeError("Cannot encode functions %r" % (
                 element,
             ))
-        elif PyType_Check(element) or PyType_CheckExact(element):
+        elif PyType_CheckExact(element):
             raise miniamf.EncodeError("Cannot encode class objects %r" % (
                 element,
             ))

@@ -17,10 +17,12 @@ cdef extern from "stdio.h":
     int SIZEOF_LONG
 
 cdef extern from "Python.h":
-    int PyFloat_Pack4(double, const char *, int) except? -1 #This was _PyFloat_Pack4
-    int PyFloat_Pack8(double, const char *, int) except? -1 #This was _PyFloat_Pack8
-    double PyFloat_Unpack4(const char *, int) except? -1.0 #This was _PyFloat_Unpack4
-    double PyFloat_Unpack8(const char *, int) except? -1.0 #This was _PyFloat_Unpack8
+    int PyFloat_Pack4(double, unsigned char *, int) except? -1 #This was _PyFloat_Pack4
+    int PyFloat_Pack8(double, unsigned char *, int) except? -1 #This was _PyFloat_Pack8
+    double PyFloat_Unpack4(const unsigned char *, int) except? -1.0 #This was _PyFloat_Unpack4
+    double PyFloat_Unpack8(const unsigned char *, int) except? -1.0 #This was _PyFloat_Unpack8
+    int PyByteArray_Check(object)
+    char* PyByteArray_AsString(object)
 
 from miniamf import python
 
@@ -30,15 +32,15 @@ cdef char ENDIAN_NATIVE = "@"
 cdef char ENDIAN_LITTLE = "<"
 cdef char ENDIAN_BIG = ">"
 
-cdef const int MAX_BUFFER_EXTENSION = 1 << 14
+cdef int MAX_BUFFER_EXTENSION = 1 << 14
 
 cdef char SYSTEM_ENDIAN
 
 cdef int float_broken = -1
 
-cdef unsigned char *NaN = <unsigned char *>'\xff\xf8\x00\x00\x00\x00\x00\x00'
-cdef unsigned char *NegInf = <unsigned char *>'\xff\xf0\x00\x00\x00\x00\x00\x00'
-cdef unsigned char *PosInf = <unsigned char *>'\x7f\xf0\x00\x00\x00\x00\x00\x00'
+cdef const unsigned char *NaN = <const unsigned char *>'\xff\xf8\x00\x00\x00\x00\x00\x00'
+cdef const unsigned char *NegInf = <const unsigned char *>'\xff\xf0\x00\x00\x00\x00\x00\x00'
+cdef const unsigned char *PosInf = <const unsigned char *>'\x7f\xf0\x00\x00\x00\x00\x00\x00'
 
 cdef double platform_nan
 cdef double platform_posinf
@@ -92,21 +94,21 @@ cdef int build_platform_exceptional_floats() except -1:
 
     if float_broken == 1:
         try:
-            PyFloat_Unpack8(<const char *>&NaN, not is_big_endian(SYSTEM_ENDIAN))
+            PyFloat_Unpack8(NaN, not is_big_endian(SYSTEM_ENDIAN))
         except:
             raise
         else:
             memcpy(&platform_nan, &system_nan, 8)
 
         try:
-            PyFloat_Unpack8(<const char *>&PosInf, not is_big_endian(SYSTEM_ENDIAN))
+            PyFloat_Unpack8(PosInf, not is_big_endian(SYSTEM_ENDIAN))
         except:
             raise
         else:
             memcpy(&platform_posinf, &system_posinf, 8)
 
         try:
-            PyFloat_Unpack8(<const char *>&NegInf, not is_big_endian(SYSTEM_ENDIAN))
+            PyFloat_Unpack8(NegInf, not is_big_endian(SYSTEM_ENDIAN))
         except:
             raise
         else:
@@ -172,7 +174,7 @@ cdef inline int swap_bytes(unsigned char *buffer, Py_ssize_t size) nogil:
 
 
 cdef bint is_broken_float() except -1:
-    cdef double test = PyFloat_Unpack8(<const char *>&NaN, 0)
+    cdef double test = PyFloat_Unpack8(NaN, 0)
 
     cdef int result
     cdef unsigned char *buf = <unsigned char *>&test
@@ -364,7 +366,7 @@ cdef class cBufferedByteStream(object):
         """
         Get raw data from buffer.
         """
-        return PyBytes_FromStringAndSize(self.buffer, self.length)
+        return PyBytes_FromStringAndSize(self.buffer, self.length) #!This might need to be PyUnincode
 
     cdef Py_ssize_t peek(self, char **buf, Py_ssize_t size) except -1:
         """
@@ -734,20 +736,18 @@ cdef class cBufferedByteStream(object):
         @param obj: unicode object
         @raise TypeError: Unexpected type for str C{u}.
         """
-        cdef object encoded_string
+        cdef object encoded_string = obj
+        cdef char *buf = NULL
         cdef Py_ssize_t l = -1
-        cdef const char** buf
 
-        if PyUnicode_Check(obj) == 1:
-            #encoded_string = PyUnicode_AsUTF8String(obj)
-            buf = PyUnicode_AsUTF8AndSize(obj, &l)
-        elif PyBytes_Check(obj) == 1:
-            #encoded_string = obj
-            PyBytes_AsStringAndSize(obj, buf, &l)
-        else:
+        if PyUnicode_Check(obj):
+            encoded_string = PyUnicode_AsUTF8String(obj)
+        elif PyByteArray_Check(obj):
+            encoded_string = PyByteArray_AsString(obj)
+        elif not PyBytes_Check(obj):
             raise TypeError('value must be Unicode or str')
 
-        #cdef const char* buf = PyUnicode_AsUTF8AndSize(encoded_string, &l)
+        PyBytes_AsStringAndSize(encoded_string, &buf, &l)
         self.write(buf, l)
 
         return 0
@@ -796,7 +796,7 @@ cdef class cBufferedByteStream(object):
                     if swap_bytes(buf, 8) == -1:
                         PyErr_NoMemory()
 
-        obj[0] = PyFloat_Unpack8(<const char *>buf, not is_big_endian(self.endian))
+        obj[0] = PyFloat_Unpack8(<const unsigned char*>buf, not is_big_endian(self.endian))
 
         return 0
 
@@ -842,7 +842,7 @@ cdef class cBufferedByteStream(object):
                                 PyErr_NoMemory()
 
             if done == 0:
-                PyFloat_Pack8(val, <const char *>buf, not is_big_endian(self.endian))
+                PyFloat_Pack8(val, <unsigned char *>buf, not is_big_endian(self.endian))
 
             self.write(<char *>buf, 8)
         finally:
@@ -859,7 +859,7 @@ cdef class cBufferedByteStream(object):
 
         self.read(&buf, 4)
 
-        x[0] = PyFloat_Unpack4(<const char *>buf, le)
+        x[0] = PyFloat_Unpack4(<const unsigned char *>buf, le)
 
         return 0
 
@@ -879,7 +879,7 @@ cdef class cBufferedByteStream(object):
             PyErr_NoMemory()
 
         try:
-            PyFloat_Pack4(c, <const char *>buf, le)
+            PyFloat_Pack4(c, <unsigned char *>buf, le) #!c might need to be cast to a double
 
             self.write(<char *>buf, 4)
         finally:
@@ -901,7 +901,7 @@ cdef class cBufferedByteStream(object):
 
         return 0
 
-    def __bool__(self):
+    def __nonzero__(self):
         return self.length > 0
 
 
@@ -923,6 +923,8 @@ cdef class BufferedByteStream(cBufferedByteStream):
             x = <cBufferedByteStream>buf
             self.write(x.getvalue())
         elif isinstance(buf, (str, unicode)):
+            self.write(PyBytes_FromString(buf))
+        elif isinstance(buf, bytes):
             self.write(buf)
         elif hasattr(buf, 'getvalue'):
             self.write(buf.getvalue())
@@ -938,7 +940,7 @@ cdef class BufferedByteStream(cBufferedByteStream):
 
     property endian:
         def __set__(self, value):
-            if PyBytes_Check(value) == 0:
+            if PyUnicode_Check(value) == 0:
                 raise TypeError('String value expected')
 
             if value not in [ENDIAN_NETWORK, ENDIAN_NATIVE, ENDIAN_LITTLE, ENDIAN_BIG]:
@@ -947,7 +949,7 @@ cdef class BufferedByteStream(cBufferedByteStream):
             self.endian = PyUnicode_AsUTF8String(value)[0]
 
         def __get__(self):
-            return PyBytes_FromStringAndSize(&self.endian, 1)
+            return PyUnicode_FromStringAndSize(&self.endian, 1)
 
     def read(self, size=-1):
         """
