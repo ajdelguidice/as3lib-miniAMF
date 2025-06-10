@@ -46,7 +46,7 @@ skip_missing_interpreters = True
 [tool.tox.env_run_base]
 pass_env = "TRAVIS TRAVIS_JOB_ID TRAVIS_BRANCH"
 deps = ["coverage","coveralls","flake8","cython"]
-commands = [["flake8"],["coverage","run","--source=miniamf","setup.py","test"],["- coveralls"]]
+commands = [["flake8"],["coverage","run","--source=miniamf","-m","unittest","tests/*","tests/adapters/*","tests/imports/*"]] #,["- coveralls"]]
 
 [tool.tox.env.py37]
 base_python = "python3.7"
