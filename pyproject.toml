@@ -31,12 +31,12 @@ docs = ["sphinx >= 1.5"]
 
 [tool.setuptools]
 packages=["miniamf", "miniamf._accel", "miniamf.adapters", "miniamf.util"]
-#ext-modules = [
-#    {name = "miniamf._accel.util", sources = ["miniamf/_accel/util.pyx"]},
-#    {name = "miniamf._accel.codec", sources = ["miniamf/_accel/codec.pyx"]},
-#    {name = "miniamf._accel.amf3", sources = ["miniamf/_accel/amf3.pyx"]},
-#    {name = "miniamf._accel.amf0", sources = ["miniamf/_accel/amf0.pyx"]}
-#]
+ext-modules = [
+    {name = "miniamf._accel.util", sources = ["miniamf/_accel/util.pyx"]},
+    {name = "miniamf._accel.codec", sources = ["miniamf/_accel/codec.pyx"]},
+    {name = "miniamf._accel.amf3", sources = ["miniamf/_accel/amf3.pyx"]},
+    {name = "miniamf._accel.amf0", sources = ["miniamf/_accel/amf0.pyx"]}
+]
 
 [tool.tox]
 legacy_tox_ini = """
