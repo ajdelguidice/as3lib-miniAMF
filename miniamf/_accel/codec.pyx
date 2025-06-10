@@ -607,7 +607,7 @@ cdef class Encoder(Codec):
             raise miniamf.EncodeError("Cannot encode functions %r" % (
                 element,
             ))
-        elif PyType_CheckExact(element):
+        elif PyType_Check(element) or PyType_CheckExact(element):
             raise miniamf.EncodeError("Cannot encode class objects %r" % (
                 element,
             ))
