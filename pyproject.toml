@@ -39,29 +39,23 @@ ext-modules = [
 ]
 
 [tool.tox]
-legacy_tox_ini = """
-    [tox]
-    envlist = py{37,38,39,310}-cy{y,n}
-    toxworkdir = {env:TOX_WORK_DIR:.tox}
-    skip_missing_interpreters = True
+requires = ["tox"]
+env_list = ["py37","py38","py39","py310"]
+skip_missing_interpreters = True
 
-    [testenv]
-    passenv = TRAVIS TRAVIS_JOB_ID TRAVIS_BRANCH
+[tool.tox.env_run_base]
+pass_env = "TRAVIS TRAVIS_JOB_ID TRAVIS_BRANCH"
+deps = ["coverage","coveralls","flake8","cython"]
+commands = [["flake8"],["coverage","run","--source=miniamf","setup.py","test"],["- coveralls"]]
 
-    basepython =
-        py37: python3.7
-        py38: python3.8
-        py39: python3.9
-        py310: python3.10
+[tool.tox.env.py37]
+base_python = "python3.7"
 
-    deps =
-        coverage
-        coveralls
-        flake8
-        cyy: Cython
+[tool.tox.env.py38]
+base_python = "python3.8"
 
-    commands =
-        flake8
-        coverage run --source=miniamf setup.py test
-        - coveralls
-"""
+[tool.tox.env.py39]
+base_python = "python3.9"
+
+[tool.tox.env.py310]
+base_python = "python3.10"
