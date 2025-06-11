@@ -83,13 +83,13 @@ cdef int build_platform_exceptional_floats() except -1:
     global platform_nan, platform_posinf, platform_neginf
     global system_nan, system_posinf, system_neginf
 
-    if _memcpy_ensure_endian(NaN, &system_nan, 8) == -1:
+    if _memcpy_ensure_endian(<void *>NaN, &system_nan, 8) == -1:
         PyErr_NoMemory()
 
-    if _memcpy_ensure_endian(NegInf, &system_neginf, 8) == -1:
+    if _memcpy_ensure_endian(<void *>NegInf, &system_neginf, 8) == -1:
         PyErr_NoMemory()
 
-    if _memcpy_ensure_endian(PosInf, &system_posinf, 8) == -1:
+    if _memcpy_ensure_endian(<void *>PosInf, &system_posinf, 8) == -1:
         PyErr_NoMemory()
 
     if float_broken == 1:
@@ -366,7 +366,7 @@ cdef class cBufferedByteStream(object):
         """
         Get raw data from buffer.
         """
-        return PyBytes_FromStringAndSize(self.buffer, self.length) #!This might need to be PyUnincode
+        return PyBytes_FromStringAndSize(self.buffer, self.length)
 
     cdef Py_ssize_t peek(self, char **buf, Py_ssize_t size) except -1:
         """

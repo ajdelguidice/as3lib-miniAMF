@@ -16,11 +16,11 @@ cdef class cBufferedByteStream:
     cdef Py_ssize_t length
     cdef Py_ssize_t min_buf_size
 
-    cpdef Py_ssize_t tell(self) except -1
-    cdef int write(self, char *buf, Py_ssize_t size) except -1
     cdef inline int _init_buffer(self) except -1
+    cpdef Py_ssize_t tell(self) except -1
     cdef int _actually_increase_buffer(self, Py_ssize_t size) except -1
-    cdef int _increase_buffer(self, Py_ssize_t size) except -1
+    cdef inline int _increase_buffer(self, Py_ssize_t size) except -1
+    cdef int write(self, char *buf, Py_ssize_t size) except -1
     cdef inline bint has_available(self, Py_ssize_t size) except -1
     cdef int read(self, char **buf, Py_ssize_t size) except -1
     cpdef bint at_eof(self) except -1
@@ -45,10 +45,10 @@ cdef class cBufferedByteStream:
     cpdef int write_char(self, char ret) except -1
     cpdef int write_ushort(self, unsigned short ret) except -1
     cpdef int write_short(self, short ret) except -1
-    cpdef int write_24bit_uint(self, unsigned long ret) except -1
-    cpdef int write_24bit_int(self, long ret) except -1
     cpdef int write_ulong(self, unsigned long ret) except -1
     cpdef int write_long(self, long ret) except -1
+    cpdef int write_24bit_uint(self, unsigned long ret) except -1
+    cpdef int write_24bit_int(self, long ret) except -1
     cpdef object read_utf8_string(self, Py_ssize_t)
     cpdef int write_utf8_string(self, object obj) except -1
     cdef int read_double(self, double *obj) except -1
