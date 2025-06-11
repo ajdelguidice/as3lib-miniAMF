@@ -40,13 +40,13 @@ ext-modules = [
 
 [tool.tox]
 requires = ["tox"]
-env_list = ["py37","py38","py39","py310"]
-skip_missing_interpreters = True
+env_list = ["py37","py38","py39","py310","py3"]
+skip_missing_interpreters = true
 
 [tool.tox.env_run_base]
-pass_env = "TRAVIS TRAVIS_JOB_ID TRAVIS_BRANCH"
-deps = ["coverage","coveralls","flake8","cython"]
-commands = [["flake8"],["coverage","run","--source=miniamf","-m","unittest","tests/*","tests/adapters/*","tests/imports/*"]] #,["- coveralls"]]
+runner = "uv-venv-runner"
+deps = ["flake8","cython","defusedxml"]
+commands = [["-","flake8"],["python","-m","unittest","discover","tests"]]
 
 [tool.tox.env.py37]
 base_python = "python3.7"
