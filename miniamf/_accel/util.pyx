@@ -24,8 +24,6 @@ cdef extern from "Python.h":
     int PyByteArray_Check(object)
     char* PyByteArray_AsString(object)
 
-from miniamf import python
-
 # module constant declarations
 cdef char ENDIAN_NETWORK = "!"
 cdef char ENDIAN_NATIVE = "@"
@@ -50,11 +48,10 @@ cdef double system_nan
 cdef double system_posinf
 cdef double system_neginf
 
-cdef object miniamf_NaN = python.NaN
-cdef object miniamf_NegInf = python.NegInf
-cdef object miniamf_PosInf = python.PosInf
+cdef object miniamf_NaN = PyFloat_FromDouble(1e300000 / -1e300000)
+cdef object miniamf_NegInf = PyFloat_FromDouble(-1e300000)
+cdef object miniamf_PosInf = PyFloat_FromDouble(1e300000)
 cdef object empty_unicode = unicode('')
-
 
 @cython.profile(False)
 cdef int _memcpy_ensure_endian(void *src, void *dest, unsigned int size) nogil:
