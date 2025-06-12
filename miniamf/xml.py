@@ -9,10 +9,9 @@ Provides XML support.
 
 #: list of supported third party packages that support the C{etree}
 #: interface. At least enough for our needs anyway.
-ETREE_MODULES = [
-    'defusedxml.cElementTree',
-    'defusedxml.ElementTree',
-]
+from miniamf.util import get_module
+
+ETREE_MODULES = ['defusedxml.ElementTree']
 
 #: A tuple of class/type objects that are used to represent XML objects.
 types = None
@@ -55,7 +54,6 @@ def find_libs():
     one is ever used. The libs are small (relatively) and the flexibility that
     this gives seems to outweigh the cost. Time will tell.
     """
-    from miniamf.util import get_module
 
     types = []
     mapping = {}
