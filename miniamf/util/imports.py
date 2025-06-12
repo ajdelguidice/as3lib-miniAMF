@@ -31,6 +31,7 @@ def when_imported(name, *hooks):
 
 
 class ModuleFinder(object):
+    #!This is very, very broken after python 3.12. Many of these methods were either removed or deprecated. This needs major rework. find_module is replaced with find_spec, load_moule is deprecated
     """
     This is a special module finder object that executes a collection of
     callables when a specific module has been imported. An instance of this
@@ -46,10 +47,11 @@ class ModuleFinder(object):
     """
 
     def __init__(self):
+        self.loader = self
         self.post_load_hooks = {}
         self.loaded_modules = []
 
-    def find_module(self, name, path=None):
+    def find_module(self, name, path=None, target=None):
         """
         Called when an import is made. If there are hooks waiting for this
         module to be imported then we stop the normal import process and
@@ -61,6 +63,8 @@ class ModuleFinder(object):
             interface (which is this instance again). If not we return C{None}
             to allow the standard import process to continue.
         """
+        self.name = name
+        self.path = path
         if name in self.loaded_modules:
             return None
 
@@ -68,6 +72,17 @@ class ModuleFinder(object):
 
         if hooks:
             return self
+
+    find_spec = find_module
+
+    def create_module(self, spec):
+        self.submodule_search_locations = None
+        self.has_location = True
+        self.cached = None
+        return None #Indicates that default module semantics should be used
+
+    #def exec_module(self, module):
+    #    self.origin = module
 
     def load_module(self, name):
         """
@@ -77,6 +92,7 @@ class ModuleFinder(object):
 
         @param name: The name of the module to import.
         """
+        #print(name)
         self.loaded_modules.append(name)
 
         try:
