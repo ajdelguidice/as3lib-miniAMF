@@ -5,7 +5,7 @@ include *.yml
 recursive-include miniamf *.pyx
 recursive-include miniamf *.pxd
 graft doc
-graft tests
+graft miniamf/tests
 prune doc/build
 prune doc/_build
 prune .tox
