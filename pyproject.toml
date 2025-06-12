@@ -46,7 +46,7 @@ skip_missing_interpreters = true
 [tool.tox.env_run_base]
 runner = "uv-venv-runner"
 deps = ["flake8","cython","defusedxml"]
-commands = [["-","flake8"],["python","-m","unittest","discover","tests"]]
+commands = [["-","flake8"],["python","-m","unittest","discover","miniamf/tests"]]
 
 [tool.tox.env.py37]
 base_python = "python3.7"
