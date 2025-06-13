@@ -12,6 +12,7 @@ import inspect
 import miniamf
 from . import util
 
+
 class UnknownClassAlias(Exception):
     """
     Raised if the AMF stream specifies an Actionscript class that does not
@@ -398,15 +399,7 @@ class ClassAlias(object):
             return dict(obj)
 
         if self.shortcut_encode and self.dynamic:
-            #Fix for when objects do not have a __dict__ or __slots__ object (ex: decimal.Decimal)
-            try:
-                return obj.__dict__.copy()
-            except AttributeError:
-                try:
-                    return obj.__slots__.copy()
-                except AttributeError:
-                    #isinstance(obj.__getattribute__(a),type(len)) checks if the attribute is a builtin method or function. These can not be encoded
-                    return {a: obj.__getattribute__(a) for a in dir(obj) if not a.startswith('__') and isinstance(obj.__getattribute__(a),type(len))}
+            return obj.__dict__.copy()
 
         attrs = {}
 
