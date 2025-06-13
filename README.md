@@ -17,11 +17,11 @@ Here's a list of everything in this fork and their status (&#95;&#95;init&#95;&#
 
 | Module       | Status | Notes      |
 | ------------ | ------ | ---------- |
-| &#95;&#95;init&#95;&#95; | :o: | |
-| &#95;version / versions | :o: | |
+| &#95;&#95;init&#95;&#95; | - | Partially broken. Partly relies on adapters loading properly. |
+| &#95;version / versions | :heavy_check_mark: | |
 | alias | :o: | |
-| amf0 | :o: | decimal.Decimal encoding is completely broken |
-| amf3 | :o: | decimal.Decimal encoding is completely broken |
+| amf0 | - | Relies on adapters being loaded properly to encode special types. |
+| amf3 | - | Relies on adapters being loaded properly to encode special types. |
 | codec | :o: | |
 | sol | - | There does not seem to be anything wrong with the module itself but it relies on other things that might be broken |
 | xml | :o: | |
@@ -29,7 +29,7 @@ Here's a list of everything in this fork and their status (&#95;&#95;init&#95;&#
 | &#95;accel.amf3 | :o: | |
 | &#95;accel.codec | :o: | |
 | &#95;accel.util | - | Seems to work mostly fine but some stuff that I haven't tested yet could still be broken due to differences between python 2 and python 3 |
-| adapters.&#95;&#95;init&#95;&#95; | :o: | |
+| adapters.&#95;&#95;init&#95;&#95; | - | Relies on util.imports. Automatic adapter loading is broken but adapters works fine if manually loaded. |
 | adapters.&#95;array | :heavy_check_mark: | |
 | adapters.&#95;collections | :heavy_check_mark: | |
 | adapters.&#95;decimal | :heavy_check_mark: | |
@@ -39,4 +39,3 @@ Here's a list of everything in this fork and their status (&#95;&#95;init&#95;&#
 | util.&#95;&#95;init&#95;&#95; | :o: | |
 | util.imports | :x: | This uses a lot of deprecated or removed functionality of the import system. This must be comletely rewritten (partially functional up until python 3.12 but breaks after that) |
 | util.pure | - | This should be mostly working since I can read and write shared objects and bytearrays just fine but I haven't tested it |
-
