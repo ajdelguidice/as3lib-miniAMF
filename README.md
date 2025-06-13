@@ -20,8 +20,8 @@ Here's a list of everything in this fork and their status (&#95;&#95;init&#95;&#
 | &#95;&#95;init&#95;&#95; | :o: | |
 | &#95;version / versions | :o: | |
 | alias | :o: | |
-| amf0 | :o: | |
-| amf3 | :o: | |
+| amf0 | :o: | decimal.Decimal encoding is completely broken |
+| amf3 | :o: | decimal.Decimal encoding is completely broken |
 | codec | :o: | |
 | sol | - | There does not seem to be anything wrong with the module itself but it relies on other things that might be broken |
 | xml | :o: | |
@@ -30,11 +30,11 @@ Here's a list of everything in this fork and their status (&#95;&#95;init&#95;&#
 | &#95;accel.codec | :o: | |
 | &#95;accel.util | - | Seems to work mostly fine but some stuff that I haven't tested yet could still be broken due to differences between python 2 and python 3 |
 | adapters.&#95;&#95;init&#95;&#95; | :o: | |
-| adapters.&#95;array | :o: | |
-| adapters.&#95;collections | :o: | |
-| adapters.&#95;decimal | :x: | I attempted to fix this but it seems that python 3's decimal.Decimal objects can not be encoded with the current encoder |
-| adapters.&#95;sets | :o: | |
-| adapters.&#95;weakref | :o: | |
+| adapters.&#95;array | :heavy_check_mark: | |
+| adapters.&#95;collections | :heavy_check_mark: | |
+| adapters.&#95;decimal | :heavy_check_mark: | |
+| adapters.&#95;sets | :heavy_check_mark: | |
+| adapters.&#95;weakref | :heavy_check_mark: | |
 | adapters.util | :heavy_check_mark: | |
 | util.&#95;&#95;init&#95;&#95; | :o: | |
 | util.imports | :x: | This uses a lot of deprecated or removed functionality of the import system. This must be comletely rewritten (partially functional up until python 3.12 but breaks after that) |
