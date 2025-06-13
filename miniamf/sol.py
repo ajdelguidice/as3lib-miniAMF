@@ -117,7 +117,6 @@ def encode(name, values, strict=True, encoding=miniamf.AMF0):
     # write the padding
     stream.write(PADDING_BYTE * 3)
     stream.write_uchar(encoding)
-
     for n, v in values.items():
         encoder.serialiseString(n)
         encoder.writeElement(v)
@@ -134,6 +133,16 @@ def encode(name, values, strict=True, encoding=miniamf.AMF0):
     return stream
 
 
+def _load(f):
+    name, values = decode(f.read())
+    s = SOL(name)
+
+    for n, v in values.items():
+        s[n] = v
+
+    return s
+
+
 def load(name_or_file):
     """
     Loads a sol file and returns a L{SOL} object.
@@ -142,24 +151,14 @@ def load(name_or_file):
     @type name_or_file: C{string}
     """
     f = name_or_file
-    opened = False
 
     if isinstance(name_or_file, str):
-        f = open(name_or_file, "rb")
-        opened = True
+        with open(name_or_file, "rb") as f:
+            return _load(f)
     elif not hasattr(f, "read"):
         raise ValueError("Readable stream expected")
-
-    name, values = decode(f.read())
-    s = SOL(name)
-
-    for n, v in values.items():
-        s[n] = v
-
-    if opened is True:
-        f.close()
-
-    return s
+    else:
+        return _load(f)
 
 
 def save(sol, name_or_file, encoding=miniamf.AMF0):
@@ -170,18 +169,15 @@ def save(sol, name_or_file, encoding=miniamf.AMF0):
     @param encoding: AMF encoding type.
     """
     f = name_or_file
-    opened = False
+    encoded = encode(sol.name, sol, encoding=encoding).getvalue()
 
     if isinstance(name_or_file, str):
-        f = open(name_or_file, "wb+")
-        opened = True
+        with open(name_or_file, "wb+") as f:
+            f.write(encoded)
     elif not hasattr(f, "write"):
         raise ValueError("Writable stream expected")
-
-    f.write(encode(sol.name, sol, encoding=encoding).getvalue())
-
-    if opened:
-        f.close()
+    else:
+        f.write(encoded)
 
 
 class SOL(dict):
