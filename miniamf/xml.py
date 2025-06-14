@@ -78,8 +78,6 @@ def is_xml(obj):
 
     If L{types} is not populated then L{find_libs} be called.
     """
-    global types
-
     try:
         _bootstrap()
     except ImportError:
@@ -117,7 +115,7 @@ def _no_et():
 
 
 def _bootstrap():
-    global types, modules, ET
+    global types, modules
 
     if types is None:
         types, modules = find_libs()
@@ -136,8 +134,6 @@ def tostring(element, *args, **kwargs):
     Helper func to provide easy access to the (possibly) moving target that is
     C{ET}.
     """
-    global modules
-
     _bootstrap()
     t = _get_type(element)
 
@@ -157,8 +153,6 @@ def fromstring(*args, **kwargs):
     Helper func to provide easy access to the (possibly) moving target that is
     C{ET}.
     """
-    global ET
-
     _bootstrap()
 
     kwargs.setdefault('forbid_dtd', True)
