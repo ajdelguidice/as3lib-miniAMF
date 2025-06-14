@@ -86,13 +86,13 @@ class ElementTreeTestCase(_BaseTestCase):
         self.check_amf0(bytes, xml)
 
         new_element = next(miniamf.decode(bytes, encoding=miniamf.AMF0))
-        self.assertEqual(type(element), type(new_element))
+        self.assertIdentical(type(element), type(new_element))
 
         bytes = miniamf.encode(element, encoding=miniamf.AMF3).getvalue()
         self.check_amf3(bytes, xml)
 
         new_element = next(miniamf.decode(bytes, encoding=miniamf.AMF3))
-        self.assertEqual(type(element), type(new_element))
+        self.assertIdentical(type(element), type(new_element))
 
 
 class XXETestCaseTestCase(_BaseTestCase):

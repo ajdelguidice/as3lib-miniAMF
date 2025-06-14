@@ -65,7 +65,7 @@ class WhenImportedTestCase(ImportsTestCase):
         name = mod.__name__
 
         self.assertTrue(name in sys.modules)
-        self.assertEqual(sys.modules[name], mod)
+        self.assertIdentical(sys.modules[name], mod)
 
     def test_import(self):
         imports.when_imported('spam', self._hook)
