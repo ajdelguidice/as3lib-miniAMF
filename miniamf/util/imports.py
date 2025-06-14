@@ -8,7 +8,7 @@ Tools for doing dynamic imports.
 """
 
 import sys
-
+from importlib.machinery import ModuleSpec
 
 __all__ = ['when_imported']
 
@@ -49,27 +49,32 @@ class ModuleFinder(object):
         self.post_load_hooks = {}
         self.loaded_modules = []
 
-    def find_module(self, name, path=None):
+    def find_spec(self, fullname, path, target=None):
         """
         Called when an import is made. If there are hooks waiting for this
         module to be imported then we stop the normal import process and
         manually load the module.
 
         @param name: The name of the module being imported.
-        @param path The root path of the module (if a package). We ignore this.
-        @return: If we want to hook this module, we return a C{loader}
-            interface (which is this instance again). If not we return C{None}
-            to allow the standard import process to continue.
+        @param path: The root path of the module (if a package). We ignore this.
+        @param target: Not used.
+        @return: If we want to hook this module, we return a C{ModuleSpec}.
+            If not we return C{None} to allow the standard import process to
+            continue.
         """
-        if name in self.loaded_modules:
+        if fullname in self.loaded_modules:
             return None
 
-        hooks = self.post_load_hooks.get(name, None)
+        hooks = self.post_load_hooks.get(fullname, None)
 
         if hooks:
-            return self
+            return ModuleSpec(fullname, self)
+
+    def create_module(self, spec):
+        return None
 
     def load_module(self, name):
+        #!Warning: This function is deprecated
         """
         If we get this far, then there are hooks waiting to be called on
         import of this module. We manually load the module and then run the
