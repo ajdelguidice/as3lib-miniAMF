@@ -35,7 +35,7 @@ class PackageImporter(object):
         self.name = name
 
     def __call__(self, mod):
-        __import__('%s.%s' % ('miniamf.adapters', self.name))
+        __import__(f'miniamf.adapters.{self.name}')
 
 
 def register_adapters():
@@ -99,7 +99,7 @@ def get_adapter(mod):
     """
     base_name = '_' + mod.replace('.', '_')
 
-    full_import = '%s.%s' % (__name__, base_name)
+    full_import = f'{__name__}.{base_name}'
 
     ret = __import__(full_import)
 
