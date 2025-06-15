@@ -5,37 +5,38 @@ This is a fork of <a href="https://pypi.org/project/Mini-AMF/">Mini-AMF</a> that
 Supporting python 2 at this point would require a massive amount of backporting work so I just decided to remove it.
 
 ## Fork Coverage
-Here's a list of everything in this fork and their status (&#95;&#95;init&#95;&#95; files that contain code included as well). I'm not very concerned about the functionality of most of the pure python module since they used <a href="https://pypi.org/project/six/">six</a> for most of the cross version functionality but the cython modules will likely be more broken due to api changes from python 2 to python 3.
+Here's a list of everything in this fork and their status (&#95;&#95;init&#95;&#95; files that contain code included as well). Most pure python modules work properly (according to the test suite) but the cython module make 58 tests fail.
 
 | Key |              |
 | --- | ------------ |
 | :heavy_check_mark: | Working and tested |
-| - | Check notes |
+| - | Read notes |
 | :o: | Untested |
 | :x: | Broken |
 
+The first mark is the status of the module itself (manual testing), the second is the status of the tests (passing or not).
 
 | Module       | Status | Notes      |
 | ------------ | ------ | ---------- |
-| &#95;&#95;init&#95;&#95; | :o: | |
-| &#95;version / versions | :heavy_check_mark: | |
-| alias | :o: | |
-| amf0 | - | Should work but not fully tested. |
-| amf3 | - | Should work but not fully tested. |
-| codec | :o: | |
-| sol | - | There does not seem to be anything wrong with the module itself but it relies on other things that might be broken |
-| xml | :o: | |
-| &#95;accel.amf0 | :o: | |
-| &#95;accel.amf3 | :o: | |
-| &#95;accel.codec | :o: | |
-| &#95;accel.util | - | Seems to work mostly fine but some stuff that I haven't tested yet could still be broken due to differences between python 2 and python 3 |
-| adapters.&#95;&#95;init&#95;&#95; | :heavy_check_mark: | |
-| adapters.&#95;array | :heavy_check_mark: | |
-| adapters.&#95;collections | :heavy_check_mark: | |
-| adapters.&#95;decimal | :heavy_check_mark: | |
-| adapters.&#95;sets | :heavy_check_mark: | |
-| adapters.&#95;weakref | :heavy_check_mark: | |
-| adapters.util | :heavy_check_mark: | |
-| util.&#95;&#95;init&#95;&#95; | :o: | |
-| util.imports | - | This mostly works now, however it still uses deprecated functionality and will break in python 3.15 when that is released. I'm still trying to fix this. |
-| util.pure | - | Should work but not fully tested. |
+| &#95;&#95;init&#95;&#95; | :o: :heavy_check_mark: | |
+| &#95;version / versions | :heavy_check_mark: :heavy_check_mark: | |
+| alias | :o: :heavy_check_mark: | |
+| amf0 | - :heavy_check_mark: | |
+| amf3 | - :heavy_check_mark: | |
+| codec | :o: :heavy_check_mark: | |
+| sol | - :heavy_check_mark: | There does not seem to be anything wrong with the module itself but it relies on other things that might be broken |
+| xml | :o: :heavy_check_mark: | |
+| &#95;accel.amf0 | - :x: | |
+| &#95;accel.amf3 | - :x: | |
+| &#95;accel.codec | - :x: | Decoder.readElement does not seem to return the correct type (sometimes returns bytes when string is expected). |
+| &#95;accel.util | - :x: | |
+| adapters.&#95;&#95;init&#95;&#95; | - :heavy_check_mark: | PackageImporter is broken when I try to use nondeprecated functions in util.imports (error says likely due to circular import) |
+| adapters.&#95;array | :heavy_check_mark: :heavy_check_mark: | |
+| adapters.&#95;collections | :heavy_check_mark: :heavy_check_mark: | |
+| adapters.&#95;decimal | :heavy_check_mark: :heavy_check_mark: | |
+| adapters.&#95;sets | :heavy_check_mark: :heavy_check_mark: | |
+| adapters.&#95;weakref | :heavy_check_mark: :heavy_check_mark: | |
+| adapters.util | :heavy_check_mark: :heavy_check_mark: | |
+| util.&#95;&#95;init&#95;&#95; | :o: :heavy_check_mark: | |
+| util.imports | - - | This mostly works now, however it still uses deprecated functionality and will break in python 3.15 when that is released. I'm still trying to fix this. |
+| util.pure | - :heavy_check_mark: | |
