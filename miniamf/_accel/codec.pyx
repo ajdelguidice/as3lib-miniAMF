@@ -446,9 +446,6 @@ cdef class Decoder(Codec):
             # all data was successfully decoded from the stream
             raise StopIteration
 
-    def next(self):
-        self.__next__()
-
     def __iter__(self):
         return self
 
@@ -677,9 +674,6 @@ cdef class Encoder(Codec):
         self.stream.read(&buf, end_pos - start_pos)
 
         return PyBytes_FromStringAndSize(buf, end_pos - start_pos)
-
-    def next(self):
-        self.__next__()
 
     def __iter__(self):
         return self
