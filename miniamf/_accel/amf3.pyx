@@ -876,11 +876,11 @@ cdef class Encoder(codec.Encoder):
 
         self.context.addObject(obj)
 
-        buf = str(obj)
-        l = PyUnicode_GetLength(buf)
+        buf = obj.encode()
+        l = PyBytes_GET_SIZE(buf)
 
         _encode_integer(self.stream, (l << 1) | REFERENCE_BIT)
-        self.stream.write(PyUnicode_AsUTF8String(buf), l) #!Pure python writes bytes here. Should this be PyBytes_FromString instead?
+        self.stream.write(PyBytes_AsString(buf), l)
 
         return 0
 
