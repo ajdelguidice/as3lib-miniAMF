@@ -526,11 +526,9 @@ cdef class Encoder(Codec):
         raise NotImplementedError
 
     cdef int writeGenerator(self, object o) except -1:
-        cdef object n = getattr(o, 'next')
-
         while True:
             try:
-                self.writeElement(n())
+                self.writeElement(next(o))
             except StopIteration:
                 return 0
 
