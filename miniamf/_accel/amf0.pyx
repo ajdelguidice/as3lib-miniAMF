@@ -122,7 +122,7 @@ cdef class Decoder(codec.Decoder):
 
                 break
 
-            key = self.readBytes()
+            key = self.readString()
 
             PyDict_SetItem(obj_attrs, key, self.readElement())
 
