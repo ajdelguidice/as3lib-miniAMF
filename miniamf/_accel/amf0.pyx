@@ -450,10 +450,7 @@ cdef class Encoder(codec.Encoder):
         """
         self.writeType(TYPE_XML)
 
-        data = xml.tostring(e)
-
-        if isinstance(data, unicode):
-            data = data.encode('utf-8')
+        data = xml.tostring(e).decode('utf-8')
 
         if not PyUnicode_CheckExact(data):
             raise TypeError('expected str from xml.tostring')

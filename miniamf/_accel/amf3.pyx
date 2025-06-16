@@ -898,7 +898,7 @@ cdef class Encoder(codec.Encoder):
 
         self.context.addObject(obj)
 
-        s = xml.tostring(obj).encode('utf-8')
+        s = xml.tostring(obj).decode('utf-8')
 
         if not PyUnicode_CheckExact(s):
             raise TypeError('Expected string from xml serialization')
