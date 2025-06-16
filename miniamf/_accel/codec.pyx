@@ -129,7 +129,7 @@ cdef class IndexedCollection(object):
         if p is None:
             return -1
 
-        return <Py_ssize_t>PyLong_AsLong(<object>p) #!This is probably wrong
+        return <Py_ssize_t>PyLong_AsLong(<object>p)
 
     cpdef Py_ssize_t append(self, object obj) except -1:
         self._increase_size()
@@ -446,6 +446,9 @@ cdef class Decoder(Codec):
             # all data was successfully decoded from the stream
             raise StopIteration
 
+    def next(self):
+        self.__next__()
+
     def __iter__(self):
         return self
 
@@ -676,6 +679,9 @@ cdef class Encoder(Codec):
         self.stream.read(&buf, end_pos - start_pos)
 
         return PyBytes_FromStringAndSize(buf, end_pos - start_pos)
+
+    def next(self):
+        self.__next__()
 
     def __iter__(self):
         return self
