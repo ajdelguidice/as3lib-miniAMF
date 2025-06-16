@@ -505,7 +505,7 @@ class EncoderTestCase(ClassCacheClearingTestCase, EncoderMixIn):
         )
 
     def test_iterate(self):
-        self.assertRaises(StopIteration, self.encoder.next)
+        self.assertRaises(StopIteration, lambda: next(self.encoder))
 
         self.encoder.send('')
         self.encoder.send('hello')
@@ -518,7 +518,7 @@ class EncoderTestCase(ClassCacheClearingTestCase, EncoderMixIn):
             b'\x02\x00\x06\xc6\x92\xc3\xb8\xc3\xb8'
         )
 
-        self.assertRaises(StopIteration, self.encoder.next)
+        self.assertRaises(StopIteration, lambda: next(self.encoder))
 
         self.assertIdentical(iter(self.encoder), self.encoder)
         self.assertEqual(
@@ -860,7 +860,7 @@ class DecoderTestCase(ClassCacheClearingTestCase, DecoderMixIn):
                           self.decode, b'\x07\x00\x03')
 
     def test_iterate(self):
-        self.assertRaises(StopIteration, self.decoder.next)
+        self.assertRaises(StopIteration, lambda: next(self.decoder))
 
         self.decoder.send(b'\x02\x00\x00')
         self.decoder.send(b'\x02\x00\x05hello')
@@ -870,7 +870,7 @@ class DecoderTestCase(ClassCacheClearingTestCase, DecoderMixIn):
         self.assertEqual(next(self.decoder), 'hello')
         self.assertEqual(next(self.decoder), u'\u16a0\u16c7\u16bb')
 
-        self.assertRaises(StopIteration, self.decoder.next)
+        self.assertRaises(StopIteration, lambda: next(self.decoder))
 
         self.assertIdentical(iter(self.decoder), self.decoder)
 

@@ -530,7 +530,7 @@ class EncoderTestCase(ClassCacheClearingTestCase, EncoderMixIn):
         )
 
     def test_iterate(self):
-        self.assertRaises(StopIteration, self.encoder.next)
+        self.assertRaises(StopIteration, lambda: next(self.encoder))
 
         self.encoder.send('')
         self.encoder.send('hello')
@@ -856,7 +856,7 @@ class DecoderTestCase(ClassCacheClearingTestCase, DecoderMixIn):
         self.assertEqual(f, datetime.datetime(2009, 9, 24, 9, 23, 23))
 
     def test_iterate(self):
-        self.assertRaises(StopIteration, self.decoder.next)
+        self.assertRaises(StopIteration, lambda: next(self.decoder))
 
         self.decoder.send(b'\x01')
         self.decoder.send(b'\x03')
@@ -866,7 +866,7 @@ class DecoderTestCase(ClassCacheClearingTestCase, DecoderMixIn):
         self.assertEqual(next(self.decoder), True)
         self.assertEqual(next(self.decoder), False)
 
-        self.assertRaises(StopIteration, self.decoder.next)
+        self.assertRaises(StopIteration, lambda: next(self.decoder))
 
         self.assertIdentical(iter(self.decoder), self.decoder)
 
