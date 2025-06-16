@@ -30,6 +30,11 @@ cdef char ENDIAN_NATIVE = "@"
 cdef char ENDIAN_LITTLE = "<"
 cdef char ENDIAN_BIG = ">"
 
+from miniamf.util.pure import ENDIAN_NETWORK as PyEndianNetwork
+from miniamf.util.pure import ENDIAN_NATIVE as PyEndianNative
+from miniamf.util.pure import ENDIAN_LITTLE as PyEndianLittle
+from miniamf.util.pure import ENDIAN_BIG as PyEndianBig
+
 cdef int MAX_BUFFER_EXTENSION = 1 << 14
 
 cdef char SYSTEM_ENDIAN
@@ -940,7 +945,7 @@ cdef class BufferedByteStream(cBufferedByteStream):
             if PyUnicode_Check(value) == 0:
                 raise TypeError('String value expected')
 
-            if value not in [ENDIAN_NETWORK, ENDIAN_NATIVE, ENDIAN_LITTLE, ENDIAN_BIG]:
+            if value not in [PyEndianNetwork, PyEndianNative, PyEndianLittle, PyEndianBig]:
                 raise ValueError('Not a valid endian type')
 
             self.endian = PyUnicode_AsUTF8String(value)[0]
