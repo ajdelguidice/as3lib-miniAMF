@@ -5,7 +5,7 @@ This is a fork of <a href="https://pypi.org/project/Mini-AMF/">Mini-AMF</a> that
 Supporting python 2 at this point would require a massive amount of backporting work so I just decided to remove it.
 
 ## Fork Coverage
-Here's a list of everything in this fork and their status (&#95;&#95;init&#95;&#95; files that contain code included as well). Most pure python modules work properly (according to the test suite) but the cython module make 22 tests fail.
+Here's a list of everything in this fork and their status (&#95;&#95;init&#95;&#95; files that contain code included as well). All pure python modules work properly (according to the test suite) but the cython module make 1 tests fail.
 
 | Key |              |
 | --- | ------------ |
@@ -26,10 +26,10 @@ The first mark is the status of the module itself (manual testing), the second i
 | codec | :o: :heavy_check_mark: | |
 | sol | - :heavy_check_mark: | There does not seem to be anything wrong with the module itself but it relies on other things that might be broken |
 | xml | :o: :heavy_check_mark: | |
-| &#95;accel.amf0 | :x: :x: | |
+| &#95;accel.amf0 | :x: :x: | Fails test_use_amf3 (test_amf0.EncoderTestCase.test_use_amf3). Writes the object in the opposite order |
 | &#95;accel.amf3 | :x: :x: | |
 | &#95;accel.codec | :x: :x: | |
-| &#95;accel.util | :x: :x: | endian property of BufferedByteStram can not be set from python. |
+| &#95;accel.util | :x: :x: | |
 | adapters.&#95;&#95;init&#95;&#95; | - :heavy_check_mark: | PackageImporter is broken when I try to use nondeprecated functions in util.imports (error says likely due to circular import) |
 | adapters.&#95;array | :heavy_check_mark: :heavy_check_mark: | |
 | adapters.&#95;collections | :heavy_check_mark: :heavy_check_mark: | |
