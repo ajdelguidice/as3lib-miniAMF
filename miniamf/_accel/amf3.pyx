@@ -671,9 +671,12 @@ cdef class Encoder(codec.Encoder):
         return 0
 
     cdef int writeDict(self, dict obj) except -1:
+        if '' in obj:
+            raise miniamf.EncodeError("dicts cannot contain empty string keys")
+
         cdef Py_ssize_t idx = 0
 
-        self.writeType(TYPE_OBJECT)
+        self.writeType(TYPE_OBJECT) #!Pure python writes TYPE_ARRAY but for some reason, this is correct here
 
         ref = self.context.getObjectReference(obj)
 
