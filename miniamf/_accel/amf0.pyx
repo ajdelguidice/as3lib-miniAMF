@@ -181,7 +181,7 @@ cdef class Decoder(codec.Decoder):
 
         self.readObjectAttributes(attrs)
 
-        for key, value in attrs.iteritems():
+        for key, value in attrs.items():
             try:
                 key = int(key)
             except ValueError:
@@ -488,7 +488,7 @@ cdef class Encoder(codec.Encoder):
 
         @param o: The C{dict} data to be encoded to the AMF0 data stream.
         """
-        for key, value in attrs.iteritems():
+        for key, value in attrs.items():
             if PyLong_Check(key):
                 key = str(key)
 

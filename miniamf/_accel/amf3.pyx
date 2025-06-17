@@ -698,7 +698,7 @@ cdef class Encoder(codec.Encoder):
         if class_ref == 0:
             self.stream.write(&REF_CHAR, 1)
 
-        for key, value in obj.iteritems():
+        for key, value in obj.items():
             if PyLong_Check(key):
                 key = str(key)
 

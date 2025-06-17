@@ -701,7 +701,7 @@ cdef class _CustomTypeFunc(object):
 cdef object get_custom_type_func(object encoder, object data):
     cdef _CustomTypeFunc ret
 
-    for type_, func in miniamf.TYPE_MAP.iteritems():
+    for type_, func in miniamf.TYPE_MAP.items():
         try:
             if isinstance(data, type_):
                 return _CustomTypeFunc(encoder, func)
