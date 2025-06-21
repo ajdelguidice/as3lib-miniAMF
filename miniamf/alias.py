@@ -296,13 +296,11 @@ class ClassAlias(object):
     def is_compiled(self):
         return self._compiled
 
-    def __unicode__(self):
+    def __str__(self):
         return self.alias
 
     def __bytes__(self):
         return self.alias.encode('utf-8')
-
-    __str__ = __unicode__
 
     def __repr__(self):
         k = self.__class__
