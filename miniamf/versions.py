@@ -31,7 +31,7 @@ def get_version(elements):
 
     for x in elements:
         if not first and isinstance(x, int):
-            v.append(u".")
+            v.append(".")
         if isinstance(x, str):
             v.append(x)
         elif isinstance(x, bytes):
@@ -40,4 +40,4 @@ def get_version(elements):
             v.append(str(x))
         first = False
 
-    return u"".join(v)
+    return "".join(v)
