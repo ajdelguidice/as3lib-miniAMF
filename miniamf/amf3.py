@@ -1420,7 +1420,7 @@ class Encoder(codec.Encoder):
                     value = attrs[key]
                     if isinstance(key, int):
                         key = str(key)
-                    elif not isinstance(key,str):
+                    elif not isinstance(key, str):
                         raise miniamf.EncodeError(
                             'Unable to encode %r (key %r not supported)'
                             % (obj, key))
@@ -1449,8 +1449,7 @@ class Encoder(codec.Encoder):
         self.context.addObject(n)
 
         buf = n.encode()
-        l = len(buf)
-        self._writeInteger(l << 1 | REFERENCE_BIT)
+        self._writeInteger(len(buf) << 1 | REFERENCE_BIT)
         self.stream.write(buf)
 
     def writeXML(self, n):
