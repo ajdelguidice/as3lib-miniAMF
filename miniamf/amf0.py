@@ -412,9 +412,7 @@ class Encoder(codec.Encoder):
         if self.use_amf3:
             return self.writeAMF3
 
-        t = type(data)
-
-        if t is miniamf.MixedArray:
+        if type(data) is miniamf.MixedArray:
             return self.writeMixedArray
 
         return codec.Encoder.getTypeFunc(self, data)
