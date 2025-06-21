@@ -25,8 +25,6 @@ def when_imported(name, *hooks):
     module has not been imported, then the hook is called when the module is
     first imported.
     """
-    global finder
-
     finder.when_imported(name, *hooks)
 
 
@@ -55,7 +53,7 @@ class ModuleFinder(object):
         module to be imported then we stop the normal import process and
         manually load the module.
 
-        @param name: The name of the module being imported.
+        @param fullname: The name of the module being imported.
         @param path: The root path of the module (if a package). We ignore this.
         @param target: Not used.
         @return: If we want to hook this module, we return a C{ModuleSpec}.
@@ -72,6 +70,22 @@ class ModuleFinder(object):
 
     def create_module(self, spec):
         return None
+
+    #def exec_module(self, module):
+    #    name = module.__spec__.name
+    #    self.loaded_modules.append(name)
+
+    #    try:
+    #        #__import__(name, {}, {}, [])
+
+    #        mod = sys.modules[name]
+    #        self._run_hooks(name, module)
+    #    except:
+    #        self.loaded_modules.pop()
+
+    #        raise
+
+    #    return module
 
     def load_module(self, name):
         #!Warning: This function is deprecated

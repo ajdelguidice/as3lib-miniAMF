@@ -14,6 +14,7 @@ Do not reference directly, use L{miniamf.util.BufferedByteStream} instead.
 import struct
 import io
 
+
 def _get_endian_system():
     encoded = struct.pack("@I", 0x01020304)
     if encoded == b'\x01\x02\x03\x04':
