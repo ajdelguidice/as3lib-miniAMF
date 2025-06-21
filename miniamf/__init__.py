@@ -89,10 +89,8 @@ class UndefinedType(object):
     def __repr__(self):
         return 'miniamf.Undefined'
 
-    def __nonzero__(self):
+    def __bool__(self):
         return False
-
-    __bool__ = __nonzero__
 
 
 #: Represents the C{undefined} value in the Adobe Flash Player client.
