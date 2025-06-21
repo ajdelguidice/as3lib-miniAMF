@@ -349,8 +349,6 @@ class Decoder(_Codec):
         except miniamf.EOStream:
             # all data was successfully decoded from the stream
             raise StopIteration
-    # Python 2 compat
-    next = __next__
 
     def finalise(self, payload):
         """
@@ -583,7 +581,7 @@ class Encoder(_Codec):
     def send(self, element):
         self.bucket.append(element)
 
-    def next(self):
+    def __next__(self):
         try:
             element = self.bucket.pop(0)
         except IndexError:
@@ -598,8 +596,6 @@ class Encoder(_Codec):
         self.stream.seek(start_pos)
 
         return self.stream.read(end_pos - start_pos)
-
-    __next__ = next
 
     def __iter__(self):
         return self
