@@ -18,9 +18,9 @@ The first mark is the status of the module itself (manual testing), the second i
 
 | Module       | Status | Notes      |
 | ------------ | ------ | ---------- |
-| &#95;&#95;init&#95;&#95; | :o: :heavy_check_mark: | |
+| &#95;&#95;init&#95;&#95; | :heavy_check_mark: :heavy_check_mark: | |
 | &#95;version / versions | :heavy_check_mark: :heavy_check_mark: | |
-| alias | :o: :heavy_check_mark: | |
+| alias | :heavy_check_mark: :heavy_check_mark: | |
 | amf0 | :o: :heavy_check_mark: | |
 | amf3 | :o: :heavy_check_mark: | |
 | codec | :o: :heavy_check_mark: | |
@@ -37,6 +37,6 @@ The first mark is the status of the module itself (manual testing), the second i
 | adapters.&#95;sets | :heavy_check_mark: :heavy_check_mark: | |
 | adapters.&#95;weakref | :heavy_check_mark: :heavy_check_mark: | |
 | adapters.util | :heavy_check_mark: :heavy_check_mark: | |
-| util.&#95;&#95;init&#95;&#95; | :o: :heavy_check_mark: | |
+| util.&#95;&#95;init&#95;&#95; | :heavy_check_mark: :heavy_check_mark: | |
 | util.imports | - - | This mostly works now, however it still uses deprecated functionality and will break in python 3.15 when that is released. I'm still trying to fix this. |
 | util.pure | :o: :heavy_check_mark: | |
