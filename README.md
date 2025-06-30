@@ -30,7 +30,7 @@ The first mark is the status of the module itself (manual testing), the second i
 | &#95;accel.amf3 | :o: :x: | |
 | &#95;accel.codec | :o: :heavy_check_mark: | |
 | &#95;accel.util | :o: :heavy_check_mark: | |
-| adapters.&#95;&#95;init&#95;&#95; | - :heavy_check_mark: | PackageImporter is broken when I try to use nondeprecated functions in util.imports (error says likely due to circular import) |
+| adapters.&#95;&#95;init&#95;&#95; | :heavy_check_mark: :heavy_check_mark: | |
 | adapters.&#95;array | :heavy_check_mark: :heavy_check_mark: | |
 | adapters.&#95;collections | :heavy_check_mark: :heavy_check_mark: | |
 | adapters.&#95;decimal | :heavy_check_mark: :heavy_check_mark: | |
@@ -38,5 +38,5 @@ The first mark is the status of the module itself (manual testing), the second i
 | adapters.&#95;weakref | :heavy_check_mark: :heavy_check_mark: | |
 | adapters.util | :heavy_check_mark: :heavy_check_mark: | |
 | util.&#95;&#95;init&#95;&#95; | :heavy_check_mark: :heavy_check_mark: | |
-| util.imports | - - | This mostly works now, however it still uses deprecated functionality and will break in python 3.15 when that is released. I'm still trying to fix this. |
+| util.imports | :o: :heavy_check_mark: | |
 | util.pure | :o: :heavy_check_mark: | |
