@@ -709,9 +709,7 @@ def register_alias_type(klass, *args):
         raise ValueError('At least one type must be supplied')
 
     if len(args) == 1 and hasattr(args[0], '__call__'):
-        c = args[0]
-
-        check_type_registered(c)
+        check_type_registered(args[0])
     else:
         for arg in args:
             if not isinstance(arg, type):
