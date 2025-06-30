@@ -63,52 +63,30 @@ class ModuleFinder(object):
         if fullname in self.loaded_modules:
             return None
 
-        hooks = self.post_load_hooks.get(fullname, None)
-
-        if hooks:
+        if self.post_load_hooks.get(fullname, None):
             return ModuleSpec(fullname, self)
 
     def create_module(self, spec):
-        return None
-
-    #def exec_module(self, module):
-    #    name = module.__spec__.name
-    #    self.loaded_modules.append(name)
-
-    #    try:
-    #        #__import__(name, {}, {}, [])
-
-    #        mod = sys.modules[name]
-    #        self._run_hooks(name, module)
-    #    except:
-    #        self.loaded_modules.pop()
-
-    #        raise
-
-    #    return module
-
-    def load_module(self, name):
-        #!Warning: This function is deprecated
-        """
-        If we get this far, then there are hooks waiting to be called on
-        import of this module. We manually load the module and then run the
-        hooks.
-
-        @param name: The name of the module to import.
-        """
+        name = spec.name
         self.loaded_modules.append(name)
 
         try:
             __import__(name, {}, {}, [])
-
-            mod = sys.modules[name]
-            self._run_hooks(name, mod)
         except:
             self.loaded_modules.pop()
 
             raise
 
-        return mod
+        return sys.modules[name]
+
+    def exec_module(self, module):
+        name = module.__spec__.name
+        try:
+            self._run_hooks(name, sys.modules[name])
+        except:
+            self.loaded_modules.pop()
+
+            raise
 
     def when_imported(self, name, *hooks):
         """
@@ -127,9 +105,7 @@ class ModuleFinder(object):
         """
         Run all hooks for a module.
         """
-        hooks = self.post_load_hooks.pop(name, [])
-
-        for hook in hooks:
+        for hook in self.post_load_hooks.pop(name, []):
             hook(module)
 
     def __getstate__(self):
