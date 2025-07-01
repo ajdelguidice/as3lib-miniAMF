@@ -18,8 +18,7 @@ classifiers = [
 ]
 requires-python = ">=3.7"
 dependencies = [
-    "defusedxml",
-    "cython"
+    "defusedxml"
 ]
 
 [project.urls]
@@ -27,15 +26,10 @@ Homepage = "https://github.com/ajdelguidice/as3lib-miniAMF"
 
 [pyproject.optional-dependencies]
 docs = ["sphinx >= 1.5"]
+c-modules = ["cython >= 3.0"]
 
 [tool.setuptools]
 packages=["miniamf", "miniamf._accel", "miniamf.adapters", "miniamf.util"]
-ext-modules = [
-    {name = "miniamf._accel.util", sources = ["miniamf/_accel/util.pyx"]},
-    {name = "miniamf._accel.codec", sources = ["miniamf/_accel/codec.pyx"]},
-    {name = "miniamf._accel.amf3", sources = ["miniamf/_accel/amf3.pyx"]},
-    {name = "miniamf._accel.amf0", sources = ["miniamf/_accel/amf0.pyx"]}
-]
 
 [tool.tox]
 requires = ["tox"]
