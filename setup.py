@@ -3,7 +3,7 @@ from setuptools import setup, Extension
 if __name__ == "__main__":
     nocython = False
     try:
-        import cython
+        import Cython
     except:
         nocython = True
     if nocython:
