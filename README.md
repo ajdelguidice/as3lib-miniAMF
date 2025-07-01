@@ -4,13 +4,13 @@ This is a fork of <a href="https://pypi.org/project/Mini-AMF/">Mini-AMF</a> that
 
 ## Change Overview
 Python 2 support has been removed.
-The cython modules have been fixed and now compile.
-The cython modules are no longer optional. I tried to make them optional but I couldn't figure out how to without breaking other stuff.
-Use importlib instead of pkg_resources.
-Use datetime.fromtimestamp instead of datetime.utcfromtimestamp.
-cElementTree can no longer be used for xml.
-sol.save and sol.load actually close their files.
-Replaces find_module with find_spec and spread load_module out into create_module and exec_module in util.imports.ModuleFinder
+<br>The cython modules have been fixed and now compile.
+<br>The cython modules are no longer optional. I tried to make them optional but I couldn't figure out how to without breaking other stuff.
+<br>Use importlib instead of pkg_resources.
+<br>Use datetime.fromtimestamp instead of datetime.utcfromtimestamp.
+<br>cElementTree can no longer be used for xml.
+<br>sol.save and sol.load actually close their files.
+<br>Replaces find_module with find_spec and spread load_module out into create_module and exec_module in util.imports.ModuleFinder
 
 ## Fork Coverage
 Here's a list of everything in this fork and their status (&#95;&#95;init&#95;&#95; files that contain code included as well). All pure python modules work properly (according to the test suite) but the cython modules fail some tests (currently 1).
