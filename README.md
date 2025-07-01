@@ -1,8 +1,16 @@
 <b>This is heavily work in progress</b>
 
-This is a fork of <a href="https://pypi.org/project/Mini-AMF/">Mini-AMF</a> that works properly on newer python versions (currently only tested on 3.13). Miniamf made use of a lot of deprecated or removed functionality, especially in the cython modules, which means I had to rewrite a lot of stuff. If something doesn't work as expected, please let me know, I'll try to fix it as best as I can. The cython modules are no longer optional, I tried to make them optional but it didn't work out.
+This is a fork of <a href="https://pypi.org/project/Mini-AMF/">Mini-AMF</a> that works properly on newer python versions (currently only tested on 3.13). Miniamf made use of a lot of deprecated or removed functionality, especially in the cython modules, which means I had to rewrite a lot of stuff. If something doesn't work as expected, please let me know, I'll try to fix it as best as I can.
 
-Supporting python 2 at this point would require a massive amount of backporting work so I just decided to remove it.
+## Change Overview
+Python 2 support has been removed.
+The cython modules have been fixed and now compile.
+The cython modules are no longer optional. I tried to make them optional but I couldn't figure out how to without breaking other stuff.
+Use importlib instead of pkg_resources.
+Use datetime.fromtimestamp instead of datetime.utcfromtimestamp.
+cElementTree can no longer be used for xml.
+sol.save and sol.load actually close their files.
+Replaces find_module with find_spec and spread load_module out into create_module and exec_module in util.imports.ModuleFinder
 
 ## Fork Coverage
 Here's a list of everything in this fork and their status (&#95;&#95;init&#95;&#95; files that contain code included as well). All pure python modules work properly (according to the test suite) but the cython modules fail some tests (currently 1).
