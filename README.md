@@ -34,8 +34,8 @@ The first mark is the status of the module itself (manual testing), the second i
 | codec | :o: :heavy_check_mark: | |
 | sol | :heavy_check_mark: :heavy_check_mark: | |
 | xml | :o: :heavy_check_mark: | |
-| &#95;accel.amf0 | :o: :x: | Fails test_use_amf3 (test_amf0.EncoderTestCase.test_use_amf3). _accel.amf3.Encoder.writeDict does not sort keys (amf3.Encoder.writeDict also does other stuff that it does not do). Every time I try to fix this, everything else breaks so I might leave it the way it is. |
-| &#95;accel.amf3 | :o: :x: | |
+| &#95;accel.amf0 | :o: :heavy_check_mark: | |
+| &#95;accel.amf3 | :o: :x: | Fails test_complex_encode_decode_dict. Looks to be an object encoding problem and not a dictionary encoding problem (the thing I tried to fix which caused this to show up) but I could be wrong. |
 | &#95;accel.codec | :o: :heavy_check_mark: | |
 | &#95;accel.util | :o: :heavy_check_mark: | |
 | adapters.&#95;&#95;init&#95;&#95; | :heavy_check_mark: :heavy_check_mark: | |
@@ -46,5 +46,5 @@ The first mark is the status of the module itself (manual testing), the second i
 | adapters.&#95;weakref | :heavy_check_mark: :heavy_check_mark: | |
 | adapters.util | :heavy_check_mark: :heavy_check_mark: | |
 | util.&#95;&#95;init&#95;&#95; | :heavy_check_mark: :heavy_check_mark: | |
-| util.imports | :o: :heavy_check_mark: | |
+| util.imports | :heavy_check_mark: :heavy_check_mark: | |
 | util.pure | :o: :heavy_check_mark: | |
