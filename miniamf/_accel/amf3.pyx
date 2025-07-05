@@ -674,8 +674,6 @@ cdef class Encoder(codec.Encoder):
         if '' in obj:
             raise miniamf.EncodeError("dicts cannot contain empty string keys")
 
-        cdef Py_ssize_t idx = 0
-
         self.writeType(TYPE_OBJECT) #!Pure python writes TYPE_ARRAY but for some reason, this is correct here
 
         ref = self.context.getObjectReference(obj)
@@ -698,6 +696,7 @@ cdef class Encoder(codec.Encoder):
 
         definition.writeReference(self.stream)
 
+        '''
         if class_ref == 0:
             self.stream.write(&REF_CHAR, 1)
 
@@ -709,7 +708,50 @@ cdef class Encoder(codec.Encoder):
             self.writeElement(value)
 
         return self.stream.write(&REF_CHAR, 1)
+        '''
+        int_keys = PyList_New(0)
+        str_keys = PyList_New(0)
 
+        for x in obj.keys():
+            if isinstance(x, int):
+                PyList_Append(int_keys, x)
+            elif isinstance(x, str):
+                PyList_Append(str_keys, x)
+            else:
+                raise ValueError("Non integer/string key value found in dict")
+
+        # Make sure the integer keys are within range
+        l = PyList_Size(int_keys)
+
+        for x in int_keys:
+            if l < x <= 0:
+                # treat as a string key
+                str_keys.append(x)
+                del int_keys[int_keys.index(x)]
+
+        PyList_Sort(int_keys)
+
+        # If integer keys don't start at 0, they will be treated as strings
+        if len(int_keys) > 0 and int_keys[0] != 0:
+            for x in int_keys.copy():
+                PyList_Append(str_keys, str(x))
+                del int_keys[int_keys.index(x)]
+
+        _encode_integer(self.stream, PyList_Size(int_keys) << 1 | REFERENCE_BIT)
+
+        PyList_Sort(str_keys)
+
+        for x in str_keys:
+            self.serialiseString(x)
+            try:
+                self.writeElement(obj[x])
+            except KeyError:
+                self.writeElement(obj[int(x)])
+
+        self.stream.write(&REF_CHAR, 1)
+
+        for k in int_keys:
+            self.writeElement(obj[k])
     cdef int writeMixedArray(self, object n) except -1:
         # Design bug in AMF3 that cannot read/write empty key strings
         # http://www.docuverse.com/blog/donpark/2007/05/14/flash-9-amf3-bug
