@@ -696,19 +696,6 @@ cdef class Encoder(codec.Encoder):
 
         definition.writeReference(self.stream)
 
-        '''
-        if class_ref == 0:
-            self.stream.write(&REF_CHAR, 1)
-
-        for key, value in obj.items():
-            if PyLong_Check(key):
-                key = str(key)
-
-            self.serialiseString(key)
-            self.writeElement(value)
-
-        return self.stream.write(&REF_CHAR, 1)
-        '''
         int_keys = PyList_New(0)
         str_keys = PyList_New(0)
 
@@ -748,7 +735,8 @@ cdef class Encoder(codec.Encoder):
             except KeyError:
                 self.writeElement(obj[int(x)])
 
-        self.stream.write(&REF_CHAR, 1)
+        if class_ref == 0:
+            self.stream.write(&REF_CHAR, 1)
 
         for k in int_keys:
             self.writeElement(obj[k])
