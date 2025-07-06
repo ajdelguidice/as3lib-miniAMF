@@ -4,7 +4,7 @@ This is a fork of <a href="https://pypi.org/project/Mini-AMF/">Mini-AMF</a> that
 
 ## Change Overview
 Python 2 support has been removed.
-<br>The cython modules have been fixed and now compile.
+<br>The cython modules now compile properly and pass all of the tests.
 <br>The cython modules are no longer optional. I tried to make them optional but I couldn't figure out how to without breaking other stuff.
 <br>Use importlib instead of pkg_resources.
 <br>Use datetime.fromtimestamp instead of datetime.utcfromtimestamp.
@@ -13,7 +13,7 @@ Python 2 support has been removed.
 <br>Replaces find_module with find_spec and spread load_module out into create_module and exec_module in util.imports.ModuleFinder
 
 ## Fork Coverage
-Here's a list of everything in this fork and their status (&#95;&#95;init&#95;&#95; files that contain code included as well). All pure python modules work properly (according to the test suite) but the cython modules fail some tests (currently 1).
+Here's a list of everything in this fork and their status (&#95;&#95;init&#95;&#95; files that contain code included as well). Every module works according to the tests, I just have to make sure everything works on other python versions and look over each module to make sure things are properly done.
 
 | Key |              |
 | --- | ------------ |
@@ -35,7 +35,7 @@ The first mark is the status of the module itself (manual testing), the second i
 | sol | :heavy_check_mark: :heavy_check_mark: | |
 | xml | :o: :heavy_check_mark: | |
 | &#95;accel.amf0 | :o: :heavy_check_mark: | |
-| &#95;accel.amf3 | :o: :x: | Fails test_complex_encode_decode_dict. Looks to be an object encoding problem and not a dictionary encoding problem (the thing I tried to fix which caused this to show up) but I could be wrong. |
+| &#95;accel.amf3 | :o: :heavy_check_mark: | |
 | &#95;accel.codec | :o: :heavy_check_mark: | |
 | &#95;accel.util | :o: :heavy_check_mark: | |
 | adapters.&#95;&#95;init&#95;&#95; | :heavy_check_mark: :heavy_check_mark: | |
