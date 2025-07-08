@@ -1,6 +1,6 @@
 <b>This is heavily work in progress</b>
 
-This is a fork of <a href="https://pypi.org/project/Mini-AMF/">Mini-AMF</a> that works properly on newer python versions (currently only tested on 3.13). Miniamf made use of a lot of deprecated or removed functionality, especially in the cython modules, which means I had to rewrite a lot of stuff. If something doesn't work as expected, please let me know, I'll try to fix it as best as I can.
+This is a fork of <a href="https://pypi.org/project/Mini-AMF/">Mini-AMF</a> that aims to works properly on newer python versions (3.11+). Miniamf made use of a lot of deprecated or removed functionality, especially in the cython modules, which means I had to rewrite a lot of stuff. If something doesn't work as expected, please let me know, I'll try to fix it as best as I can.
 
 ## Change Overview
 Python 2 support has been removed.
