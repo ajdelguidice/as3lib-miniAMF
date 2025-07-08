@@ -17,10 +17,10 @@ cdef extern from "stdio.h":
     int SIZEOF_LONG
 
 cdef extern from "Python.h":
-    int PyFloat_Pack4(double, unsigned char *, int) except? -1 #This was _PyFloat_Pack4
-    int PyFloat_Pack8(double, unsigned char *, int) except? -1 #This was _PyFloat_Pack8
-    double PyFloat_Unpack4(const unsigned char *, int) except? -1.0 #This was _PyFloat_Unpack4
-    double PyFloat_Unpack8(const unsigned char *, int) except? -1.0 #This was _PyFloat_Unpack8
+    int PyFloat_Pack4(double, unsigned char *, int) except? -1
+    int PyFloat_Pack8(double, unsigned char *, int) except? -1
+    double PyFloat_Unpack4(const unsigned char *, int) except? -1.0
+    double PyFloat_Unpack8(const unsigned char *, int) except? -1.0
     int PyByteArray_Check(object)
     char* PyByteArray_AsString(object)
 

@@ -437,13 +437,11 @@ cdef class Decoder(codec.Decoder):
         ref >>= 1
 
         cdef char *buf = NULL
-        cdef object s
 
         self.stream.read(&buf, ref)
-        s = PyBytes_FromStringAndSize(buf, ref) #!The pure python version loads this as bytes, I'm not sure if that is correct in this context
 
         x = xml.fromstring(
-            s,
+            PyBytes_FromStringAndSize(buf, ref),
             forbid_dtd=self.context.forbid_dtd,
             forbid_entities=self.context.forbid_entities
         )
@@ -472,7 +470,7 @@ cdef class Decoder(codec.Decoder):
         ref >>= 1
 
         self.stream.read(&buf, ref)
-        s = PyBytes_FromStringAndSize(buf, ref) #!Read as bytes in pure python
+        s = PyBytes_FromStringAndSize(buf, ref)
 
         if zlib:
             if ref > 2 and buf[0] == '\x78' and buf[1] == '\x9c':
@@ -674,7 +672,8 @@ cdef class Encoder(codec.Encoder):
         if '' in obj:
             raise miniamf.EncodeError("dicts cannot contain empty string keys")
 
-        self.writeType(TYPE_OBJECT) #!Pure python writes TYPE_ARRAY but for some reason, this is correct here
+        # Pure python writes TYPE_ARRAY here but that doesn't work here
+        self.writeType(TYPE_OBJECT)
 
         ref = self.context.getObjectReference(obj)
 
@@ -757,11 +756,10 @@ cdef class Encoder(codec.Encoder):
         self.context.addObject(n)
 
         # The AMF3 spec demands that all str based indicies be listed first
-        keys = n.keys()
         int_keys = []
         str_keys = []
 
-        for x in keys:
+        for x in n.keys():
             if isinstance(x, int):
                 int_keys.append(x)
             elif isinstance(x, (str, unicode)):
@@ -803,7 +801,6 @@ cdef class Encoder(codec.Encoder):
         cdef ClassDefinition definition
         cdef object alias = None
         cdef int class_ref = 0
-        cdef int ret = 0
         cdef char *buf = NULL
         cdef PyObject *key
         cdef PyObject *value

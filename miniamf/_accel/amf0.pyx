@@ -94,11 +94,7 @@ cdef class Decoder(codec.Decoder):
         raise miniamf.DecodeError('Bad boolean read from stream')
 
     cdef object readBytes(self):
-        cdef object u
-
-        u = self.readString()
-
-        return self.context.getBytesForString(u)
+        return self.context.getBytesForString(self.readString())
 
     cpdef object readString(self):
         cdef unsigned short l
@@ -111,7 +107,6 @@ cdef class Decoder(codec.Decoder):
         return PyUnicode_DecodeUTF8(b, <Py_ssize_t>l, 'strict')
 
     cdef void readObjectAttributes(self, object obj_attrs):
-        cdef object key
         cdef char *peek = NULL
 
         while True:
@@ -122,9 +117,7 @@ cdef class Decoder(codec.Decoder):
 
                 break
 
-            key = self.readString()
-
-            PyDict_SetItem(obj_attrs, key, self.readElement())
+            PyDict_SetItem(obj_attrs, self.readString(), self.readElement())
 
         # discard the end marker (TYPE_OBJECTTERM)
 
@@ -237,9 +230,8 @@ cdef class Decoder(codec.Decoder):
         return self.context.getStringForBytes(s)
 
     cdef object readXML(self):
-        cdef object data = self.readLongString()
         cdef object root = xml.fromstring(
-            data,
+            self.readLongString(),
             forbid_dtd=self.context.forbid_dtd,
             forbid_entities=self.context.forbid_entities
         )

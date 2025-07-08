@@ -567,8 +567,6 @@ cdef class Encoder(Codec):
             ret = self.writeNull(element)
         elif PyBool_Check(element):
             ret = self.writeBoolean(element)
-        #elif PyInt_CheckExact(element):
-        #    ret = self.writeInt(element)
         elif PyLong_CheckExact(element):
             ret = self.writeLong(element)
         elif PyFloat_CheckExact(element):
