@@ -589,8 +589,8 @@ class Encoder(codec.Encoder):
         try:
             # list comprehensions to save the day
             max_index = max([
-                y[0] for y in o.items()
-                if isinstance(y[0], int)
+                y for y in o.keys()
+                if isinstance(y, int)
             ])
 
             if max_index < 0:
