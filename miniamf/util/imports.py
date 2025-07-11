@@ -109,7 +109,7 @@ class ModuleFinder(object):
             hook(module)
 
     def __getstate__(self):
-        return (self.post_load_hooks.copy(), self.loaded_modules[:])
+        return (self.post_load_hooks.copy(), self.loaded_modules.copy())
 
     def __setstate__(self, state):
         self.post_load_hooks, self.loaded_modules = state
