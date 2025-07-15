@@ -1479,8 +1479,6 @@ def encode_int(n):
     @return: The encoded string
     @raise OverflowError: C{c} is out of range.
     """
-    global ENCODED_INT_CACHE
-
     try:
         return ENCODED_INT_CACHE[n]
     except KeyError:
@@ -1515,7 +1513,7 @@ def encode_int(n):
         encoded.append(n & 0x7f)
 
     encoded = bytes(encoded)
-    ENCODED_INT_CACHE[n] = encoded
+    ENCODED_INT_CACHE.__setitem__(n, encoded)
     return encoded
 
 
