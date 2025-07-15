@@ -105,9 +105,7 @@ class IndexedCollection(object):
         return self.getByReference(idx)
 
     def __contains__(self, obj):
-        r = self.getReferenceTo(obj)
-
-        return r != -1
+        return self.getReferenceTo(obj) != -1
 
     def __repr__(self):
         t = self.__class__
@@ -475,16 +473,12 @@ class Encoder(_Codec):
         Encodes an iterable. The default is to write it out as a list.
         If the iterable has an external alias, it can override.
         """
-        use_writeObject = False
         try:
             alias = self.context.getClassAlias(iterable.__class__)
-            if alias.external:
-                use_writeObject = True
-
         except (AttributeError, miniamf.UnknownClassAlias):
             pass
 
-        if use_writeObject:
+        if alias.external:
             self.writeObject(iterable)
         else:
             self.writeList(list(iterable))
@@ -514,21 +508,21 @@ class Encoder(_Codec):
             return self.writeBytes
         if t is str or issubclass(t, str):
             return self.writeString
-        elif t is bool:
+        if t is bool:
             return self.writeBoolean
-        elif t is float:
+        if t is float:
             return self.writeNumber
-        elif t is int:
+        if t is int:
             return self.writeNumber
-        elif t in (list, tuple):
+        if t in (list, tuple):
             return self.writeList
-        elif t is types.GeneratorType:  # flake8: noqa
+        if t is types.GeneratorType:  # flake8: noqa
             return self.writeGenerator
-        elif t is miniamf.UndefinedType:
+        if t is miniamf.UndefinedType:
             return self.writeUndefined
-        elif t in (datetime.date, datetime.datetime, datetime.time):
+        if t in (datetime.date, datetime.datetime, datetime.time):
             return self.writeDate
-        elif xml.is_xml(data):
+        if xml.is_xml(data):
             return self.writeXML
 
         # check for any overridden types
@@ -547,10 +541,10 @@ class Encoder(_Codec):
         if t is type:
             # can't encode classes
             return None
-        elif isinstance(data, FUNC_TYPES):
+        if isinstance(data, FUNC_TYPES):
             # can't encode code objects
             return None
-        elif isinstance(t, types.ModuleType):
+        if isinstance(t, types.ModuleType):
             # cannot encode module objects
             return None
 
