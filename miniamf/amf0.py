@@ -152,33 +152,33 @@ class Decoder(codec.Decoder):
         # great for coverage, sucks for readability
         if data == TYPE_NUMBER:
             return self.readNumber
-        elif data == TYPE_BOOL:
+        if data == TYPE_BOOL:
             return self.readBoolean
-        elif data == TYPE_STRING:
+        if data == TYPE_STRING:
             return self.readString
-        elif data == TYPE_OBJECT:
+        if data == TYPE_OBJECT:
             return self.readObject
-        elif data == TYPE_NULL:
+        if data == TYPE_NULL:
             return self.readNull
-        elif data == TYPE_UNDEFINED:
+        if data == TYPE_UNDEFINED:
             return self.readUndefined
-        elif data == TYPE_REFERENCE:
+        if data == TYPE_REFERENCE:
             return self.readReference
-        elif data == TYPE_MIXEDARRAY:
+        if data == TYPE_MIXEDARRAY:
             return self.readMixedArray
-        elif data == TYPE_ARRAY:
+        if data == TYPE_ARRAY:
             return self.readList
-        elif data == TYPE_DATE:
+        if data == TYPE_DATE:
             return self.readDate
-        elif data == TYPE_LONGSTRING:
+        if data == TYPE_LONGSTRING:
             return self.readLongString
-        elif data == TYPE_UNSUPPORTED:
+        if data == TYPE_UNSUPPORTED:
             return self.readNull
-        elif data == TYPE_XML:
+        if data == TYPE_XML:
             return self.readXML
-        elif data == TYPE_TYPEDOBJECT:
+        if data == TYPE_TYPEDOBJECT:
             return self.readTypedObject
-        elif data == TYPE_AMF3:
+        if data == TYPE_AMF3:
             return self.readAMF3
 
     def readNumber(self):
@@ -207,8 +207,7 @@ class Decoder(codec.Decoder):
         get the raw data read from the stream, otherwise a string that has been
         B{utf-8} decoded.
         """
-        l = self.stream.read_ushort()
-        b = self.stream.read(l)
+        b = self.stream.read(self.stream.read_ushort())
 
         if bytes:
             return b
@@ -379,9 +378,8 @@ class Decoder(codec.Decoder):
         """
         Read XML.
         """
-        data = self.readLongString()
         root = xml.fromstring(
-            data,
+            self.readLongString(),
             forbid_dtd=self.context.forbid_dtd,
             forbid_entities=self.context.forbid_entities,
         )
