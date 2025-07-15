@@ -345,10 +345,9 @@ class DataInput(object):
 
         if byte == b'\x00':
             return False
-        elif byte == b'\x01':
+        if byte == b'\x01':
             return True
-        else:
-            raise ValueError("Error reading boolean")
+        raise ValueError("Error reading boolean")
 
     def readByte(self):
         """
@@ -723,29 +722,29 @@ class Decoder(codec.Decoder):
     def getTypeFunc(self, data):
         if data == TYPE_UNDEFINED:
             return self.readUndefined
-        elif data == TYPE_NULL:
+        if data == TYPE_NULL:
             return self.readNull
-        elif data == TYPE_BOOL_FALSE:
+        if data == TYPE_BOOL_FALSE:
             return self.readBoolFalse
-        elif data == TYPE_BOOL_TRUE:
+        if data == TYPE_BOOL_TRUE:
             return self.readBoolTrue
-        elif data == TYPE_INTEGER:
+        if data == TYPE_INTEGER:
             return self.readInteger
-        elif data == TYPE_NUMBER:
+        if data == TYPE_NUMBER:
             return self.readNumber
-        elif data == TYPE_STRING:
+        if data == TYPE_STRING:
             return self.readString
-        elif data == TYPE_XML:
+        if data == TYPE_XML:
             return self.readXML
-        elif data == TYPE_DATE:
+        if data == TYPE_DATE:
             return self.readDate
-        elif data == TYPE_ARRAY:
+        if data == TYPE_ARRAY:
             return self.readArray
-        elif data == TYPE_OBJECT:
+        if data == TYPE_OBJECT:
             return self.readObject
-        elif data == TYPE_XMLSTRING:
+        if data == TYPE_XMLSTRING:
             return self.readXMLString
-        elif data == TYPE_BYTEARRAY:
+        if data == TYPE_BYTEARRAY:
             return self.readByteArray
 
     def readUndefined(self):
@@ -893,8 +892,7 @@ class Decoder(codec.Decoder):
             key = self.readString()
 
         for i in range(size):
-            el = self.readElement()
-            result[i] = el
+            result[i] = self.readElement()
 
         return result
 
@@ -906,9 +904,7 @@ class Decoder(codec.Decoder):
         ref >>= 1
 
         if is_ref:
-            class_def = self.context.getClassByReference(ref)
-
-            return class_def
+            return self.context.getClassByReference(ref)
 
         name = self.readString()
         alias = None
@@ -1006,10 +1002,8 @@ class Decoder(codec.Decoder):
         if ref & REFERENCE_BIT == 0:
             return self.context.getObject(ref >> 1)
 
-        xmlstring = self.stream.read(ref >> 1)
-
         x = xml.fromstring(
-            xmlstring,
+            self.stream.read(ref >> 1),
             forbid_dtd=self.context.forbid_dtd,
             forbid_entities=self.context.forbid_entities,
         )
@@ -1079,9 +1073,9 @@ class Encoder(codec.Encoder):
 
         if t is int:
             return self.writeInteger
-        elif t is ByteArray:
+        if t is ByteArray:
             return self.writeByteArray
-        elif t is miniamf.MixedArray:
+        if t is miniamf.MixedArray:
             return self.writeDict
 
         return codec.Encoder.getTypeFunc(self, data)
@@ -1102,10 +1096,7 @@ class Encoder(codec.Encoder):
         """
         Writes a Boolean to the stream.
         """
-        t = TYPE_BOOL_TRUE
-
-        if n is False:
-            t = TYPE_BOOL_FALSE
+        t = TYPE_BOOL_FALSE if n is False else TYPE_BOOL_TRUE
 
         self.stream.write(t)
 
