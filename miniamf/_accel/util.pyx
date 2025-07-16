@@ -131,8 +131,8 @@ cdef char get_native_endian() nogil:
 
     if big_endian == 1:
         return ENDIAN_BIG
-    else:
-        return ENDIAN_LITTLE
+
+    return ENDIAN_LITTLE
 
 
 @cython.profile(False)
