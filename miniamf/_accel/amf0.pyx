@@ -164,13 +164,12 @@ cdef class Decoder(codec.Decoder):
         return o
 
     cdef object readMixedArray(self):
-        cdef unsigned long l
         cdef dict attrs = {}
 
         obj = miniamf.MixedArray()
         self.context.addObject(obj)
 
-        l = self.stream.read_ulong()
+        self.stream.read_ulong() #length
 
         self.readObjectAttributes(attrs)
 
@@ -199,10 +198,9 @@ cdef class Decoder(codec.Decoder):
 
     cdef object readDate(self):
         cdef double ms = -1
-        cdef short tz = -1
 
         self.stream.read_double(&ms)
-        tz = self.stream.read_short()
+        self.stream.read_short() #timezone
 
         # Timezones are ignored
         d = util.get_datetime(ms / 1000.0)
@@ -322,8 +320,8 @@ cdef class Encoder(codec.Encoder):
 
         if b is True:
             return self.writeType('\x01')
-        else:
-            return self.writeType('\x00')
+
+        return self.writeType('\x00')
 
     cdef int writeUndefined(self, data) except -1:
         return self.writeType(TYPE_UNDEFINED)
@@ -339,7 +337,6 @@ cdef class Encoder(codec.Encoder):
         Write array to the stream.
         """
         cdef Py_ssize_t size = -1, i = -1
-        cdef PyObject *x = NULL
 
         if self.writeReference(a) != -1:
             return 0
@@ -352,15 +349,12 @@ cdef class Encoder(codec.Encoder):
         self.stream.write_ulong(size)
 
         for i from 0 <= i < size:
-            x = PyList_GET_ITEM(a, i)
-
-            self.writeElement(<object>x)
+            self.writeElement(<object>PyList_GET_ITEM(a, i))
 
         return 0
 
     cdef int writeTuple(self, object a) except -1:
         cdef Py_ssize_t size = -1, i = -1
-        cdef PyObject *x = NULL
 
         if self.writeReference(a) != -1:
             return 0
@@ -373,9 +367,7 @@ cdef class Encoder(codec.Encoder):
         self.stream.write_ulong(size)
 
         for i from 0 <= i < size:
-            x = PyTuple_GET_ITEM(a, i)
-
-            self.writeElement(<object>x)
+            self.writeElement(<object>PyTuple_GET_ITEM(a, i))
 
         return 0
 

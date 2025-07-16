@@ -181,10 +181,9 @@ cdef class IndexedCollection(object):
 
         if op == 2: # ==
             return equal
-        elif op == 3: # !=
+        if op == 3: # !=
             return not equal
-        else:
-            raise NotImplementedError
+        raise NotImplementedError
 
     def __getitem__(self, idx):
         return self.getByReference(idx)
@@ -557,42 +556,39 @@ cdef class Encoder(Codec):
         """
         @return: 0 = handled, -1 = error, 1 = not handled
         """
-        cdef int ret = 1
-
         if PyBytes_Check(element):
-            ret = self.writeBytes(element)
+            return self.writeBytes(element)
         elif PyUnicode_Check(element):
-            ret = self.writeString(element)
+            return self.writeString(element)
         elif element is None:
-            ret = self.writeNull(element)
+            return self.writeNull(element)
         elif PyBool_Check(element):
-            ret = self.writeBoolean(element)
+            return self.writeBoolean(element)
         elif PyLong_CheckExact(element):
-            ret = self.writeLong(element)
+            return self.writeLong(element)
         elif PyFloat_CheckExact(element):
-            ret = self.writeNumber(element)
+            return self.writeNumber(element)
         elif PyList_CheckExact(element):
-            ret = self.writeList(element)
+            return self.writeList(element)
         elif PyTuple_CheckExact(element):
-            ret = self.writeTuple(element)
+            return self.writeTuple(element)
         elif element is Undefined:
-            ret = self.writeUndefined(element)
+            return self.writeUndefined(element)
         elif PyDict_CheckExact(element):
-            ret = self.writeDict(element)
+            return self.writeDict(element)
         elif PyDateTime_CheckExact(element):
-            ret = self.writeDateTime(element)
+            return self.writeDateTime(element)
         elif PyDate_CheckExact(element):
-            ret = self.writeDate(element)
+            return self.writeDate(element)
         elif py_type is MixedArray:
-            ret = self.writeMixedArray(element)
+            return self.writeMixedArray(element)
         elif py_type is GeneratorType:
-            ret = self.writeGenerator(element)
+            return self.writeGenerator(element)
         elif PySequence_Contains(self.use_write_object, py_type):
-            ret = self.writeObject(element)
+            return self.writeObject(element)
         elif xml.is_xml(element):
-            ret = self.writeXML(element)
-
-        return ret
+            return self.writeXML(element)
+        return 1
 
     cdef int checkBadTypes(self, object element, object py_type) except -1:
         if PyModule_CheckExact(element):

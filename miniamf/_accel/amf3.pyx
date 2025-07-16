@@ -107,7 +107,6 @@ cdef class ClassDefinition(object):
 
         cdef Py_ssize_t ref = 0
         cdef char *buf = NULL
-        cdef int ret = 0
 
         if self.encoding != OBJECT_ENCODING_EXTERNAL:
             ref += self.attr_len << 4
@@ -115,9 +114,7 @@ cdef class ClassDefinition(object):
         ref |= self.encoding << 2 | REFERENCE_BIT << 1 | REFERENCE_BIT
 
         try:
-            ret = encode_int(ref, &buf)
-
-            stream.write(buf, ret)
+            stream.write(buf, encode_int(ref, &buf))
         finally:
             if buf != NULL:
                 free(buf)
@@ -214,9 +211,7 @@ cdef class Decoder(codec.Decoder):
         <http://osflash.org/amf3/parsing_integers>} for the AMF3 integer data
         format.
         """
-        cdef int r = decode_int(self.stream, signed)
-
-        return <object>r
+        return <object>decode_int(self.stream, signed)
 
     cdef object readNumber(self):
         cdef double d = -1
@@ -623,7 +618,6 @@ cdef class Encoder(codec.Encoder):
     cpdef int writeList(self, object n) except -1:
         cdef Py_ssize_t ref = self.context.getObjectReference(n)
         cdef Py_ssize_t i
-        cdef PyObject *x
 
         self.writeType(TYPE_ARRAY)
 
@@ -638,16 +632,13 @@ cdef class Encoder(codec.Encoder):
         self.writeType('\x01')
 
         for i from 0 <= i < ref:
-            x = PyList_GET_ITEM(n, i)
-
-            self.writeElement(<object>x)
+            self.writeElement(<object>PyList_GET_ITEM(n, i))
 
         return 0
 
     cdef int writeTuple(self, object n) except -1:
         cdef Py_ssize_t ref = self.context.getObjectReference(n)
         cdef Py_ssize_t i
-        cdef PyObject *x
 
         self.writeType(TYPE_ARRAY)
 
@@ -662,9 +653,7 @@ cdef class Encoder(codec.Encoder):
         self.writeType('\x01')
 
         for i from 0 <= i < ref:
-            x = PyTuple_GET_ITEM(n, i)
-
-            self.writeElement(<object>x)
+            self.writeElement(<object>PyTuple_GET_ITEM(n, i))
 
         return 0
 
@@ -1056,12 +1045,9 @@ cdef int decode_int(cBufferedByteStream stream, int sign=0) except? -1:
 
 cdef inline int _encode_integer(cBufferedByteStream stream, int i) except -1:
     cdef char *buf = NULL
-    cdef int size = 0
 
     try:
-        size = encode_int(i, &buf)
-
-        return stream.write(buf, size)
+        return stream.write(buf, encode_int(i, &buf))
     finally:
         free(buf)
 
