@@ -17,10 +17,10 @@ cdef extern from "stdio.h":
     int SIZEOF_LONG
 
 cdef extern from "Python.h":
-    int PyFloat_Pack4(double, unsigned char *, int) except? -1
-    int PyFloat_Pack8(double, unsigned char *, int) except? -1
-    double PyFloat_Unpack4(const unsigned char *, int) except? -1.0
-    double PyFloat_Unpack8(const unsigned char *, int) except? -1.0
+    int PyFloat_Pack4(double, char *, int) except? -1
+    int PyFloat_Pack8(double, char *, int) except? -1
+    double PyFloat_Unpack4(const char *, int) except? -1.0
+    double PyFloat_Unpack8(const char *, int) except? -1.0
     int PyByteArray_Check(object)
     char* PyByteArray_AsString(object)
 
@@ -41,9 +41,9 @@ cdef char SYSTEM_ENDIAN
 
 cdef int float_broken = -1
 
-cdef const unsigned char *NaN = <const unsigned char *>'\xff\xf8\x00\x00\x00\x00\x00\x00'
-cdef const unsigned char *NegInf = <const unsigned char *>'\xff\xf0\x00\x00\x00\x00\x00\x00'
-cdef const unsigned char *PosInf = <const unsigned char *>'\x7f\xf0\x00\x00\x00\x00\x00\x00'
+cdef const char *NaN = <const char *>'\xff\xf8\x00\x00\x00\x00\x00\x00'
+cdef const char *NegInf = <const char *>'\xff\xf0\x00\x00\x00\x00\x00\x00'
+cdef const char *PosInf = <const char *>'\x7f\xf0\x00\x00\x00\x00\x00\x00'
 
 cdef double platform_nan
 cdef double platform_posinf
@@ -62,7 +62,7 @@ cdef object empty_unicode = unicode('')
 cdef int _memcpy_ensure_endian(void *src, void *dest, unsigned int size) nogil:
     """
     """
-    cdef unsigned char *buf = <unsigned char *>malloc(size)
+    cdef char *buf = <char *>malloc(size)
 
     if buf == NULL:
         return -1
@@ -158,8 +158,8 @@ cdef inline int is_native_endian(char endian) nogil:
 
 
 @cython.profile(False)
-cdef inline int swap_bytes(unsigned char *buffer, Py_ssize_t size) nogil:
-    cdef unsigned char *buf = <unsigned char *>malloc(size)
+cdef inline int swap_bytes(char *buffer, Py_ssize_t size) nogil:
+    cdef char *buf = <char *>malloc(size)
 
     if buf == NULL:
         return -1
@@ -179,7 +179,7 @@ cdef bint is_broken_float() except -1:
     cdef double test = PyFloat_Unpack8(NaN, 0)
 
     cdef int result
-    cdef unsigned char *buf = <unsigned char *>&test
+    cdef char *buf = <char *>&test
 
     if not is_big_endian(SYSTEM_ENDIAN):
         if swap_bytes(buf, 8) == -1:
@@ -758,7 +758,7 @@ cdef class cBufferedByteStream(object):
         """
         Reads an 8 byte float from the stream.
         """
-        cdef unsigned char *buf = NULL
+        cdef char *buf = NULL
         cdef int done = 0
 
         self.read(<char **>&buf, 8)
@@ -798,7 +798,7 @@ cdef class cBufferedByteStream(object):
                     if swap_bytes(buf, 8) == -1:
                         PyErr_NoMemory()
 
-        obj[0] = PyFloat_Unpack8(<const unsigned char*>buf, not is_big_endian(self.endian))
+        obj[0] = PyFloat_Unpack8(buf, not is_big_endian(self.endian))
 
         return 0
 
@@ -809,11 +809,10 @@ cdef class cBufferedByteStream(object):
         @param val: 8 byte float
         @type val: C{float}
         """
-        cdef unsigned char *buf
-        cdef unsigned char *foo
+        cdef char *buf
         cdef int done = 0
 
-        buf = <unsigned char *>malloc(sizeof(double))
+        buf = <char *>malloc(sizeof(double))
 
         if buf == NULL:
             PyErr_NoMemory()
@@ -844,9 +843,9 @@ cdef class cBufferedByteStream(object):
                                 PyErr_NoMemory()
 
             if done == 0:
-                PyFloat_Pack8(val, <unsigned char *>buf, not is_big_endian(self.endian))
+                PyFloat_Pack8(val, buf, not is_big_endian(self.endian))
 
-            self.write(<char *>buf, 8)
+            self.write(buf, 8)
         finally:
             free(buf)
 
@@ -857,11 +856,10 @@ cdef class cBufferedByteStream(object):
         Reads a 4 byte float from the stream.
         """
         cdef char *buf = NULL
-        cdef unsigned char le = not is_big_endian(self.endian)
 
         self.read(&buf, 4)
 
-        x[0] = PyFloat_Unpack4(<const unsigned char *>buf, le)
+        x[0] = PyFloat_Unpack4(<const char *>buf, not is_big_endian(self.endian))
 
         return 0
 
@@ -872,18 +870,15 @@ cdef class cBufferedByteStream(object):
         @param c: 4 byte float
         @type c: C{float}
         """
-        cdef unsigned char *buf
-        cdef unsigned char le = not is_big_endian(self.endian)
-
-        buf = <unsigned char *>malloc(4)
+        cdef char *buf = <char *>malloc(4)
 
         if buf == NULL:
             PyErr_NoMemory()
 
         try:
-            PyFloat_Pack4(c, <unsigned char *>buf, le) #!c might need to be cast to a double
+            PyFloat_Pack4(c, buf, not is_big_endian(self.endian))
 
-            self.write(<char *>buf, 4)
+            self.write(buf, 4)
         finally:
             free(buf)
 
@@ -958,7 +953,6 @@ cdef class BufferedByteStream(cBufferedByteStream):
         Reads C{size} bytes from the stream.
         """
         cdef Py_ssize_t s
-        cdef object cls
 
         if size != -1:
             s = <Py_ssize_t>size
@@ -1111,11 +1105,11 @@ cdef class BufferedByteStream(cBufferedByteStream):
             if done == 1:
                 if is_big_endian(SYSTEM_ENDIAN):
                     if not is_big_endian(self.endian):
-                        if swap_bytes(<unsigned char *>&d, 8) == -1:
+                        if swap_bytes(<char *>&d, 8) == -1:
                             PyErr_NoMemory()
                 else:
                     if is_big_endian(self.endian):
-                        if swap_bytes(<unsigned char *>&d, 8) == -1:
+                        if swap_bytes(<char *>&d, 8) == -1:
                             PyErr_NoMemory()
 
                 cBufferedByteStream.write(self, <char *>&d, 8)
