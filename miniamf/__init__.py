@@ -781,8 +781,6 @@ def register_package(module=None, package=None, separator='.', ignore=None,
         module = None
 
     if module is None:
-        import inspect
-
         prev_frame = inspect.stack()[1][0]
         module = prev_frame.f_locals
 
