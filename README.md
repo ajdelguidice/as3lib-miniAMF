@@ -1,6 +1,8 @@
 <b>This is heavily work in progress</b>
 
-This is a fork of <a href="https://pypi.org/project/Mini-AMF/">Mini-AMF</a> that aims to works properly on newer python versions (3.11+). Miniamf made use of a lot of deprecated or removed functionality, especially in the cython modules, which means I had to rewrite a lot of stuff. If something doesn't work as expected, please let me know, I'll try to fix it as best as I can.
+This is a fork of <a href="https://pypi.org/project/Mini-AMF/">Mini-AMF</a> that aims to work properly on newer python versions (3.11+). This could theoretically go down to 3.9 but PyFloat_Unpack{4,8} and PyFloat_Pack{4,8} were changed in 3.11 so I would need to do some backporting. Miniamf made use of a lot of deprecated or removed functionality, especially in the cython modules, which means I had to rewrite a lot of stuff. If something doesn't work as expected, please let me know, I'll try to fix it as best as I can.
+
+This package currently uses the same directories as miniamf. They should not be installed together.
 
 ## Change Overview
 Python 2 support has been removed.
@@ -13,7 +15,7 @@ Python 2 support has been removed.
 <br>Replaces find_module with find_spec and spread load_module out into create_module and exec_module in util.imports.ModuleFinder
 
 ## Fork Coverage
-Here's a list of everything in this fork and their status (&#95;&#95;init&#95;&#95; files that contain code included as well). Every module works according to the tests, I just have to make sure everything works on other python versions and look over each module to make sure things are properly done.
+Here's a list of everything in this fork and their status (&#95;&#95;init&#95;&#95; files that contain code included as well). Every module works according to the tests, I just have to make sure everything works on other python versions and look over each module to make sure things are done properly.
 
 | Key |              |
 | --- | ------------ |
@@ -31,9 +33,9 @@ The first mark is the status of the module itself (manual testing), the second i
 | alias | :heavy_check_mark: :heavy_check_mark: | |
 | amf0 | :o: :heavy_check_mark: | |
 | amf3 | :o: :heavy_check_mark: | |
-| codec | :o: :heavy_check_mark: | |
+| codec | :heavy_check_mark: :heavy_check_mark: | |
 | sol | :heavy_check_mark: :heavy_check_mark: | |
-| xml | :o: :heavy_check_mark: | |
+| xml | :heavy_check_mark: :heavy_check_mark: | |
 | &#95;accel.amf0 | :o: :heavy_check_mark: | |
 | &#95;accel.amf3 | :o: :heavy_check_mark: | |
 | &#95;accel.codec | :o: :heavy_check_mark: | |
