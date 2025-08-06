@@ -54,8 +54,8 @@ class ModuleFinder(object):
         manually load the module.
 
         @param fullname: The name of the module being imported.
-        @param path: The root path of the module (if a package). We ignore this.
-        @param target: Not used.
+        @param path: The root path of the module (if a package). Ignored.
+        @param target: Ignored.
         @return: If we want to hook this module, we return a C{ModuleSpec}.
             If not we return C{None} to allow the standard import process to
             continue.
@@ -72,10 +72,10 @@ class ModuleFinder(object):
 
         try:
             __import__(name, {}, {}, [])
-        except:
+        except Exception as e:
             self.loaded_modules.pop()
 
-            raise
+            raise e
 
         return sys.modules[name]
 
@@ -83,10 +83,10 @@ class ModuleFinder(object):
         name = module.__spec__.name
         try:
             self._run_hooks(name, sys.modules[name])
-        except:
+        except Exception as e:
             self.loaded_modules.pop()
 
-            raise
+            raise e
 
     def when_imported(self, name, *hooks):
         """
