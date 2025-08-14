@@ -292,8 +292,7 @@ class BufferedByteStream(object):
     def _is_little_endian(self):
         if self._endian == ENDIAN_NATIVE:
             return ENDIAN_SYSTEM == ENDIAN_LITTLE
-        else:
-            return self._endian == ENDIAN_LITTLE
+        return self._endian == ENDIAN_LITTLE
 
     def read_uchar(self):
         """
@@ -440,9 +439,9 @@ class BufferedByteStream(object):
         @since: 0.4
         """
         if self._is_little_endian():
-            order = [0, 8, 16]
+            order = (0, 8, 16)
         else:
-            order = [16, 8, 0]
+            order = (16, 8, 0)
 
         n = 0
         for x in order:
@@ -467,9 +466,9 @@ class BufferedByteStream(object):
             raise OverflowError("n is out of range")
 
         if self._is_little_endian():
-            order = [0, 8, 16]
+            order = (0, 8, 16)
         else:
-            order = [16, 8, 0]
+            order = (16, 8, 0)
 
         for x in order:
             self.write_uchar((n >> x) & 0xff)
@@ -508,9 +507,9 @@ class BufferedByteStream(object):
             n += 0x1000000
 
         if self._is_little_endian():
-            order = [0, 8, 16]
+            order = (0, 8, 16)
         else:
-            order = [16, 8, 0]
+            order = (16, 8, 0)
 
         for x in order:
             self.write_uchar((n >> x) & 0xff)
