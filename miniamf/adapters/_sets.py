@@ -13,5 +13,6 @@ import miniamf
 def to_sorted_tuple(obj, encoder):
     return tuple(sorted(obj))
 
+
 miniamf.add_type(frozenset, to_sorted_tuple)
 miniamf.add_type(set, to_sorted_tuple)
