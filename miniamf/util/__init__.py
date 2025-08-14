@@ -61,7 +61,6 @@ def get_datetime(secs):
     # the underlying C gmtime() cannot handle values outside the range
     # 1970-01-01T00:00:00Z through 2038-01-19T03:14:07Z.  Also, this way
     # fractional seconds are handled seamlessly (secs can be a float).
-    # return (datetime.datetime.utcfromtimestamp(0) + datetime.timedelta(seconds=secs))
     return datetime.datetime.fromtimestamp(-datetime.datetime.fromtimestamp(0).replace(tzinfo=datetime.timezone.utc).timestamp()) + datetime.timedelta(seconds=secs)
 
 
