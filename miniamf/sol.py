@@ -117,6 +117,7 @@ def encode(name, values, strict=True, encoding=miniamf.AMF0):
     # write the padding
     stream.write(PADDING_BYTE * 3)
     stream.write_uchar(encoding)
+
     for n, v in values.items():
         encoder.serialiseString(n)
         encoder.writeElement(v)
