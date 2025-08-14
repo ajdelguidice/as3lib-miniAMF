@@ -532,8 +532,8 @@ cdef class Encoder(codec.Encoder):
         # work out the highest integer index
         try:
             # list comprehensions to save the day
-            max_index = max([y[0] for y in o.items()
-                if isinstance(y[0], int)])
+            max_index = max([y for y in o.keys()
+                if isinstance(y, int)])
 
             if max_index < 0:
                 max_index = 0
