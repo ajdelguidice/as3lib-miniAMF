@@ -663,11 +663,10 @@ class Encoder(codec.Encoder):
             d -= self.timezone_offset
 
         secs = util.get_timestamp(d)
-        tz = 0
 
         self.writeType(TYPE_DATE)
         self.stream.write_double(secs * 1000.0)
-        self.stream.write_short(tz)
+        self.stream.write_short(0)  # tz
 
     def writeXML(self, e):
         """
