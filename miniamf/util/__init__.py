@@ -152,6 +152,7 @@ def get_class_meta(klass):
         'static_attrs': None,
         'exclude_attrs': None,
         'readonly_attrs': None,
+        'proxy_attrs': None,
         'amf3': None,
         'dynamic': None,
         'alias': None,
@@ -176,11 +177,11 @@ def get_class_meta(klass):
         def get_func(x):
             return getattr(a, x)
 
-    for prop in ['alias', 'amf3', 'dynamic', 'external']:
+    for prop in ('alias', 'amf3', 'dynamic', 'external'):
         if in_func(prop):
             meta[prop] = get_func(prop)
 
-    for prop in ['static', 'exclude', 'readonly', 'synonym']:
+    for prop in ('static', 'exclude', 'readonly', 'proxy', 'synonym'):
         if in_func(prop):
             meta[prop + '_attrs'] = get_func(prop)
 
