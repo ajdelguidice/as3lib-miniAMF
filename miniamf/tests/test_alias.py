@@ -34,6 +34,7 @@ class ClassAliasTestCase(ClassCacheClearingTestCase):
         self.assertEqual(x.readonly_attrs, None)
         self.assertEqual(x.static_attrs, [])
         self.assertEqual(x.exclude_attrs, None)
+        self.assertEqual(x.proxy_attrs, None)
 
         self.assertEqual(x.alias, '')
         self.assertEqual(x.klass, Spam)
@@ -57,6 +58,7 @@ class ClassAliasTestCase(ClassCacheClearingTestCase):
         self.assertEqual(x.readonly_attrs, None)
         self.assertEqual(x.static_attrs, None)
         self.assertEqual(x.exclude_attrs, None)
+        self.assertEqual(x.proxy_attrs, None)
 
         self.assertEqual(x.alias, '')
         self.assertEqual(x.klass, Spam)
@@ -69,7 +71,7 @@ class ClassAliasTestCase(ClassCacheClearingTestCase):
         x = ClassAlias(
             Spam, alias='foo', static_attrs=('bar',), exclude_attrs=('baz',),
             readonly_attrs='gak', amf3='spam',
-            external='eggs', dynamic='goo'
+            external='eggs', dynamic='goo', proxy_attrs=('blarg',)
         )
 
         self.assertFalse(x.anonymous)
@@ -80,6 +82,7 @@ class ClassAliasTestCase(ClassCacheClearingTestCase):
         self.assertEqual(x.readonly_attrs, ['a', 'g', 'k'])
         self.assertEqual(x.static_attrs, ['bar'])
         self.assertEqual(x.exclude_attrs, ['baz'])
+        self.assertEqual(x.proxy_attrs, ['blarg'])
 
         self.assertEqual(x.alias, 'foo')
         self.assertEqual(x.klass, Spam)
@@ -188,6 +191,31 @@ class GetEncodableAttributesTestCase(unittest.TestCase):
 
         attrs = self.alias.getEncodableAttributes(self.obj)
         self.assertEqual(attrs, {'foo': 'bar', 'bar': 'foo'})
+
+    def test_proxy(self):
+        from miniamf import flex
+
+        c = miniamf.get_encoder(miniamf.AMF3)
+
+        self.alias.proxy_attrs = ('foo', 'bar')
+        self.alias.compile()
+
+        self.assertEqual(self.alias.proxy_attrs, ['bar', 'foo'])
+
+        self.obj.foo = ['bar', 'baz']
+        self.obj.bar = {'foo': 'gak'}
+
+        attrs = self.alias.getEncodableAttributes(self.obj, c)
+
+        k = sorted(attrs.keys())
+
+        self.assertEqual(k, ['bar', 'foo'])
+
+        self.assertTrue(isinstance(attrs['foo'], flex.ArrayCollection))
+        self.assertEqual(attrs['foo'], ['bar', 'baz'])
+
+        self.assertTrue(isinstance(attrs['bar'], flex.ObjectProxy))
+        self.assertEqual(attrs['bar']._amf_object, {'foo': 'gak'})
 
     def test_synonym(self):
         self.alias.synonym_attrs = {'foo': 'bar'}
@@ -339,6 +367,28 @@ class GetDecodableAttributesTestCase(unittest.TestCase):
         ret = self.alias.getDecodableAttributes(self.obj, attrs)
 
         self.assertEqual(ret, {'foo': 'foo', 'bar': 'bar'})
+
+    def test_proxy(self):
+        from miniamf import flex
+
+        c = miniamf.get_encoder(miniamf.AMF3)
+
+        self.alias.proxy_attrs = ('foo', 'bar')
+        self.alias.compile()
+
+        self.assertEqual(self.alias.proxy_attrs, ['bar', 'foo'])
+
+        attrs = {
+            'foo': flex.ArrayCollection(['bar', 'baz']),
+            'bar': flex.ObjectProxy({'foo': 'gak'})
+        }
+
+        ret = self.alias.getDecodableAttributes(self.obj, attrs, c)
+
+        self.assertEqual(ret, {
+            'foo': ['bar', 'baz'],
+            'bar': {'foo': 'gak'}
+        })
 
     def test_synonym(self):
         self.alias.synonym_attrs = {'foo': 'bar'}

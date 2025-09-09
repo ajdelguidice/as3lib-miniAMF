@@ -262,6 +262,18 @@ class EncoderTestCase(ClassCacheClearingTestCase, EncoderMixIn):
         self.assertEncoded(y, b'\x09\x00', clear=False)
         self.assertEncoded(y, b'\x09\x00', clear=False)
 
+    def test_list_proxy_references(self):
+        self.encoder.use_proxies = True
+        y = [0, 1, 2, 3]
+
+        self.assertEncoded(
+            y,
+            b'\n\x07Cflex.messaging.io.ArrayCollection\t\t\x01\x04\x00\x04\x01'
+            b'\x04\x02\x04\x03'
+        )
+        self.assertEncoded(y, b'\n\x00', clear=False)
+        self.assertEncoded(y, b'\n\x00', clear=False)
+
     def test_dict(self):
         self.assertEncoded({'spam': 'eggs'}, b'\n\x0b\x01\tspam\x06\teggs\x01')
         self.assertEncoded(
@@ -505,6 +517,25 @@ class EncoderTestCase(ClassCacheClearingTestCase, EncoderMixIn):
 
         with self.assertRaises(miniamf.EncodeError):
             self.encoder.writeElement(New)
+
+    def test_proxy(self):
+        """
+        Test to ensure that only C{dict} objects will be proxied correctly
+        """
+        self.encoder.use_proxies = True
+        bytes = b'\n\x07;flex.messaging.io.ObjectProxy\n\x0b\x01\x01'
+
+        self.assertEncoded(miniamf.ASObject(), bytes)
+        self.assertEncoded({}, bytes)
+
+    def test_proxy_non_dict(self):
+        class Foo(object):
+            pass
+
+        self.encoder.use_proxies = True
+        bytes = b'\n\x0b\x01\x01'
+
+        self.assertEncoded(Foo(), bytes)
 
     def test_timezone(self):
         d = datetime.datetime(2009, 9, 24, 14, 23, 23)
@@ -829,6 +860,14 @@ class DecoderTestCase(ClassCacheClearingTestCase, DecoderMixIn):
         self.assertEqual(foo.family_name, 'Doe')
         self.assertEqual(foo.given_name, 'Jane')
         self.assertEqual(self.buf.remaining(), 0)
+
+    def test_default_proxy_flag(self):
+        amf3.use_proxies_default = True
+        decoder = amf3.Decoder(self.buf, context=self.context)
+        self.assertTrue(decoder.use_proxies)
+        amf3.use_proxies_default = False
+        decoder = amf3.Decoder(self.buf, context=self.context)
+        self.assertFalse(decoder.use_proxies)
 
     def test_ioerror_buffer_position(self):
         """
@@ -1229,6 +1268,51 @@ class DataOutputTestCase(unittest.TestCase, EncoderMixIn):
         # check references
         self.x.writeObject(obj)
         self.assertEqual(self.buf.getvalue(), b'\t\x00')
+
+    def test_object_proxy(self):
+        self.encoder.use_proxies = True
+        obj = {'spam': 'eggs'}
+
+        self.x.writeObject(obj)
+        self.assertEqual(
+            self.buf.getvalue(),
+            b'\n\x07;flex.messaging.io.ObjectProxy\n\x0b\x01\tspam\x06\teggs'
+            b'\x01'
+        )
+        self.buf.truncate()
+
+        # check references
+        self.x.writeObject(obj)
+        self.assertEqual(self.buf.getvalue(), b'\n\x00')
+        self.buf.truncate()
+
+    def test_object_proxy_mixed_array(self):
+        self.encoder.use_proxies = True
+        obj = miniamf.MixedArray(spam='eggs')
+
+        self.x.writeObject(obj)
+        self.assertEqual(
+            self.buf.getvalue(),
+            b'\n\x07;flex.messaging.io.ObjectProxy\n\x0b\x01\tspam\x06\teggs'
+            b'\x01'
+        )
+        self.buf.truncate()
+
+        # check references
+        self.x.writeObject(obj)
+        self.assertEqual(self.buf.getvalue(), b'\n\x00')
+        self.buf.truncate()
+
+    def test_object_proxy_inside_list(self):
+        self.encoder.use_proxies = True
+        obj = [{'spam': 'eggs'}]
+
+        self.x.writeObject(obj)
+        self.assertEqual(
+            self.buf.getvalue(),
+            b'\n\x07Cflex.messaging.io.ArrayCollection\t\x03\x01\n\x07;'
+            b'flex.messaging.io.ObjectProxy\n\x0b\x01\tspam\x06\teggs\x01'
+        )
 
     def test_short(self):
         self.x.writeShort(55)

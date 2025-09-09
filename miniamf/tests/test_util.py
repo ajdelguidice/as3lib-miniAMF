@@ -1061,6 +1061,7 @@ class GetClassMetaTestCase(unittest.TestCase):
             'readonly_attrs': None,
             'static_attrs': None,
             'synonym_attrs': None,
+            'proxy_attrs': None,
             'dynamic': None,
             'alias': None,
             'amf3': None,
@@ -1084,6 +1085,7 @@ class GetClassMetaTestCase(unittest.TestCase):
             'readonly_attrs': None,
             'static_attrs': None,
             'synonym_attrs': None,
+            'proxy_attrs': None,
             'dynamic': None,
             'alias': 'foo.bar.Spam',
             'amf3': None,
@@ -1107,6 +1109,7 @@ class GetClassMetaTestCase(unittest.TestCase):
             'readonly_attrs': None,
             'static_attrs': ['foo', 'bar'],
             'synonym_attrs': None,
+            'proxy_attrs': None,
             'dynamic': None,
             'alias': None,
             'amf3': None,
@@ -1130,6 +1133,7 @@ class GetClassMetaTestCase(unittest.TestCase):
             'readonly_attrs': None,
             'exclude_attrs': ['foo', 'bar'],
             'synonym_attrs': None,
+            'proxy_attrs': None,
             'dynamic': None,
             'alias': None,
             'amf3': None,
@@ -1153,6 +1157,7 @@ class GetClassMetaTestCase(unittest.TestCase):
             'exclude_attrs': None,
             'readonly_attrs': ['foo', 'bar'],
             'synonym_attrs': None,
+            'proxy_attrs': None,
             'dynamic': None,
             'alias': None,
             'amf3': None,
@@ -1176,6 +1181,7 @@ class GetClassMetaTestCase(unittest.TestCase):
             'exclude_attrs': None,
             'synonym_attrs': None,
             'readonly_attrs': None,
+            'proxy_attrs': None,
             'dynamic': None,
             'alias': None,
             'amf3': True,
@@ -1199,6 +1205,7 @@ class GetClassMetaTestCase(unittest.TestCase):
             'exclude_attrs': None,
             'synonym_attrs': None,
             'readonly_attrs': None,
+            'proxy_attrs': None,
             'dynamic': False,
             'alias': None,
             'amf3': None,
@@ -1222,6 +1229,7 @@ class GetClassMetaTestCase(unittest.TestCase):
             'exclude_attrs': None,
             'synonym_attrs': None,
             'readonly_attrs': None,
+            'proxy_attrs': None,
             'dynamic': None,
             'alias': None,
             'amf3': None,
@@ -1238,6 +1246,7 @@ class GetClassMetaTestCase(unittest.TestCase):
             'readonly': ['bar'],
             'dynamic': False,
             'alias': 'spam.eggs',
+            'proxy_attrs': None,
             'synonym_attrs': None,
             'amf3': True,
             'static': ['baz'],
@@ -1255,6 +1264,7 @@ class GetClassMetaTestCase(unittest.TestCase):
             'static_attrs': ['baz'],
             'dynamic': False,
             'alias': 'spam.eggs',
+            'proxy_attrs': None,
             'amf3': True,
             'exclude_attrs': ['foo'],
             'synonym_attrs': None,
@@ -1263,6 +1273,30 @@ class GetClassMetaTestCase(unittest.TestCase):
 
         self.assertEqual(get_class_meta(A), ret)
         self.assertEqual(get_class_meta(B), ret)
+
+    def test_proxy(self):
+        class A:
+            class __amf__:
+                proxy = ['foo', 'bar']
+
+        class B(object):
+            class __amf__:
+                proxy = ['foo', 'bar']
+
+        meta = {
+            'exclude_attrs': None,
+            'readonly_attrs': None,
+            'proxy_attrs': ['foo', 'bar'],
+            'synonym_attrs': None,
+            'dynamic': None,
+            'alias': None,
+            'amf3': None,
+            'static_attrs': None,
+            'external': None
+        }
+
+        self.assertEqual(get_class_meta(A), meta)
+        self.assertEqual(get_class_meta(B), meta)
 
     def test_synonym(self):
         class A:
@@ -1276,6 +1310,7 @@ class GetClassMetaTestCase(unittest.TestCase):
         meta = {
             'exclude_attrs': None,
             'readonly_attrs': None,
+            'proxy_attrs': None,
             'synonym_attrs': {'foo': 'bar'},
             'dynamic': None,
             'alias': None,
