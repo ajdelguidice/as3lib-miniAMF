@@ -317,7 +317,7 @@ class BaseGateway(object):
             if isinstance(service, type):
                 name = service.__name__
             elif isinstance(service, types.FunctionType):
-                name = service.func_name
+                name = service.__name__
             elif isinstance(service, types.ModuleType):
                 name = service.__name__
             else:
