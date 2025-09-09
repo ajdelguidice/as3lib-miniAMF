@@ -1206,3 +1206,54 @@ class ExceptionEncodingTestCase(ClassCacheClearingTestCase):
             b'\x10\x00\x07foo.bar\x00\x07message\x02\x00\x05blarg\x00\x04name'
             b'\x02\x00\x03XYZ\x00\x00\t'
         )
+
+
+class AMF0ContextTestCase(unittest.TestCase):
+    """
+    """
+
+    bytes = (
+        b'\x00\x03\x00\x02\x00\x0eServiceLicense\x00\x00\x00\x00O\x11\n\x0b'
+        b'\x01-serviceConfigurationId\x06\t1234\x15licenseKey\x06Axxxxxxxxxxxx'
+        b'xxxxxxxxxxxxxxxxxxxx\x01\x00\tSessionId\x00\x00\x00\x00\xb2\x11\n'
+        b'\x0b\x01\x0bToken\x06\x82Iyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy'
+        b'yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy'
+        b'yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy\x01\x00\x01'
+        b'\x00\x0cRegisterUser\x00\x02/3\x00\x00\x01k\n\x00\x00\x00\x07\x11\n#'
+        b'\x01\rformat\x0bvalue\x069urn:TribalDDB:identity:email\x06!tester@tr'
+        b'ial.com\x11\n#\x01\x02\ttype\x06\x0fpasswrd\x06Kurn:TribalDDB:authen'
+        b'tication:password\x11\nS\x01\x19EmailAddress\x15PostalCode\x17DateOf'
+        b'Birth\x11LastName\x13FirstName\x06\x06\x06\x0b12345\n3\x12\x0bmonth'
+        b'\x07day\tyear\x04\x04\x04\x0f\x04\x8fF\x06\rewrwer\x06\x07wer\x11\n3'
+        b'\x1fSectionTracking\tCsId\x11TrtmntId\x13LocalCsId\x04\x00\x04\x86'
+        b'\x94z\x04\x00\x11\n\x13\x11Tracking\x07CTC\x06\x07555\x11\t\x03\x01'
+        b'\n#\x13UserOptIn\x1dliveModeEnable\x05id\x02\x04\x884\x02\x00\x10www'
+        b'wwwwwwwwwwwww'
+    )
+
+    def test_decode(self):
+        from miniamf.remoting import decode
+
+        e = decode(self.bytes)
+
+        a, b, c, d, e, f, g = e['/3'].body
+
+        self.assertEqual(a, {
+            'value': u'tester@trial.com',
+            'format': u'urn:TribalDDB:identity:email'
+        })
+        self.assertEqual(b, {
+            'type': u'urn:TribalDDB:authentication:password',
+            'value': u'passwrd'}
+        )
+        self.assertEqual(c, {
+            'PostalCode': u'12345',
+            'DateOfBirth': {'month': 4, 'day': 15, 'year': 1990},
+            'EmailAddress': u'tester@trial.com',
+            'FirstName': u'wer',
+            'LastName': u'ewrwer'}
+        )
+        self.assertEqual(d, {'CsId': 0, 'TrtmntId': 100986, 'LocalCsId': 0})
+        self.assertEqual(e, {'CTC': u'555'})
+        self.assertEqual(f, [{'liveModeEnable': False, 'id': 1076}])
+        self.assertEqual(g, u'wwwwwwwwwwwwwwww')
