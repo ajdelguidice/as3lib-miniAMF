@@ -20,6 +20,7 @@ import miniamf
 from miniamf import remoting
 from miniamf.flex import messaging
 
+from io import StringIO
 
 class BaseServerError(miniamf.BaseError):
     """
@@ -67,11 +68,10 @@ def generate_error(request, cls, e, tb, include_traceback=False):
     rootCause = e
 
     if include_traceback:
-        buffer = miniamf.util.BufferedByteStream()
+        with StringIO() as buffer:
+            traceback.print_exception(cls, e, tb, file=buffer)
 
-        traceback.print_exception(cls, e, tb, file=buffer)
-
-        details = buffer.getvalue()
+            details = buffer.getvalue().encode()
 
     faultDetail = None
     faultString = None
