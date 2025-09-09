@@ -126,8 +126,11 @@ class BufferedByteStream(object):
         return self._buf.tell()
 
     def truncate(self, size=0):
+        cur_pos = self.tell()
         self._buf.truncate(size)
         self._len = size
+        if self._len < cur_pos:
+            self.seek(self._len)
 
     def getvalue(self):
         return self._buf.getvalue()
