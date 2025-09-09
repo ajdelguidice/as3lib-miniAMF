@@ -27,6 +27,7 @@ import zlib
 
 import miniamf
 from . import codec, util, xml
+from miniamf import flex
 
 
 __all__ = [
@@ -34,8 +35,14 @@ __all__ = [
     'Context',
     'Encoder',
     'Decoder',
+    'use_proxies_default',
 ]
 
+
+#: If True encode/decode lists/tuples to L{ArrayCollection
+#: <pyamf.flex.ArrayCollection>} and dicts to L{ObjectProxy
+#: <pyamf.flex.ObjectProxy>}
+use_proxies_default = False
 
 #: The undefined type is represented by the undefined type marker. No further
 #: information is encoded for this value.
@@ -141,6 +148,9 @@ class ObjectEncoding:
     #: class-def reference there are no property names and the number of values
     #: is equal to the number of properties in the class-def.
     DYNAMIC = 0x02
+
+    #: Proxy object.
+    PROXY = 0x03
 
 
 class DataOutput(object):
@@ -628,6 +638,7 @@ class Context(codec.Context):
         codec.Context.clear(self)
 
         self.strings.clear()
+        self.proxied_objects = {}
         self.classes = {}
         self.class_ref = {}
 
@@ -710,11 +721,60 @@ class Context(codec.Context):
 
         return ref
 
+    def getObjectForProxy(self, proxy):
+        """
+        Returns the unproxied version of C{proxy} as stored in the context, or
+        unproxies the proxy and returns that 'raw' object.
+
+        @see: L{miniamf.flex.unproxy_object}
+        @since: 0.6
+        """
+        obj = self.proxied_objects.get(id(proxy))
+
+        if obj is None:
+            obj = flex.unproxy_object(proxy)
+
+            self.addProxyObject(obj, proxy)
+
+        return obj
+
+    def addProxyObject(self, obj, proxied):
+        """
+        Stores a reference to the unproxied and proxied versions of C{obj} for
+        later retrieval.
+
+        @since: 0.6
+        """
+        self.proxied_objects[id(obj)] = proxied
+        self.proxied_objects[id(proxied)] = obj
+
+    def getProxyForObject(self, obj):
+        """
+        Returns the proxied version of C{obj} as stored in the context, or
+        creates a new proxied object and returns that.
+
+        @see: L{miniamf.flex.proxy_object}
+        @since: 0.6
+        """
+        proxied = self.proxied_objects.get(id(obj))
+
+        if proxied is None:
+            proxied = flex.proxy_object(obj)
+
+            self.addProxyObject(obj, proxied)
+
+        return proxied
+
 
 class Decoder(codec.Decoder):
     """
     Decodes an AMF3 data stream.
     """
+
+    def __init__(self, *args, **kwargs):
+        self.use_proxies = kwargs.pop('use_proxies', use_proxies_default)
+
+        codec.Decoder.__init__(self, *args, **kwargs)
 
     def buildContext(self, **kwargs):
         return Context(**kwargs)
@@ -746,6 +806,14 @@ class Decoder(codec.Decoder):
             return self.readXMLString
         if data == TYPE_BYTEARRAY:
             return self.readByteArray
+
+    def readProxy(self, obj):
+        """
+        Decodes a proxied object from the stream.
+
+        @since: 0.6
+        """
+        return self.context.getObjectForProxy(obj)
 
     def readUndefined(self):
         """
@@ -963,6 +1031,9 @@ class Decoder(codec.Decoder):
                     'Unknown reference %d' % (ref >> 1,)
                 )
 
+            if self.use_proxies is True:
+                obj = self.readProxy(obj)
+
             return obj
 
         ref >>= 1
@@ -975,8 +1046,12 @@ class Decoder(codec.Decoder):
 
         self.context.addObject(obj)
 
-        if class_def.encoding == ObjectEncoding.EXTERNAL:
+        if class_def.encoding in (ObjectEncoding.EXTERNAL,ObjectEncoding.PROXY):
             obj.__readamf__(DataInput(self))
+
+            if self.use_proxies is True:
+                obj = self.readProxy(obj)
+
             return obj
         elif class_def.encoding == ObjectEncoding.DYNAMIC:
             self._readStatic(class_def, obj_attrs)
@@ -987,6 +1062,9 @@ class Decoder(codec.Decoder):
             raise miniamf.DecodeError("Unknown object encoding")
 
         alias.applyAttributes(obj, obj_attrs, codec=self)
+
+        if self.use_proxies is True:
+            obj = self.readProxy(obj)
 
         return obj
 
@@ -1058,6 +1136,7 @@ class Encoder(codec.Encoder):
     """
 
     def __init__(self, *args, **kwargs):
+        self.use_proxies = kwargs.pop('use_proxies', use_proxies_default)
         self.string_references = kwargs.pop('string_references', True)
 
         codec.Encoder.__init__(self, *args, **kwargs)
@@ -1222,7 +1301,7 @@ class Encoder(codec.Encoder):
         ms = util.get_timestamp(n)
         self.stream.write_double(ms * 1000.0)
 
-    def writeList(self, n):
+    def writeList(self, n, is_proxy=False):
         """
         Writes a C{tuple}, C{set} or C{list} to the stream.
 
@@ -1230,6 +1309,10 @@ class Encoder(codec.Encoder):
             or C{__builtin__.list}
         @param n: The C{list} data to be encoded to the AMF3 data stream.
         """
+        if self.use_proxies and not is_proxy:
+            self.writeProxy(n)
+
+            return
 
         self.stream.write(TYPE_ARRAY)
 
@@ -1260,6 +1343,11 @@ class Encoder(codec.Encoder):
         # for more info
         if '' in n:
             raise miniamf.EncodeError("dicts cannot contain empty string keys")
+
+        if self.use_proxies:
+            self.writeProxy(n)
+
+            return
 
         self.stream.write(TYPE_ARRAY)
 
@@ -1314,10 +1402,22 @@ class Encoder(codec.Encoder):
         for k in int_keys:
             self.writeElement(n[k])
 
-    def writeObject(self, obj):
+    def writeProxy(self, obj):
+        """
+        Encodes a proxied object to the stream.
+
+        @since: 0.6
+        """
+        self.writeObject(self.context.getProxyForObject(obj), is_proxy=True)
+
+    def writeObject(self, obj, is_proxy=False):
         """
         Writes an object to the stream.
         """
+        if self.use_proxies and not is_proxy:
+            self.writeProxy(obj)
+
+            return
 
         self.stream.write(TYPE_OBJECT)
 

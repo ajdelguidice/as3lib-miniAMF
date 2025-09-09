@@ -526,6 +526,50 @@ def get_encoder(encoding, *args, **kwargs):
     return module.Encoder(*args, **kwargs)
 
 
+def blaze_loader(alias):
+    """
+    Loader for BlazeDS framework compatibility classes, specifically
+    implementing C{ISmallMessage}.
+
+    @type alias: C{string}
+    @see: U{BlazeDS<http://opensource.adobe.com/wiki/display/blazeds/BlazeDS>}
+    @see: U{ISmallMessage on Adobe Help (external) <http://help.adobe.com/en_US
+        /FlashPlatform/reference/actionscript/3/mx/messaging/messages/
+        ISmallMessage.html>}
+    @since: 0.5
+    """
+    if alias not in ('DSC', 'DSK'):
+        return
+
+    import miniamf.flex.messaging  # noqa
+
+    return CLASS_CACHE[alias]
+
+
+def flex_loader(alias):
+    """
+    Loader for L{Flex<pyamf.flex>} framework compatibility classes.
+
+    @type alias: C{string}
+    @raise UnknownClassAlias: Trying to load an unknown Flex compatibility
+        class.
+    """
+    if not alias.startswith('flex.'):
+        return
+
+    try:
+        if alias.startswith('flex.messaging.messages'):
+            import miniamf.flex.messaging
+        elif alias.startswith('flex.messaging.io'):
+            import miniamf.flex
+        elif alias.startswith('flex.data.messages'):
+            import miniamf.flex.data  # noqa
+
+        return CLASS_CACHE[alias]
+    except KeyError:
+        raise UnknownClassAlias(alias)
+
+
 def add_type(type_, func=None):
     """
     Adds a custom type to L{TYPE_MAP}. A custom type allows fine grain control
@@ -811,11 +855,11 @@ def register_package(module=None, package=None, separator='.', ignore=None,
     if has('__all__'):
         keys = get('__all__')
     elif hasattr(module, '__dict__'):
-        keys = list(module.__dict__.keys())
+        keys = module.__dict__.keys()
     elif hasattr(module, 'keys'):
-        keys = list(module.keys())
+        keys = module.keys()
     elif isinstance(module, list):
-        keys = list(range(len(module)))
+        keys = range(len(module))
     else:
         raise TypeError('Cannot get list of classes from %r' % (module,))
 
@@ -881,6 +925,8 @@ def add_post_decode_processor(func):
 # setup some some standard class registrations and class loaders.
 register_class_loader(_load_class_from_module)
 register_class(ASObject)
+register_class_loader(flex_loader)
+register_class_loader(blaze_loader)
 register_alias_type(TypedObjectClassAlias, TypedObject)
 register_alias_type(ErrorAlias, Exception)
 
