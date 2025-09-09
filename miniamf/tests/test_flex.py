@@ -103,7 +103,7 @@ class ArrayCollectionTestCase(unittest.TestCase, EncoderMixIn):
             b'\t\x05\x01\x06\x07foo\x06\x07bar\x01'
         )
 
-        x = miniamf.decode(s, encoding=miniamf.AMF3).next()
+        x = next(miniamf.decode(s, encoding=miniamf.AMF3))
 
         self.assertTrue(isinstance(x, flex.ArrayCollection))
         self.assertEqual(x, ['foo', 'bar'])
