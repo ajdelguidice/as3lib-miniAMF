@@ -62,7 +62,7 @@ class WSGIServerTestCase(unittest.TestCase):
 
     def test_bad_request(self):
         request = util.BufferedByteStream()
-        request.write('Bad request')
+        request.write(b'Bad request')
         request.seek(0, 0)
 
         def start_response(status, headers):
