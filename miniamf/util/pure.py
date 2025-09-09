@@ -230,6 +230,8 @@ class BufferedByteStream(object):
 
         @param s: Raw bytes
         """
+        if hasattr(s, 'encode'):
+            s = s.encode()
         self._buf.write(s)
         self._len = None
 
