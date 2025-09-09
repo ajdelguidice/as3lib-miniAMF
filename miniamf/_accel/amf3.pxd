@@ -23,11 +23,16 @@ cdef class Context(codec.Context):
     cdef codec.ByteStringReferenceCollection strings
     cdef dict classes
     cdef dict class_ref
+    cdef dict proxied_objects
     cdef Py_ssize_t class_idx
 
     cpdef object getString(self, Py_ssize_t ref)
     cpdef Py_ssize_t getStringReference(self, object s) except -2
     cpdef Py_ssize_t addString(self, object s) except -1
+
+    cpdef int addProxyObject(self, object obj, object proxied) except? -1
+    cpdef object getProxyForObject(self, object obj)
+    cpdef object getObjectForProxy(self, object proxy)
 
     cpdef object getClassByReference(self, Py_ssize_t ref)
     cpdef ClassDefinition getClass(self, object klass)
@@ -35,6 +40,7 @@ cdef class Context(codec.Context):
 
 
 cdef class Decoder(codec.Decoder):
+    cdef public bint use_proxies
     cdef readonly Context context
 
     cdef ClassDefinition _getClassDefinition(self, long ref)
@@ -44,9 +50,12 @@ cdef class Decoder(codec.Decoder):
     cdef object readBytes(self)
     cdef object readInteger(self, int signed=?)
     cdef object readByteArray(self)
+    cdef object readProxy(self, obj)
 
 
 cdef class Encoder(codec.Encoder):
+    cdef public bint use_proxies
     cdef readonly Context context
 
     cdef int writeByteArray(self, object obj) except -1
+    cdef int writeProxy(self, obj) except -1
