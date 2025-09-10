@@ -51,6 +51,12 @@ cdef class Decoder(codec.Decoder):
     cdef object readInteger(self, int signed=?)
     cdef object readByteArray(self)
     cdef object readProxy(self, obj)
+    cdef object readVector(self, vector_class)
+    cdef object readIntVector(self)
+    cdef object readUintVector(self)
+    cdef object readDoubleVector(self)
+    cdef object readObjectVector(self)
+    cdef object readASDictionary(self)
 
 
 cdef class Encoder(codec.Encoder):
@@ -59,3 +65,5 @@ cdef class Encoder(codec.Encoder):
 
     cdef int writeByteArray(self, object obj) except -1
     cdef int writeProxy(self, obj) except -1
+    cdef int writeVector(self, obj)
+    cdef int writeASDictionary(self, obj)

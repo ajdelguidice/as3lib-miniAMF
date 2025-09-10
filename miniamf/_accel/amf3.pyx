@@ -38,6 +38,11 @@ cdef char TYPE_ARRAY = '\x09'
 cdef char TYPE_OBJECT = '\x0A'
 cdef char TYPE_XMLSTRING = '\x0B'
 cdef char TYPE_BYTEARRAY = '\x0C'
+cdef char TYPE_INT_VECTOR = '\x0D'
+cdef char TYPE_UINT_VECTOR = '\x0E'
+cdef char TYPE_DOUBLE_VECTOR = '\x0F'
+cdef char TYPE_OBJECT_VECTOR = '\x10'
+cdef char TYPE_DICTIONARY = '\x11'
 
 cdef unsigned int REFERENCE_BIT = 0x01
 cdef char REF_CHAR = '\x01'
@@ -56,6 +61,12 @@ cdef int OBJECT_ENCODING_PROXY = 0x03
 cdef object ByteArrayType = amf3.ByteArray
 cdef object DataInput = amf3.DataInput
 cdef object DataOutput = amf3.DataOutput
+cdef object VectorType = amf3.BaseVector
+cdef object IntVectorType = amf3.IntVector
+cdef object UintVectorType = amf3.UintVector
+cdef object DoubleVectorType = amf3.DoubleVector
+cdef object ObjectVectorType = amf3.ObjectVector
+cdef object DictionaryType = amf3.ASDictionary
 cdef str empty_string = str('')
 cdef unicode empty_unicode = ''
 cdef object undefined = miniamf.Undefined
@@ -366,6 +377,32 @@ cdef class Decoder(codec.Decoder):
 
         return tmp
 
+    cdef object readASDictionary(self):
+        cdef int size = _read_ref(self.stream)
+        cdef object res
+        cdef object key
+
+        if size & REFERENCE_BIT == 0:
+            raise miniamf.DecodeError(
+                'ASDictionaries are not allowed to have references.'
+            )
+
+        size >>= 1
+
+        res = DictionaryType()
+
+        wk = self.stream.read_uchar()
+        if wk == TYPE_BOOL_FALSE:
+            res.weak_keys = False
+        elif wk == TYPE_BOOL_TRUE:
+            res.weak_keys = True
+
+        for i from 0 <= i < size:
+            key = self.readElement()
+            res[key] = self.readElement()
+
+        return res
+
     cdef ClassDefinition _getClassDefinition(self, long ref):
         """
         Reads class definition from the stream.
@@ -550,6 +587,46 @@ cdef class Decoder(codec.Decoder):
         """
         return self.context.getObjectForProxy(obj)
 
+    cdef object readVector(self, vector_class):
+        """
+        Reads an array of a specific datatype.
+
+        @see: L{TypedVector}
+        @note: This is not supported in ActionScript 1.0, 2.0, or early
+        versions of 3.0
+        """
+        cdef int ref = _read_ref(self.stream)
+        cdef object obj
+
+        if ref & REFERENCE_BIT == 0:
+            return self.context.getObject(ref >> 1)
+
+        obj = vector_class()
+
+        obj.fixed = self.stream.read_uchar()
+
+        if isinstance(obj, ObjectVectorType):
+            obj.classname = self.readString()
+
+        for i in range(ref >> 1):
+            obj.append(obj.reader(self)())
+
+        #self.context.addObject(obj)
+
+        return obj
+
+    cdef object readIntVector(self):
+        return self.readVector(IntVectorType)
+
+    cdef object readUintVector(self):
+        return self.readVector(UintVectorType)
+
+    cdef object readDoubleVector(self):
+        return self.readVector(DoubleVectorType)
+
+    cdef object readObjectVector(self):
+        return self.readVector(ObjectVectorType)
+
     cdef object readConcreteElement(self, char t):
         if t == TYPE_STRING:
             return self.readString()
@@ -577,6 +654,16 @@ cdef class Decoder(codec.Decoder):
             return self.readXML()
         elif t == TYPE_XMLSTRING:
             return self.readXML()
+        elif t == TYPE_INT_VECTOR:
+            return self.readIntVector()
+        elif t == TYPE_UINT_VECTOR:
+            return self.readUintVector()
+        elif t == TYPE_DOUBLE_VECTOR:
+            return self.readDoubleVector()
+        elif t == TYPE_OBJECT_VECTOR:
+            return self.readObjectVector()
+        elif t == TYPE_DICTIONARY:
+            return self.readASDictionary()
 
         raise miniamf.DecodeError("Unsupported ActionScript type")
 
@@ -987,6 +1074,39 @@ cdef class Encoder(codec.Encoder):
 
         return 0
 
+    cdef int writeVector(self, obj):
+        cdef Py_ssize_t ref
+
+        self.writeType(obj.datatype)
+
+        ref = self.context.getObjectReference(obj)
+
+        if ref != -1:
+            _encode_integer(self.stream, ref << 1)
+
+            return 0
+
+        self.context.addObject(obj)
+        ref = PyList_GET_SIZE(obj)
+
+        _encode_integer(self.stream, (ref << 1) | REFERENCE_BIT)
+        self.stream.write_uchar(0x01 if obj.fixed else 0x00)
+
+        if isinstance(obj, ObjectVectorType):
+            self.writeString(obj.classname)
+
+        for i from 0 <= i < ref:
+            obj.writer(self)(<object>PyList_GET_ITEM(obj, i))
+
+    cdef int writeASDictionary(self, obj):
+        self.writeType(TYPE_DICTIONARY)
+        _encode_integer(self.stream, len(obj) << 1 | REFERENCE_BIT)
+        self.stream.write_uchar(0x01 if obj.weak_keys else 0x00)
+
+        for key, value in PyDict_Items(obj):
+            self.writeElement(key)
+            self.writeElement(value)
+
     cdef int writeXML(self, obj) except -1:
         self.writeType(TYPE_XMLSTRING)
 
@@ -1047,6 +1167,10 @@ cdef class Encoder(codec.Encoder):
         if ret == 1: # not handled
             if py_type is ByteArrayType:
                 return self.writeByteArray(element)
+            elif isinstance(element, VectorType):
+                return self.writeVector(element)
+            elif py_type is DictionaryType:
+                return self.writeASDictionary(element)
 
         return ret
 
