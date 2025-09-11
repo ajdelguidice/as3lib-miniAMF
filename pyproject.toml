@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "as3lib-miniAMF"
-version = "1"
+version = "2"
 authors = [{name = "ajdelguidice", email = "ajdelguidice@gmail.com"}]
 description = "A fork of Mini-AMF using up to date dependencies."
 readme = {file = "README.md", content-type = "text/markdown"}
