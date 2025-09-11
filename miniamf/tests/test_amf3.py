@@ -1763,3 +1763,60 @@ class ByteArrayTestCase(unittest.TestCase):
         ba = amf3.ByteArray(z)
 
         self.assertTrue(ba.compressed)
+
+class VectorTestCase(unittest.TestCase):
+    def test_int_vector_encode_decode(self):
+        a = amf3.IntVector((-5,-4,-3,-2,-1,0,1,2,3,4,5))
+
+        encoder = miniamf.get_encoder(miniamf.AMF3)
+        encoder.writeElement(a)
+        encoded = encoder.stream.getvalue()
+
+        decoded = miniamf.get_decoder(miniamf.AMF3, encoded).readElement()
+
+        self.assertEqual(a, decoded)
+    def test_uint_vector_encode_decode(self):
+        a = amf3.UintVector((0,1,2,3,4,5,6,7,8,9,10))
+
+        encoder = miniamf.get_encoder(miniamf.AMF3)
+        encoder.writeElement(a)
+        encoded = encoder.stream.getvalue()
+
+        decoded = miniamf.get_decoder(miniamf.AMF3, encoded).readElement()
+
+        self.assertEqual(a, decoded)
+    def test_double_vector_encode_decode(self):
+        a = amf3.DoubleVector((-5.0,-4.0,-3.0,-2.0,-1.0,0.0,1.0,2.0,3.0,4.0,5.0))
+
+        encoder = miniamf.get_encoder(miniamf.AMF3)
+        encoder.writeElement(a)
+        encoded = encoder.stream.getvalue()
+
+        decoded = miniamf.get_decoder(miniamf.AMF3, encoded).readElement()
+
+        self.assertEqual(a, decoded)
+    def test_object_vector_encode_decode(self):
+        a = amf3.ObjectVector(('foo','bar','baz','gak'))
+        a.classname = 'str'
+
+        encoder = miniamf.get_encoder(miniamf.AMF3)
+        encoder.writeElement(a)
+        encoded = encoder.stream.getvalue()
+
+        decoded = miniamf.get_decoder(miniamf.AMF3, encoded).readElement()
+
+        self.assertEqual(a, decoded)
+
+class ASDictionaryTestCase(unittest.TestCase):
+    def test_int_vector_encode_decode(self):
+        a = amf3.ASDictionary()
+        a['1'] = 100
+        a[2] = 'test'
+
+        encoder = miniamf.get_encoder(miniamf.AMF3)
+        encoder.writeElement(a)
+        encoded = encoder.stream.getvalue()
+
+        decoded = miniamf.get_decoder(miniamf.AMF3, encoded).readElement()
+
+        self.assertEqual(a, decoded)
