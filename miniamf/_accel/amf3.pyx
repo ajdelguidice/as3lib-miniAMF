@@ -611,7 +611,7 @@ cdef class Decoder(codec.Decoder):
         for i in range(ref >> 1):
             obj.append(obj.reader(self)())
 
-        #self.context.addObject(obj)
+        self.context.addObject(obj)
 
         return obj
 
@@ -1074,10 +1074,8 @@ cdef class Encoder(codec.Encoder):
 
         return 0
 
-    cdef int writeVector(self, obj):
+    cdef int _writeVector(self, obj):
         cdef Py_ssize_t ref
-
-        self.writeType(obj.datatype)
 
         ref = self.context.getObjectReference(obj)
 
@@ -1097,6 +1095,26 @@ cdef class Encoder(codec.Encoder):
 
         for i from 0 <= i < ref:
             obj.writer(self)(<object>PyList_GET_ITEM(obj, i))
+
+    cdef int writeIntVector(self, obj):
+        self.writeType(TYPE_INT_VECTOR)
+
+        return self._writeVector(obj)
+
+    cdef int writeUintVector(self, obj):
+        self.writeType(TYPE_UINT_VECTOR)
+
+        return self._writeVector(obj)
+
+    cdef int writeDoubleVector(self, obj):
+        self.writeType(TYPE_DOUBLE_VECTOR)
+
+        return self._writeVector(obj)
+
+    cdef int writeObjectVector(self, obj):
+        self.writeType(TYPE_OBJECT_VECTOR)
+
+        return self._writeVector(obj)
 
     cdef int writeASDictionary(self, obj):
         self.writeType(TYPE_DICTIONARY)
@@ -1167,8 +1185,14 @@ cdef class Encoder(codec.Encoder):
         if ret == 1: # not handled
             if py_type is ByteArrayType:
                 return self.writeByteArray(element)
-            elif isinstance(element, VectorType):
-                return self.writeVector(element)
+            elif isinstance(element, ObjectVectorType):
+                return self.writeObjectVector(element)
+            elif isinstance(element, DoubleVectorType):
+                return self.writeDoubleVector(element)
+            elif isinstance(element, UintVectorType):
+                return self.writeUintVector(element)
+            elif isinstance(element, IntVectorType):
+                return self.writeIntVector(element)
             elif py_type is DictionaryType:
                 return self.writeASDictionary(element)
 

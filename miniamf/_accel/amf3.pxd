@@ -65,5 +65,9 @@ cdef class Encoder(codec.Encoder):
 
     cdef int writeByteArray(self, object obj) except -1
     cdef int writeProxy(self, obj) except -1
-    cdef int writeVector(self, obj)
+    cdef int _writeVector(self, obj)
+    cdef int writeIntVector(self, obj)
+    cdef int writeUintVector(self, obj)
+    cdef int writeDoubleVector(self, obj)
+    cdef int writeObjectVector(self, obj)
     cdef int writeASDictionary(self, obj)
