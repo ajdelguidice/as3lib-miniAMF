@@ -597,6 +597,7 @@ cdef class Decoder(codec.Decoder):
         """
         cdef int ref = _read_ref(self.stream)
         cdef object obj
+        cdef char *tmp = NULL # Throw away variable
 
         if ref & REFERENCE_BIT == 0:
             return self.context.getObject(ref >> 1)
@@ -606,6 +607,7 @@ cdef class Decoder(codec.Decoder):
         obj.fixed = self.stream.read_uchar()
 
         if isinstance(obj, ObjectVectorType):
+            self.stream.read(&tmp, 1) # Discard because we know it is a string
             obj.classname = self.readString()
 
         for i in range(ref >> 1):

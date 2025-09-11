@@ -1236,6 +1236,7 @@ class Decoder(codec.Decoder):
         obj.fixed = self.stream.read_uchar()
 
         if isinstance(obj, ObjectVector):
+            self.stream.read(1) # Discard type because we know it is a string
             obj.classname = self.readString()
 
         num_items = ref >> 1
