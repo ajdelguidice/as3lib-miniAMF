@@ -26,6 +26,10 @@ Homepage = "https://github.com/ajdelguidice/as3lib-miniAMF"
 
 [pyproject.optional-dependencies]
 docs = ["sphinx >= 1.5"]
+django = ["Django"]
+sqlachemy = ["SQLAlchemy"]
+twisted = ["Twisted"]
+
 
 [tool.setuptools]
 packages=["miniamf", "miniamf._accel", "miniamf.adapters", "miniamf.util"]
@@ -43,7 +47,7 @@ skip_missing_interpreters = true
 
 [tool.tox.env_run_base]
 runner = "uv-venv-runner"
-deps = ["flake8","cython","defusedxml"]
+deps = ["flake8","defusedxml","Django","SQLAlchemy","Twisted"]
 commands = [["python","-m","unittest","discover","miniamf/tests"]]
 
 [tool.tox.env.py3]
