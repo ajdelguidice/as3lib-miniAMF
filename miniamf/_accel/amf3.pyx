@@ -67,8 +67,7 @@ cdef object UintVectorType = amf3.UintVector
 cdef object DoubleVectorType = amf3.DoubleVector
 cdef object ObjectVectorType = amf3.ObjectVector
 cdef object DictionaryType = amf3.ASDictionary
-cdef str empty_string = str('')
-cdef unicode empty_unicode = ''
+cdef unicode empty_unicode = u''
 cdef object undefined = miniamf.Undefined
 
 
@@ -293,22 +292,22 @@ cdef class Decoder(codec.Decoder):
         """
         Reads and returns a string from the stream.
         """
-        cdef Py_ssize_t r = _read_ref(self.stream)
+        cdef Py_ssize_t ref = _read_ref(self.stream)
         cdef object s
 
-        if r & REFERENCE_BIT == 0:
+        if ref & REFERENCE_BIT == 0:
             # read a string reference
-            return self.context.getString(r >> 1)
+            return self.context.getString(ref >> 1)
 
-        r >>= 1
+        ref >>= 1
 
-        if r == 0:
+        if ref == 0:
             return empty_unicode
 
         cdef char *buf = NULL
 
-        self.stream.read(&buf, r)
-        s = PyUnicode_DecodeUTF8(buf, r, 'strict')
+        self.stream.read(&buf, ref)
+        s = PyUnicode_DecodeUTF8(buf, ref, 'strict')
 
         self.context.addString(s)
 
@@ -372,8 +371,7 @@ cdef class Decoder(codec.Decoder):
             key = self.readString()
 
         for i from 0 <= i < size:
-            el = self.readElement()
-            tmp[i] = el
+            tmp[i] = self.readElement()
 
         return tmp
 
@@ -451,9 +449,7 @@ cdef class Decoder(codec.Decoder):
         return 0
 
     cdef int _readDynamic(self, ClassDefinition class_def, dict obj) except -1:
-        cdef object attr
         cdef char *peek = NULL
-
 
         while True:
             self.stream.peek(&peek, 1)
@@ -559,7 +555,6 @@ cdef class Decoder(codec.Decoder):
 
         cdef char *buf = NULL
         cdef object s
-        cdef object compressed = None
 
         ref >>= 1
 
@@ -705,36 +700,36 @@ cdef class Encoder(codec.Encoder):
         """
         Serialises a unicode object.
         """
-        cdef Py_ssize_t l
+        cdef Py_ssize_t size
         cdef bint is_unicode = 0
 
         if PyUnicode_Check(u):
-            l = PyUnicode_GetLength(u)
+            size = PyUnicode_GetLength(u)
             is_unicode = 1
         elif PyBytes_Check(u):
-            l = PyBytes_GET_SIZE(u)
+            size = PyBytes_GET_SIZE(u)
         else:
             raise TypeError('Expected str or unicode')
 
-        if l == 0:
+        if size == 0:
             # '' is a special case
             return self.stream.write(&REF_CHAR, 1)
 
-        r = self.context.getStringReference(u)
+        ref = self.context.getStringReference(u)
 
-        if r != -1:
+        if ref != -1:
             # we have a reference
-            return _encode_integer(self.stream, r << 1)
+            return _encode_integer(self.stream, ref << 1)
 
         self.context.addString(u)
 
         if is_unicode:
             u = self.context.getBytesForString(u)
-            l = PyBytes_GET_SIZE(u)
+            size = PyBytes_GET_SIZE(u)
 
-        _encode_integer(self.stream, (l << 1) | REFERENCE_BIT)
+        _encode_integer(self.stream, (size << 1) | REFERENCE_BIT)
 
-        return self.stream.write(PyBytes_AsString(u), l)
+        return self.stream.write(PyBytes_AsString(u), size)
 
     cdef int writeString(self, object s) except -1:
         self.writeType(TYPE_STRING)
@@ -960,7 +955,6 @@ cdef class Encoder(codec.Encoder):
         cdef ClassDefinition definition
         cdef object alias = None
         cdef int class_ref = 0
-        cdef char *buf = NULL
         cdef PyObject *key
         cdef PyObject *value
         cdef object attrs
@@ -1069,10 +1063,10 @@ cdef class Encoder(codec.Encoder):
         self.context.addObject(obj)
 
         buf = obj.encode()
-        l = PyBytes_GET_SIZE(buf)
+        ref = PyBytes_GET_SIZE(buf)
 
-        _encode_integer(self.stream, (l << 1) | REFERENCE_BIT)
-        self.stream.write(PyBytes_AsString(buf), l)
+        _encode_integer(self.stream, (ref << 1) | REFERENCE_BIT)
+        self.stream.write(PyBytes_AsString(buf), ref)
 
         return 0
 

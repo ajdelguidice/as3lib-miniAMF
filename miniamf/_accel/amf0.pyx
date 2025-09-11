@@ -97,14 +97,14 @@ cdef class Decoder(codec.Decoder):
         return self.context.getBytesForString(self.readString())
 
     cpdef object readString(self):
-        cdef unsigned short l
-        cdef char *b = NULL
+        cdef Py_ssize_t size
+        cdef char *buf = NULL
 
-        l = self.stream.read_ushort()
+        size = self.stream.read_ushort()
 
-        self.stream.read(&b, l)
+        self.stream.read(&buf, size)
 
-        return PyUnicode_DecodeUTF8(b, <Py_ssize_t>l, 'strict')
+        return PyUnicode_DecodeUTF8(buf, size, 'strict')
 
     cdef void readObjectAttributes(self, object obj_attrs):
         cdef char *peek = NULL
@@ -185,13 +185,13 @@ cdef class Decoder(codec.Decoder):
 
     cdef object readList(self):
         cdef list obj = []
-        cdef unsigned long l
+        cdef unsigned long size
         cdef unsigned long i
 
         self.context.addObject(obj)
-        l = self.stream.read_ulong()
+        size = self.stream.read_ulong()
 
-        for i from 0 <= i < l:
+        for i from 0 <= i < size:
             PyList_Append(obj, self.readElement())
 
         return obj
@@ -213,14 +213,14 @@ cdef class Decoder(codec.Decoder):
         return d
 
     cdef object readLongString(self, bint bytes=0):
-        cdef unsigned long l = 0
-        cdef char *b = NULL
+        cdef unsigned long size = 0
+        cdef char *buf = NULL
         cdef object s
 
-        l = self.stream.read_ulong()
+        size = self.stream.read_ulong()
 
-        self.stream.read(&b, l)
-        s = PyBytes_FromStringAndSize(b, <Py_ssize_t>l)
+        self.stream.read(&buf, size)
+        s = PyBytes_FromStringAndSize(buf, <Py_ssize_t>size)
 
         if bytes:
             return s
@@ -390,19 +390,19 @@ cdef class Encoder(codec.Encoder):
         """
         Write a string of bytes to the data stream.
         """
-        cdef Py_ssize_t l = PyBytes_GET_SIZE(s)
+        cdef Py_ssize_t size = PyBytes_GET_SIZE(s)
 
-        if l > 0xffff:
+        if size > 0xffff:
             self.writeType(TYPE_LONGSTRING)
         else:
             self.writeType(TYPE_STRING)
 
-        if l > 0xffff:
-            self.stream.write_ulong(l)
+        if size > 0xffff:
+            self.stream.write_ulong(size)
         else:
-            self.stream.write_ushort(l)
+            self.stream.write_ushort(size)
 
-        return self.stream.write(PyBytes_FromString(s), l)
+        return self.stream.write(PyBytes_FromString(s), size)
 
     cdef int writeString(self, u) except -1:
         """
@@ -419,14 +419,14 @@ cdef class Encoder(codec.Encoder):
         if PyUnicode_CheckExact(u):
             u = self.context.getBytesForString(u)
 
-        cdef Py_ssize_t l = PyBytes_GET_SIZE(u)
+        cdef Py_ssize_t size = PyBytes_GET_SIZE(u)
 
-        if l > 0xffff:
-            self.stream.write_ulong(l)
+        if size > 0xffff:
+            self.stream.write_ulong(size)
         else:
-            self.stream.write_ushort(l)
+            self.stream.write_ushort(size)
 
-        return self.stream.write(PyBytes_AsString(u), l)
+        return self.stream.write(PyBytes_AsString(u), size)
 
     cdef int writeXML(self, e) except -1:
         """
@@ -439,11 +439,11 @@ cdef class Encoder(codec.Encoder):
         if not PyUnicode_CheckExact(data):
             raise TypeError('expected str from xml.tostring')
 
-        cdef Py_ssize_t l = PyUnicode_GetLength(data)
+        cdef Py_ssize_t size = PyUnicode_GetLength(data)
 
-        self.stream.write_ulong(l)
+        self.stream.write_ulong(size)
 
-        return self.stream.write(PyUnicode_AsUTF8String(data), l) #!Might be wrong
+        return self.stream.write(PyUnicode_AsUTF8String(data), size) #!Might be wrong
 
     cdef int writeDateTime(self, d) except -1:
         if self.timezone_offset is not None:

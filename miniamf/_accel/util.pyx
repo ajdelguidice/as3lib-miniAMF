@@ -56,7 +56,7 @@ cdef double system_neginf
 cdef object miniamf_NaN = PyFloat_FromDouble(1e300000 / -1e300000)
 cdef object miniamf_NegInf = PyFloat_FromDouble(-1e300000)
 cdef object miniamf_PosInf = PyFloat_FromDouble(1e300000)
-cdef object empty_unicode = unicode('')
+cdef object empty_unicode = u''
 
 @cython.profile(False)
 cdef int _memcpy_ensure_endian(void *src, void *dest, unsigned int size) nogil:

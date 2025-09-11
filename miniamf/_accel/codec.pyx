@@ -394,15 +394,12 @@ cdef class Decoder(Codec):
         Reads an element from the data stream.
         """
         cdef Py_ssize_t pos = self.stream.tell()
-        cdef char t
 
         if self.stream.at_eof():
             raise miniamf.EOStream
 
-        t = self.stream.read_char()
-
         try:
-            return self.readConcreteElement(t)
+            return self.readConcreteElement(self.stream.read_char())
         except IOError:
             self.stream.seek(pos)
 
@@ -693,8 +690,6 @@ cdef class _CustomTypeFunc(object):
 
 
 cdef object get_custom_type_func(object encoder, object data):
-    cdef _CustomTypeFunc ret
-
     for type_, func in miniamf.TYPE_MAP.items():
         try:
             if isinstance(data, type_):
