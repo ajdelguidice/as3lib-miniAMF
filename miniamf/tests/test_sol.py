@@ -30,7 +30,7 @@ class DecoderTestCase(unittest.TestCase):
 
         try:
             sol.decode(bytes)
-        except:
+        except Exception:
             self.fail("Error occurred during decoding stream")
 
     def test_invalid_header(self):
@@ -55,7 +55,7 @@ class DecoderTestCase(unittest.TestCase):
 
         try:
             sol.decode(bytes, strict=False)
-        except:
+        except Exception:
             self.fail("Error occurred during decoding stream")
 
     def test_invalid_signature(self):

@@ -15,7 +15,9 @@ import unittest
 
 import miniamf
 from miniamf import amf0, util, xml
-from miniamf.tests.util import EncoderMixIn, DecoderMixIn, ClassCacheClearingTestCase, Spam, ClassicSpam
+# Flake complains so the next two lines had to be split
+from miniamf.tests.util import EncoderMixIn, DecoderMixIn, Spam, ClassicSpam
+from miniamf.tests.util import ClassCacheClearingTestCase
 
 
 class TypesTestCase(unittest.TestCase):

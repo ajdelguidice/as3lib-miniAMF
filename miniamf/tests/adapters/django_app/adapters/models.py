@@ -3,8 +3,10 @@
 
 from django.db import models
 
+
 def func(*args):
     print(args)
+
 
 class SimplestModel(models.Model):
     """
@@ -28,7 +30,8 @@ class ParentReference(models.Model):
     """
 
     name = models.CharField(max_length=100)
-    bar = models.ForeignKey('ChildReference', null=True, on_delete=func, db_constraint=False)
+    bar = models.ForeignKey('ChildReference', null=True, on_delete=func,
+                            db_constraint=False)
 
 
 class ChildReference(models.Model):
@@ -37,7 +40,8 @@ class ChildReference(models.Model):
     """
 
     name = models.CharField(max_length=100)
-    foo = models.ForeignKey(ParentReference, on_delete=func, db_constraint=False)
+    foo = models.ForeignKey(ParentReference, on_delete=func,
+                            db_constraint=False)
 
 
 class NotSaved(models.Model):
@@ -66,7 +70,8 @@ class Reporter(models.Model):
 class Article(models.Model):
     headline = models.CharField(max_length=100)
     publications = models.ManyToManyField(Publication)
-    reporter = models.ForeignKey(Reporter, null=True, on_delete=func, db_constraint=False)
+    reporter = models.ForeignKey(Reporter, null=True, on_delete=func,
+                                 db_constraint=False)
 
     def __unicode__(self):
         return self.headline
@@ -101,15 +106,18 @@ class Student(CommonInfo):
 
 # foreign keys
 class NullForeignKey(models.Model):
-    foobar = models.ForeignKey(SimplestModel, null=True, on_delete=func, db_constraint=False)
+    foobar = models.ForeignKey(SimplestModel, null=True, on_delete=func,
+                               db_constraint=False)
 
 
 class BlankForeignKey(models.Model):
-    foobar = models.ForeignKey(SimplestModel, blank=True, on_delete=func, db_constraint=False)
+    foobar = models.ForeignKey(SimplestModel, blank=True, on_delete=func,
+                               db_constraint=False)
 
 
 class StaticRelation(models.Model):
-    gak = models.ForeignKey(SimplestModel, on_delete=func, db_constraint=False)
+    gak = models.ForeignKey(SimplestModel, on_delete=func,
+                            db_constraint=False)
 
 
 class FileModel(models.Model):
@@ -131,4 +139,5 @@ class DBColumnModel(models.Model):
     """
     @see: #807
     """
-    bar = models.ForeignKey(SimplestModel, db_column='custom', on_delete=func, db_constraint=False)
+    bar = models.ForeignKey(SimplestModel, db_column='custom', on_delete=func,
+                            db_constraint=False)

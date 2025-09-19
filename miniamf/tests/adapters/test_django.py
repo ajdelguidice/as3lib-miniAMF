@@ -49,7 +49,7 @@ def init_django():
     """
     Bootstrap Django and initialise this module
     """
-    global django, create_test_db, destroy_test_db, setup_test_environment
+    global create_test_db, destroy_test_db, setup_test_environment
     global teardown_test_environment, adapter
 
     if not django:
@@ -773,13 +773,15 @@ class ReferenceTestCase(BaseTestCase, util.EncoderMixIn):
         # ensure the referenced attribute resolves
         foo.bar.foo
 
+        idchr = chr(ref_id).encode()
+
         self.assertEncoded(
             foo,
             (
                 b'\n\x0b\x01\x07bar',
                 b'\n\x0b\x01\x07foo',
-                b'\n\x00\x05id\x04%s' % chr(ref_id).encode(),
-                b'\tname\x06\x00\x01\x04\x04%s\x06\x06\x02\x01' % chr(ref_id).encode(),
+                b'\n\x00\x05id\x04%s' % idchr,
+                b'\tname\x06\x00\x01\x04\x04%s\x06\x06\x02\x01' % idchr,
             )
         )
 

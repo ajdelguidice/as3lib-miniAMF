@@ -25,7 +25,7 @@ class AbstractMessageTestCase(unittest.TestCase):
 
         try:
             repr(a)
-        except:
+        except Exception:
             raise
 
 

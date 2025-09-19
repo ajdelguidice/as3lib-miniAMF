@@ -49,9 +49,9 @@ class _BaseTestCase(unittest.TestCase):
 
         self.assertEqual(b.read_char(), 15)
 
-        l = b.read_ulong()
+        size = b.read_ulong()
 
-        self.assertEqual(l, b.remaining())
+        self.assertEqual(size, b.remaining())
         self.assertEqual(b.read(), xml)
 
     def check_amf3(self, bytes, xml):
@@ -59,9 +59,9 @@ class _BaseTestCase(unittest.TestCase):
 
         self.assertEqual(b.read_char(), 11)
 
-        l = b.read_uchar()
+        size = b.read_uchar()
 
-        self.assertEqual(l >> 1, b.remaining())
+        self.assertEqual(size >> 1, b.remaining())
         self.assertEqual(b.read(), xml)
 
     def fromstring(self, xml, **kwargs):

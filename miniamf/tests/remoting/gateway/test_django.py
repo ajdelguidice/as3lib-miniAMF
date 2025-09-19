@@ -33,7 +33,7 @@ def make_http_request(method, body=''):
 
     version = _django.VERSION[:2]
 
-    if hasattr(body,'encode'):
+    if hasattr(body, 'encode'):
         body = body.encode()
 
     if version <= (1, 2):
@@ -180,7 +180,7 @@ class DjangoGatewayTestCase(BaseTestCase):
 
         try:
             http_response = gw(http_request)
-        except:
+        except Exception:
             remoting.decode = self.old_method
 
             raise
@@ -209,7 +209,7 @@ class DjangoGatewayTestCase(BaseTestCase):
                     x, *args, **kwargs
                 )
                 self.assertRaises(x, gw, http_request)
-        except:
+        except Exception:
             remoting.decode = self.old_method
 
             raise

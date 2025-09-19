@@ -15,7 +15,9 @@ import unittest
 
 import miniamf
 from miniamf import amf3, util, xml
-from miniamf.tests.util import Spam, EncoderMixIn, DecoderMixIn, ClassCacheClearingTestCase
+# Flake complains so the next two lines had to be split
+from miniamf.tests.util import Spam, EncoderMixIn, DecoderMixIn
+from miniamf.tests.util import ClassCacheClearingTestCase
 
 
 class MockAlias(object):
@@ -1764,9 +1766,11 @@ class ByteArrayTestCase(unittest.TestCase):
 
         self.assertTrue(ba.compressed)
 
+
 class VectorTestCase(unittest.TestCase):
+
     def test_int_vector_encode_decode(self):
-        a = amf3.IntVector((-5,-4,-3,-2,-1,0,1,2,3,4,5))
+        a = amf3.IntVector((-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5))
 
         encoder = miniamf.get_encoder(miniamf.AMF3)
         encoder.writeElement(a)
@@ -1775,8 +1779,9 @@ class VectorTestCase(unittest.TestCase):
         decoded = miniamf.get_decoder(miniamf.AMF3, encoded).readElement()
 
         self.assertEqual(a, decoded)
+
     def test_uint_vector_encode_decode(self):
-        a = amf3.UintVector((0,1,2,3,4,5,6,7,8,9,10))
+        a = amf3.UintVector((0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
 
         encoder = miniamf.get_encoder(miniamf.AMF3)
         encoder.writeElement(a)
@@ -1785,8 +1790,10 @@ class VectorTestCase(unittest.TestCase):
         decoded = miniamf.get_decoder(miniamf.AMF3, encoded).readElement()
 
         self.assertEqual(a, decoded)
+
     def test_double_vector_encode_decode(self):
-        a = amf3.DoubleVector((-5.0,-4.0,-3.0,-2.0,-1.0,0.0,1.0,2.0,3.0,4.0,5.0))
+        a = amf3.DoubleVector((-5.0, -4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0,
+                               3.0, 4.0, 5.0))
 
         encoder = miniamf.get_encoder(miniamf.AMF3)
         encoder.writeElement(a)
@@ -1795,8 +1802,9 @@ class VectorTestCase(unittest.TestCase):
         decoded = miniamf.get_decoder(miniamf.AMF3, encoded).readElement()
 
         self.assertEqual(a, decoded)
+
     def test_object_vector_encode_decode(self):
-        a = amf3.ObjectVector(('foo','bar','baz','gak'))
+        a = amf3.ObjectVector(('foo', 'bar', 'baz', 'gak'))
         a.classname = 'str'
 
         encoder = miniamf.get_encoder(miniamf.AMF3)
@@ -1806,6 +1814,7 @@ class VectorTestCase(unittest.TestCase):
         decoded = miniamf.get_decoder(miniamf.AMF3, encoded).readElement()
 
         self.assertEqual(a, decoded)
+
 
 class ASDictionaryTestCase(unittest.TestCase):
     def test_int_vector_encode_decode(self):

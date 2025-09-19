@@ -17,7 +17,7 @@ try:
     from sqlalchemy.orm import sessionmaker, clear_mappers
 
     # SQLAlchemy 2.0 removed mapper (function) and relation (alias).
-    if __version__.startswith(('0.','1.')):
+    if __version__.startswith(('0.', '1.')):
         from sqlalchemy.orm import mapper, relation
     else:
         from sqlalchemy.orm import relationship as relation
@@ -45,13 +45,16 @@ class User(BaseObject):
         self.lazy_loaded = [LazyLoaded()]
 
 
-class Address(BaseObject):...
+class Address(BaseObject):
+    pass
 
 
-class LazyLoaded(BaseObject):...
+class LazyLoaded(BaseObject):
+    pass
 
 
-class AnotherLazyLoaded(BaseObject):...
+class AnotherLazyLoaded(BaseObject):
+    pass
 
 
 class BaseTestCase(unittest.TestCase):
@@ -249,6 +252,7 @@ class SATestCase(BaseTestCase):
         encoder = miniamf.get_encoder(miniamf.AMF3)
         encoder.writeElement(users)
         encoded = encoder.stream.getvalue()
+        #! _accel and non-_accel are not encoding this the same.
 
         decoded = miniamf.get_decoder(miniamf.AMF3, encoded).readElement()
 
@@ -293,7 +297,9 @@ class ClassAliasTestCase(BaseClassAliasTestCase):
         ])
 
         self.assertEqual(attrs['sa_key'], (None,))
-        self.assertEqual(attrs['sa_lazy'], ['lazy_loaded', 'another_lazy_loaded']) #! Unsure if this is correct. Was []
+
+        #! Unsure if this is correct. Was assertEqual(attrs['sa_lazy'], [])
+        self.assertEqual(attrs['sa_lazy'], ['lazy_loaded', 'another_lazy_loaded'])
 
     def test_get_attributes(self):
         u = self._build_obj()
@@ -305,13 +311,14 @@ class ClassAliasTestCase(BaseClassAliasTestCase):
         )
         attrs = self.alias.getEncodableAttributes(u)
 
+        #! Unsure if sa_lazy is correct. Was []
         self.assertEqual(attrs, {
             'addresses': u.addresses,
             'lazy_loaded': u.lazy_loaded,
             'another_lazy_loaded': [],
             'id': None,
             'name': 'test_user',
-            'sa_lazy': ['lazy_loaded', 'another_lazy_loaded'], #! Unsure if this is correct. Was []
+            'sa_lazy': ['lazy_loaded', 'another_lazy_loaded'],
             'sa_key': (None,)
         })
 
