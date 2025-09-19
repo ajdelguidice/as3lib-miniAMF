@@ -16,13 +16,13 @@ Python 2 support has been removed.
 <br>cElementTree can no longer be used for xml.
 <br>sol.save and sol.load actually the files they opened.
 <br>Replaces find_module with find_spec and spread load_module out into create_module and exec_module in util.imports.ModuleFinder
+<br>util.pure.BufferedByteStream is not a child of io.BytesIO. I saw no reason not to do this as python 2 is no longer a support target. Excursion has also been removed because it isn't needed anymore.
+<br>Remoting support has been partially brought back. The gateways currently available are wsgi and django. The adapters currently available are Django and SQLAlchemy.
 <br>A utcnow function has been added to miniamf.util because remoting support requires it
-<br>Remoting support has been partially brought back. The gateways currently available are wsgi and django.
-<br>SQLAlchemy support has been brought back. It currently fails one test when _accel modules aren't used.
 
 ## TODO
 Make cython modules work on python 3.9 and 3.10
 <br>Make cython modules optional
-<br>Fully bring back remoting support
+<br>Bring back twisted support. (I'm having a bit of trouble with this)
 <br>Add tests for AS3 vectors and dictionaries.
 <br>Fix Django adapters
