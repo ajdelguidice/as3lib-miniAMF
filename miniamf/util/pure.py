@@ -61,27 +61,7 @@ def _compile_packers(endian):
     }
 
 
-class Excursion(object):
-    """
-    Context manager which saves and restores the seek position of a filelike.
-    """
-    def __init__(self, fp):
-        if not hasattr(fp, "seek") or not hasattr(fp, "tell"):
-            raise TypeError("%r: not a seekable filelike" % fp)
-
-        self._fp = fp
-        self._pos = None
-
-    def __enter__(self):
-        self._pos = self._fp.tell()
-
-    def __exit__(self, *unused):
-        if self._pos is not None:
-            self._fp.seek(self._pos, 0)
-
-
-# Note: BytesIO in Python 2 is not a type, so it cannot be subclassed.
-class BufferedByteStream(object):
+class BufferedByteStream(io.BytesIO):
     """
     I am a C{BytesIO} type object containing byte data from the AMF stream.
 
@@ -107,33 +87,31 @@ class BufferedByteStream(object):
         """
 
         self.endian = endian
-        self._buf = io.BytesIO()
         self._len = 0
         self.append(data)
+        self._pos = None
 
     def __len__(self):
         if self._len is None:
-            with Excursion(self._buf):
-                self._buf.seek(0, 2)
-                self._len = self._buf.tell()
+            with self:
+                self.seek(0, 2)
+                self._len = self.tell()
 
         return self._len
 
-    def seek(self, offset, whence=0):
-        return self._buf.seek(offset, whence)
+    def __enter__(self):
+        self._pos = self.tell()
 
-    def tell(self):
-        return self._buf.tell()
+    def __exit__(self, *unused):
+        if self._pos is not None:
+            self.seek(self._pos, 0)
 
     def truncate(self, size=0):
         cur_pos = self.tell()
-        self._buf.truncate(size)
+        super().truncate(size)
         self._len = size
         if self._len < cur_pos:
             self.seek(self._len)
-
-    def getvalue(self):
-        return self._buf.getvalue()
 
     def read(self, length=-1):
         """
@@ -152,14 +130,14 @@ class BufferedByteStream(object):
                 "Attempted to read from the buffer but already at the end")
 
         if length == -1:
-            return self._buf.read()
+            return super().read()
         else:
-            if self._buf.tell() + length > len(self):
+            if self.tell() + length > len(self):
                 raise IOError(
                     "Attempted to read %d bytes from the buffer but only %d "
                     "remain" % (length, len(self) - self.tell())
                 )
-            return self._buf.read(length)
+            return super().read(length)
 
     def peek(self, size=1):
         """
@@ -184,9 +162,9 @@ class BufferedByteStream(object):
             size = self.remaining()
 
         peeked = b''
-        with Excursion(self._buf):
+        with self:
             while len(peeked) < size:
-                c = self._buf.read(1)
+                c = super().read(1)
                 if not c:
                     break
                 peeked += c
@@ -200,10 +178,8 @@ class BufferedByteStream(object):
 
         @since: 0.4
         """
-        rest = self._buf.read()
-        self._buf.seek(0, 0)
-        self._buf.truncate(0)
-        self._len = 0
+        rest = super().read()
+        self.truncate(0)
         self.append(rest)
 
     def remaining(self):
@@ -230,7 +206,7 @@ class BufferedByteStream(object):
 
         @param s: Raw bytes
         """
-        self._buf.write(s)
+        super().write(s)
         self._len = None
 
     def append(self, data):
@@ -250,29 +226,15 @@ class BufferedByteStream(object):
         if data is None:
             return
 
-        odata = data
-        if not isinstance(data, (bytes, str, bytearray)):
-            if hasattr(data, "getvalue"):
-                data = data.getvalue()
-            elif (hasattr(data, "read") and
-                  hasattr(data, "seek") and
-                  hasattr(data, "tell")):
-                with Excursion(data):
-                    data = data.read()
+        pos = self.tell()
+        self.seek(len(self))
 
-        if isinstance(data, str):
-            data = data.encode("utf-8")
-        elif isinstance(data, bytearray):
-            data = bytes(data)
+        if hasattr(data, 'getvalue'):
+            self.write_utf8_string(data.getvalue())
+        else:
+            self.write_utf8_string(data)
 
-        if not isinstance(data, bytes):
-            raise TypeError("expected a string or filelike, not %r"
-                            % odata)
-
-        with Excursion(self._buf):
-            self._buf.seek(0, 2)
-            self._buf.write(data)
-            self._len = self._buf.tell()
+        self.seek(pos)
 
     def __add__(self, other):
         new = BufferedByteStream(self)
