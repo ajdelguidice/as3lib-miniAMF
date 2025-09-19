@@ -7,10 +7,10 @@ Provides XML support.
 @since: 0.6
 """
 
-#: list of supported third party packages that support the C{etree}
-#: interface. At least enough for our needs anyway.
 from miniamf.util import get_module
 
+#: list of supported third party packages that support the C{etree}
+#: interface. At least enough for our needs anyway.
 ETREE_MODULES = ['defusedxml.ElementTree']
 
 #: A tuple of class/type objects that are used to represent XML objects.
