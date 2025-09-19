@@ -309,7 +309,7 @@ class BaseGateway(object):
         @raise TypeError: C{service} cannot be a scalar value.
         @raise TypeError: C{service} must be C{callable} or a module.
         """
-        if isinstance(service, (int,float,str)):
+        if isinstance(service, (int, float, str)):
             raise TypeError("Service cannot be a scalar value")
 
         if name is None:

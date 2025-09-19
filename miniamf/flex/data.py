@@ -11,7 +11,8 @@ Service.
 """
 
 import miniamf
-from miniamf.flex.messaging import AsyncMessage, AcknowledgeMessage, ErrorMessage
+from miniamf.flex.messaging import (AsyncMessage, AcknowledgeMessage,
+                                    ErrorMessage)
 
 #: Namespace for C{flex.data} messages.
 NAMESPACE = 'flex.data.messages'

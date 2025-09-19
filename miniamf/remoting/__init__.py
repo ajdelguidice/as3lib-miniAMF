@@ -177,7 +177,6 @@ class Envelope(object):
         for body in self.bodies:
             yield body[0], body[1]
 
-        #raise StopIteration
         return
 
     def __len__(self):

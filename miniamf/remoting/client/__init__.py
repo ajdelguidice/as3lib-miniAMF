@@ -103,7 +103,7 @@ class ServiceProxy(object):
                 if hasattr(response.body, 'raiseException'):
                     try:
                         response.body.raiseException()
-                    except:
+                    except Exception:
                         raise
                 else:
                     raise remoting.RemotingError

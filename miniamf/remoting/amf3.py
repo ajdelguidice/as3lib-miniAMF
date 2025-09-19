@@ -22,6 +22,7 @@ from miniamf.flex import messaging
 
 from io import StringIO
 
+
 class BaseServerError(miniamf.BaseError):
     """
     Base server error.
@@ -219,7 +220,7 @@ class RequestProcessor(object):
             body = self._getBody(amf_request, ro_request, **kwargs)
         except (KeyboardInterrupt, SystemExit):
             raise
-        except:
+        except Exception:
             fault = self.buildErrorResponse(ro_request)
 
             if hasattr(self.gateway, 'onServiceError'):

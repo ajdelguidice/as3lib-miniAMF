@@ -131,7 +131,7 @@ class DjangoGateway(gateway.BaseGateway):
             return http_response
         except (KeyboardInterrupt, SystemExit):
             raise
-        except:
+        except Exception:
             if self.logger:
                 self.logger.exception('Unexpected error decoding AMF request')
 
@@ -153,7 +153,7 @@ class DjangoGateway(gateway.BaseGateway):
             response = self.getResponse(http_request, request)
         except (KeyboardInterrupt, SystemExit):
             raise
-        except:
+        except Exception:
             if self.logger:
                 self.logger.exception('Error processing AMF request')
 
@@ -178,7 +178,7 @@ class DjangoGateway(gateway.BaseGateway):
                 logger=self.logger,
                 timezone_offset=timezone_offset
             )
-        except:
+        except Exception:
             if self.logger:
                 self.logger.exception('Error encoding AMF request')
 

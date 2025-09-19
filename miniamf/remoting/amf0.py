@@ -111,7 +111,7 @@ class RequestProcessor(object):
             )
         except (SystemExit, KeyboardInterrupt):
             raise
-        except:
+        except Exception:
             if self.logger:
                 self.logger.exception(
                     'Unexpected error while authenticating request %r',
@@ -135,7 +135,7 @@ class RequestProcessor(object):
             self.gateway.preprocessRequest(service_request, *args, **kwargs)
         except (SystemExit, KeyboardInterrupt):
             raise
-        except:
+        except Exception:
             if self.logger:
                 self.logger.exception(
                     'Unexpected error while pre-processing request %r',
@@ -156,7 +156,7 @@ class RequestProcessor(object):
             return response
         except (SystemExit, KeyboardInterrupt):
             raise
-        except:
+        except Exception:
             if self.logger:
                 self.logger.exception(
                     'Unexpected error while processing request %r',
@@ -168,8 +168,8 @@ class RequestProcessor(object):
 
 def build_fault(cls, e, tb, include_traceback=False):
     """
-    Builds a L{ErrorFault<miniamf.remoting.ErrorFault>} object based on the last
-    exception raised.
+    Builds a L{ErrorFault<miniamf.remoting.ErrorFault>} object based on the
+    last exception raised.
 
     If include_traceback is C{False} then the traceback will not be added to
     the L{remoting.ErrorFault}.

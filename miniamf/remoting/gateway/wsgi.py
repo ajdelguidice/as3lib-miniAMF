@@ -106,7 +106,7 @@ class WSGIGateway(gateway.BaseGateway):
             return [response]
         except (KeyboardInterrupt, SystemExit):
             raise
-        except:
+        except Exception:
             if self.logger:
                 self.logger.exception('Unexpected error decoding AMF request')
 
@@ -131,7 +131,7 @@ class WSGIGateway(gateway.BaseGateway):
             response = self.getResponse(request, environ)
         except (KeyboardInterrupt, SystemExit):
             raise
-        except:
+        except Exception:
             if self.logger:
                 self.logger.exception('Error processing AMF request')
 
@@ -158,7 +158,7 @@ class WSGIGateway(gateway.BaseGateway):
                 strict=self.strict,
                 timezone_offset=timezone_offset
             )
-        except:
+        except Exception:
             if self.logger:
                 self.logger.exception('Error encoding AMF request')
 
