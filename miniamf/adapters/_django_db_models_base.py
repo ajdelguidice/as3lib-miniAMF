@@ -14,33 +14,19 @@ import miniamf
 
 from itertools import chain
 
+from django.db import models
 from django.db.models.base import Model
 from django.db.models import fields
-from django.db.models.fields import files
-
-models = sys.modules['django.db.models']
-
-try:
-    from django.db.models import related
-
-    ForeignObjectRel = related.RelatedObject
-except ImportError:
-    # django 1.8+
-    from django.db.models.fields import related
-
-    ForeignObjectRel = related.ForeignObjectRel
+from django.db.models.fields import files, related
 
 
 # Model._meta.get_all_field_names was removed in django 1.10.
 def _get_all_field_names(meta):
-    try:
-        return meta.get_all_field_names()
-    except AttributeError:
-        return list(set(chain.from_iterable(
-            (f.name, f.attname) if hasattr(f, 'attname') else (f.name,)
-            for f in meta.get_fields()
-            if not (f.many_to_one and f.related_model is None)
-        )))
+    return list(set(chain.from_iterable(
+        (f.name, f.attname) if hasattr(f, 'attname') else (f.name,)
+        for f in meta.get_fields()
+        if not (f.many_to_one and f.related_model is None)
+    )))
 
 
 class DjangoReferenceCollection(dict):
@@ -96,23 +82,24 @@ class DjangoClassAlias(miniamf.ClassAlias):
 
         for name in _get_all_field_names(self.meta):
             x = self.meta.get_field(name)
-            if x.auto_created or isinstance(x, ForeignObjectRel):
+            if x.auto_created or isinstance(x, related.ForeignObjectRel):
                 continue
 
             if isinstance(x, files.FileField):
                 self.readonly_attrs.update([name])
-            if isinstance(x, models.ManyToManyField):
+            if isinstance(x, (models.ManyToManyField, models.ForeignKey)):
                 self.relations[name] = x
-            elif not isinstance(x, models.ForeignKey):
-                self.fields[name] = x
             else:
-                self.relations[name] = x
+                self.fields[name] = x
 
         parent_fields = []
 
         for field in self.meta.parents.values():
             parent_fields.append(field.attname)
-            del self.relations[field.name]
+            try:
+                del self.relations[field.name]
+            except KeyError:
+                continue
 
         self.exclude_attrs.update(parent_fields)
 
@@ -197,10 +184,8 @@ class DjangoClassAlias(miniamf.ClassAlias):
             attrs = {}
 
         for name, prop in self.fields.items():
-            if name not in attrs.keys():
-                continue
-
-            attrs[name] = self._encodeValue(prop, getattr(obj, name))
+            if name in attrs.keys():
+                attrs[name] = self._encodeValue(prop, getattr(obj, name))
 
         keys = attrs.keys()
 
@@ -209,7 +194,7 @@ class DjangoClassAlias(miniamf.ClassAlias):
                 del attrs[key]
 
         for name, relation in self.relations.items():
-            if '_%s_cache' % name in obj.__dict__:
+            if name in obj._state.fields_cache:
                 attrs[name] = getattr(obj, name)
 
             if isinstance(relation, models.ManyToManyField):
