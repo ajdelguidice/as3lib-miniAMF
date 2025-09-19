@@ -351,9 +351,11 @@ class ForeignKeyTestCase(BaseTestCase):
 
         a = models.Article.objects.filter(pk=article_id)[0]
 
-        self.assertFalse('_reporter_cache' in a.__dict__)
+        # This was changed from '_reporter_cache' in a.__dict to
+        # 'reporter' in a._state.fields_cache
+        self.assertFalse('reporter' in a._state.fields_cache)
         a.reporter
-        self.assertTrue('_reporter_cache' in a.__dict__)
+        self.assertTrue('reporter' in a._state.fields_cache)
 
         del a
 
@@ -370,7 +372,7 @@ class ForeignKeyTestCase(BaseTestCase):
             'publications': []
         })
 
-        self.assertFalse('_reporter_cache' in a.__dict__)
+        self.assertFalse('reporter' in a._state.fields_cache)
         self.assertEqual(
             miniamf.encode(a, encoding=miniamf.AMF3).getvalue(),
             b'\n\x0b\x01\x11headline\x06\x1dThis is a test\x05id\x04%s'
@@ -398,7 +400,7 @@ class ForeignKeyTestCase(BaseTestCase):
             'publications': []
         })
 
-        self.assertTrue('_reporter_cache' in a.__dict__)
+        self.assertTrue('reporter' in a._state.fields_cache)
         self.assertEqual(
             miniamf.encode(a, encoding=miniamf.AMF3).getvalue(),
             b'\n\x0b\x01\x11reporter\n\x0b\x01\x15first_name\x06\tJohn\x13'
