@@ -159,8 +159,8 @@ class Context(object):
         default Mini-AMF will not support potentially malicious XML documents
         - e.g. XXE.
     @ivar forbid_entities: Don't allow entities in XML documents (decode only).
-        By default Mini-AMF will not support potentially malicious XML documents
-        - e.g. XXE.
+        By default Mini-AMF will not support potentially malicious XML
+        documents - e.g. XXE.
     """
 
     def __init__(self, forbid_dtd=True, forbid_entities=True):

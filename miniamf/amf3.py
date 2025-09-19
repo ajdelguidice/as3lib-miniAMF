@@ -580,9 +580,11 @@ class ByteArray(util.BufferedByteStream, DataInput, DataOutput):
 
 class BaseVector(list):
     fixed = False
+
     def __repr__(self):
         return "%s(%s, %s)" % (self.__class__.__name__,
-            super(BaseVector, self).__repr__(), self._get_attributes())
+                               super(BaseVector, self).__repr__(),
+                               self._get_attributes())
 
     def _get_attributes(self):
         return 'fixed=%s' % repr(self.fixed)
@@ -590,31 +592,47 @@ class BaseVector(list):
 
 class IntVector(BaseVector):
     datatype = TYPE_INT_VECTOR
-    reader = lambda self, decoder: decoder.stream.read_long
-    writer = lambda self, encoder: encoder.stream.write_long
+
+    def reader(self, decoder):
+        return decoder.stream.read_long
+
+    def writer(self, encoder):
+        return encoder.stream.write_long
 
 
 class UintVector(BaseVector):
     datatype = TYPE_UINT_VECTOR
-    reader = lambda self, decoder: decoder.stream.read_ulong
-    writer = lambda self, encoder: encoder.stream.write_ulong
+
+    def reader(self, decoder):
+        return decoder.stream.read_ulong
+
+    def writer(self, encoder):
+        return encoder.stream.write_ulong
 
 
 class DoubleVector(BaseVector):
     datatype = TYPE_DOUBLE_VECTOR
-    reader = lambda self, decoder: decoder.stream.read_double
-    writer = lambda self, encoder: encoder.stream.write_double
+
+    def reader(self, decoder):
+        return decoder.stream.read_double
+
+    def writer(self, encoder):
+        return encoder.stream.write_double
 
 
 class ObjectVector(BaseVector):
     classname = None
     datatype = TYPE_OBJECT_VECTOR
-    reader = lambda self, decoder: decoder.readElement
-    writer = lambda self, encoder: encoder.writeElement
+
+    def reader(self, decoder):
+        return decoder.readElement
+
+    def writer(self, encoder):
+        return encoder.writeElement
 
     def _get_attributes(self):
         return (super(ObjectVector, self)._get_attributes() +
-            ', classname=' + repr(self.classname))
+                ', classname=' + repr(self.classname))
 
 
 class ASDictionary(dict):
@@ -622,7 +640,7 @@ class ASDictionary(dict):
 
     def __repr__(self):
         return '%s(%s)' % (self.__class__.__name__,
-            super(ASDictionary, self).__repr__())
+                           super(ASDictionary, self).__repr__())
 
 
 class ClassDefinition(object):
@@ -1132,7 +1150,8 @@ class Decoder(codec.Decoder):
 
         self.context.addObject(obj)
 
-        if class_def.encoding in (ObjectEncoding.EXTERNAL,ObjectEncoding.PROXY):
+        if class_def.encoding in (ObjectEncoding.EXTERNAL,
+                                  ObjectEncoding.PROXY):
             obj.__readamf__(DataInput(self))
 
             if self.use_proxies is True:
@@ -1236,7 +1255,7 @@ class Decoder(codec.Decoder):
         obj.fixed = self.stream.read_uchar()
 
         if isinstance(obj, ObjectVector):
-            self.stream.read(1) # Discard type because we know it is a string
+            self.stream.read(1)  # Discard type because we know it is a string
             obj.classname = self.readString()
 
         num_items = ref >> 1

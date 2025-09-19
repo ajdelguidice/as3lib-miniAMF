@@ -47,8 +47,10 @@ def get_timestamp(d):
 
     return calendar.timegm(d.utctimetuple()) + d.microsecond * 1e-6
 
+
 def utcnow():
     return datetime.datetime.now(datetime.UTC).replace(tzinfo=None)
+
 
 def get_datetime(secs):
     """

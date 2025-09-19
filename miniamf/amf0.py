@@ -258,9 +258,9 @@ class Decoder(codec.Decoder):
         """
         obj = []
         self.context.addObject(obj)
-        l = self.stream.read_ulong()
+        size = self.stream.read_ulong()
 
-        for i in range(l):
+        for i in range(size):
             obj.append(self.readElement())
 
         return obj
@@ -368,9 +368,9 @@ class Decoder(codec.Decoder):
         """
         Read UTF8 string.
         """
-        l = self.stream.read_ulong()
+        size = self.stream.read_ulong()
 
-        bytes = self.stream.read(l)
+        bytes = self.stream.read(size)
 
         return self.context.getStringForBytes(bytes)
 
@@ -484,12 +484,12 @@ class Encoder(codec.Encoder):
         if isinstance(s, str):
             s = self.context.getBytesForString(s)
 
-        l = len(s)
+        size = len(s)
 
-        if l > 0xffff:
-            self.stream.write_ulong(l)
+        if size > 0xffff:
+            self.stream.write_ulong(size)
         else:
-            self.stream.write_ushort(l)
+            self.stream.write_ushort(size)
 
         self.stream.write(s)
 
@@ -497,17 +497,17 @@ class Encoder(codec.Encoder):
         """
         Write a string of bytes to the data stream.
         """
-        l = len(s)
+        size = len(s)
 
-        if l > 0xffff:
+        if size > 0xffff:
             self.writeType(TYPE_LONGSTRING)
         else:
             self.writeType(TYPE_STRING)
 
-        if l > 0xffff:
-            self.stream.write_ulong(l)
+        if size > 0xffff:
+            self.stream.write_ulong(size)
         else:
-            self.stream.write_ushort(l)
+            self.stream.write_ushort(size)
 
         self.stream.write(s)
 

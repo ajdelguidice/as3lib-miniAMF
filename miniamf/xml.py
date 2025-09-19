@@ -28,7 +28,7 @@ def set_default_interface(etree):
     Sets the default interface that Mini-AMF will use to deal with XML entities
     (both objects and blobs).
     """
-    global types, ET, modules
+    global types, ET
 
     t = _get_etree_type(etree)
 
