@@ -16,7 +16,7 @@ Python 2 support has been removed.
 <br>cElementTree can no longer be used for xml.
 <br>sol.save and sol.load actually the files they opened.
 <br>Replaces find_module with find_spec and spread load_module out into create_module and exec_module in util.imports.ModuleFinder
-<br>util.pure.BufferedByteStream is not a child of io.BytesIO. I saw no reason not to do this as python 2 is no longer a support target. Excursion has also been removed because it isn't needed anymore.
+<br>util.pure.BufferedByteStream is now a child of io.BytesIO. I saw no reason not to do this as python 2 is no longer a support target. Excursion has also been removed because it isn't needed anymore.
 <br>Remoting support has been partially brought back. The gateways currently available are wsgi and django. The adapters currently available are Django and SQLAlchemy.
 <br>A utcnow function has been added to miniamf.util because remoting support requires it
 
