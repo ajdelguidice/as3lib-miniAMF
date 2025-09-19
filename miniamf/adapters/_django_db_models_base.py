@@ -43,7 +43,6 @@ def _get_all_field_names(meta):
         )))
 
 
-
 class DjangoReferenceCollection(dict):
     """
     This helper class holds a dict of klass to pk/objects loaded from the

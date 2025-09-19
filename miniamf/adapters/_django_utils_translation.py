@@ -12,11 +12,12 @@ C{django.utils.translation} adapter module.
 from django.utils.translation import gettext_lazy
 import miniamf
 
-def convert_lazy(l, encoder=None):
+
+def convert_lazy(lazy, encoder=None):
     try:
-        return str(l)
+        return str(lazy)
     except Exception as e:
-        raise ValueError('Don\'t know how to convert lazy value ' + repr(l)) from e
+        raise ValueError("Don't know how to convert lazy value " + repr(lazy)) from e
 
 
 miniamf.add_type(type(gettext_lazy('foo')), convert_lazy)
