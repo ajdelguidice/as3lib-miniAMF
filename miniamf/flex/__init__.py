@@ -49,7 +49,7 @@ class ArrayCollection(list):
                 self.extend(source)
 
     def __repr__(self):
-        return "<flex.messaging.io.ArrayCollection %s>" % list.__repr__(self) #! Can this just be super().__repr__() ?
+        return "<flex.messaging.io.ArrayCollection %s>" % super().__repr__()
 
     def __readamf__(self, input):
         data = input.readObject()
