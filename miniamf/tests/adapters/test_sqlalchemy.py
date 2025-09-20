@@ -252,7 +252,6 @@ class SATestCase(BaseTestCase):
         encoder = miniamf.get_encoder(miniamf.AMF3)
         encoder.writeElement(users)
         encoded = encoder.stream.getvalue()
-        #! _accel and non-_accel are not encoding this the same.
 
         decoded = miniamf.get_decoder(miniamf.AMF3, encoded).readElement()
 
@@ -298,7 +297,7 @@ class ClassAliasTestCase(BaseClassAliasTestCase):
 
         self.assertEqual(attrs['sa_key'], (None,))
 
-        #! Unsure if this is correct. Was assertEqual(attrs['sa_lazy'], [])
+        # Unsure if this is correct. Was assertEqual(attrs['sa_lazy'], [])
         self.assertEqual(attrs['sa_lazy'], ['lazy_loaded', 'another_lazy_loaded'])
 
     def test_get_attributes(self):
@@ -311,7 +310,7 @@ class ClassAliasTestCase(BaseClassAliasTestCase):
         )
         attrs = self.alias.getEncodableAttributes(u)
 
-        #! Unsure if sa_lazy is correct. Was []
+        # Unsure if sa_lazy is correct. Was []
         self.assertEqual(attrs, {
             'addresses': u.addresses,
             'lazy_loaded': u.lazy_loaded,
