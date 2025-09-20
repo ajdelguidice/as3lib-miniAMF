@@ -30,7 +30,7 @@ import miniamf
 from miniamf import util
 
 
-__all__ = ['Envelope', 'Request', 'Response', 'decode', 'encode']
+__all__ = ('Envelope', 'Request', 'Response', 'decode', 'encode')
 
 #: Succesful call.
 STATUS_OK = 0
@@ -91,17 +91,17 @@ class HeaderCollection(dict):
         """
         @raise KeyError: Unknown header found.
         """
-        if idx not in self:
-            raise KeyError("Unknown header %s" % str(idx))
+        if idx in self:
+            return idx in self.required
 
-        return idx in self.required
+        raise KeyError("Unknown header %s" % (idx,))
 
     def set_required(self, idx, value=True):
         """
         @raise KeyError: Unknown header found.
         """
         if idx not in self:
-            raise KeyError("Unknown header %s" % str(idx))
+            raise KeyError("Unknown header %s" % (idx,))
 
         if idx not in self.required and value:
             self.required.append(idx)
@@ -110,7 +110,7 @@ class HeaderCollection(dict):
         return len(self.keys())
 
 
-class Envelope(object):
+class Envelope(dict):
     """
     I wrap an entire request, encapsulating headers and bodies.
 
@@ -121,24 +121,22 @@ class Envelope(object):
     @ivar headers: AMF headers, a list of name, value pairs. Global to each
         request.
     @type headers: L{HeaderCollection}
-    @ivar bodies: A list of requests/response messages
-    @type bodies: C{list} containing tuples of the key of the request and the
-        L{Message}
+    @ivar self: A dict of requests/response messages
+    @type self: C{dict} containing the key of the request and the L{Message}
     """
 
     def __init__(self, amfVersion=None):
         self.amfVersion = amfVersion
         self.headers = HeaderCollection()
-        self.bodies = []
 
     def __repr__(self):
         r = "<Envelope amfVersion=%r>\n" % (self.amfVersion,)
 
         for h in self.headers:
-            r += " " + repr(h) + "\n"
+            r += " %r\n" % (h,)
 
         for request in iter(self):
-            r += " " + repr(request) + "\n"
+            r += " %r\n" % (request,)
 
         r += "</Envelope>"
 
@@ -148,59 +146,28 @@ class Envelope(object):
         if not isinstance(value, Message):
             raise TypeError("Message instance expected")
 
-        idx = 0
-        found = False
-
-        for body in self.bodies:
-            if name == body[0]:
-                self.bodies[idx] = (name, value)
-                found = True
-
-            idx = idx + 1
-
-        if not found:
-            self.bodies.append((name, value))
+        super().__setitem__(name, value)
 
         value.envelope = self
 
-    def __getitem__(self, name):
-        for body in self.bodies:
-            if name == body[0]:
-                return body[1]
-
-        raise KeyError("'%r'" % (name,))
-
     def __bool__(self):
-        return len(self.bodies) != 0 or len(self.headers) != 0
+        return len(self) != 0 or len(self.headers) != 0
 
     def __iter__(self):
-        for body in self.bodies:
-            yield body[0], body[1]
+        for body in self.items():
+            yield body
 
         return
 
-    def __len__(self):
-        return len(self.bodies)
-
     def keys(self):
-        return [body[0] for body in self.bodies]
-
-    def items(self):
-        return self.bodies
-
-    def __contains__(self, name):
-        for body in self.bodies:
-            if name == body[0]:
-                return True
-
-        return False
+        return list(super().keys())
 
     def __eq__(self, other):
         if isinstance(other, Envelope):
             return (
                 self.amfVersion == other.amfVersion and
                 self.headers == other.headers and
-                self.bodies == other.bodies
+                super().__eq__(other)
             )
 
         if hasattr(other, 'keys') and hasattr(other, 'items'):
@@ -331,15 +298,15 @@ class BaseFault(object):
     def __repr__(self):
         x = '%s level=%s' % (self.__class__.__name__, self.level)
 
-        if self.code not in ('', None):
-            x += ' code=%s' % repr(self.code)
-        if self.type not in ('', None):
-            x += ' type=%s' % repr(self.type)
-        if self.description not in ('', None):
-            x += ' description=%s' % repr(self.description)
+        if self.code not in {'', None}:
+            x += ' code=%r' % (self.code,)
+        if self.type not in {'', None}:
+            x += ' type=%r' % (self.type,)
+        if self.description not in {'', None}:
+            x += ' description=%r' % (self.description,)
 
-        if self.details not in ('', None):
-            x += '\nTraceback:\n%s' % (repr(self.details),)
+        if self.details not in {'', None}:
+            x += '\nTraceback:\n%r' % (self.details,)
 
         return x
 
@@ -584,10 +551,7 @@ def get_fault(data):
     except KeyError:
         level = 'error'
 
-    e = {}
-
-    for x, y in data.items():
-        e[x] = y
+    e = {x: y for x, y in data.items()}
 
     return get_fault_class(level, **e)(**e)
 
