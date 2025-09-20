@@ -1029,9 +1029,11 @@ class Decoder(codec.Decoder):
 
         if key == '':
             # integer indexes only -> python list
-            result = [self.readElement() for i in range(size)]
-
+            result = []
             self.context.addObject(result)
+
+            for i in range(size):
+                result.append(self.readElement())
 
             return result
 
