@@ -17,7 +17,8 @@ def convert_lazy(lazy, encoder=None):
     try:
         return str(lazy)
     except Exception as e:
-        raise ValueError("Don't know how to convert lazy value " + repr(lazy)) from e
+        raise ValueError("Don't know how to convert lazy value " +
+                         repr(lazy)) from e
 
 
 miniamf.add_type(type(gettext_lazy('foo')), convert_lazy)

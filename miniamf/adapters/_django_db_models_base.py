@@ -9,7 +9,6 @@ C{django.db.models} adapter module.
 """
 
 import datetime
-import sys
 import miniamf
 
 from itertools import chain
