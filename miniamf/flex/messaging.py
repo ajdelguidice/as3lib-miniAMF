@@ -18,14 +18,14 @@ import miniamf.util
 from miniamf import amf3
 
 
-__all__ = [
+__all__ = (
     'RemotingMessage',
     'CommandMessage',
     'AcknowledgeMessage',
     'ErrorMessage',
     'AbstractMessage',
     'AsyncMessage'
-]
+)
 
 NAMESPACE = 'flex.messaging.messages'
 
@@ -132,7 +132,7 @@ class AbstractMessage(object):
         """
         obj = input.readObject()
 
-        if attr in ['timestamp', 'timeToLive']:
+        if attr in {'timestamp', 'timeToLive'}:
             return miniamf.util.get_datetime(obj / 1000.0)
 
         return obj
@@ -146,9 +146,9 @@ class AbstractMessage(object):
         if not obj:
             return obj
 
-        if attr in ['timestamp', 'timeToLive']:
+        if attr in {'timestamp', 'timeToLive'}:
             return miniamf.util.get_timestamp(obj) * 1000.0
-        elif attr in ['clientId', 'messageId']:
+        elif attr in {'clientId', 'messageId'}:
             if isinstance(obj, uuid.UUID):
                 return None
 

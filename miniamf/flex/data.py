@@ -18,12 +18,12 @@ from miniamf.flex.messaging import (AsyncMessage, AcknowledgeMessage,
 NAMESPACE = 'flex.data.messages'
 
 
-__all__ = [
+__all__ = (
     'DataMessage',
     'SequencedMessage',
     'PagedMessage',
     'DataErrorMessage'
-]
+)
 
 
 class DataMessage(AsyncMessage):

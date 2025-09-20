@@ -11,7 +11,7 @@ Compatibility classes/functions for Adobe Flex.
 
 import miniamf
 
-__all__ = ['ArrayCollection', 'ObjectProxy']
+__all__ = ('ArrayCollection', 'ObjectProxy')
 
 
 class ArrayCollection(list):
@@ -56,11 +56,10 @@ class ArrayCollection(list):
 
         if hasattr(data, 'source'):
             data = data.source
-        else:
-            if not hasattr(data, '__iter__'):
-                raise miniamf.DecodeError(
-                    'Unable to read a list when decoding ArrayCollection'
-                )
+        elif not hasattr(data, '__iter__'):
+            raise miniamf.DecodeError(
+                'Unable to read a list when decoding ArrayCollection'
+            )
 
         self.extend(data)
 
@@ -138,8 +137,7 @@ class ArrayCollection(list):
 
         @since: 0.4
         """
-        while len(self) > 0:
-            self.pop()
+        self.clear()
 
     def removeItemAt(self, index):
         """
