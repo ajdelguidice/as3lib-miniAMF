@@ -102,17 +102,17 @@ class ServiceWrapper(object):
                 func = getattr(service, method)
             except AttributeError:
                 raise UnknownServiceMethodError(
-                    "Unknown method %s" % str(method))
+                    "Unknown method %s" % (method,))
 
             if not callable(func):
                 raise InvalidServiceMethodError(
-                    "Service method %s must be callable" % str(method))
+                    "Service method %s must be callable" % (method,))
 
             return func
 
         if not callable(service):
             raise UnknownServiceMethodError(
-                "Unknown method %s" % str(self.service))
+                "Unknown method %s" % (self.service,))
 
         return service
 
@@ -143,10 +143,8 @@ class ServiceWrapper(object):
         for name in dir(self.service):
             method = getattr(self.service, name)
 
-            if name.startswith('_') or not callable(method):
-                continue
-
-            callables[name] = method
+            if not name.startswith('_') or  callable(method):
+                callables[name] = method
 
         return callables
 

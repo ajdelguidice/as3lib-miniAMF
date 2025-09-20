@@ -15,11 +15,7 @@ import miniamf
 from miniamf import remoting
 from miniamf.remoting import gateway
 
-
-django = __import__('django.http')
-http = django.http
-conf = __import__('django.conf')
-conf = conf.conf
+from django import http, conf
 
 __all__ = ['DjangoGateway']
 
