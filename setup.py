@@ -42,7 +42,10 @@ class Build(build_ext):
         self.finalize_options()
         super().run()
 
-setup(
-    ext_modules=[Extension('miniamf.x',['x.c'],optional=True)],
-    cmdclass={'build_ext': Build}
-)
+if os.environ.get('MINIAMF_NO_CYTHON',"0") == "1":
+    setup()
+else:
+    setup(
+        ext_modules=[Extension('miniamf.x',['x.c'],optional=True)],
+        cmdclass={'build_ext': Build}
+    )

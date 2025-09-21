@@ -10,7 +10,7 @@ While I am trying to bring back the remoting stuff, the stuff listed below will 
 ## Change Overview
 Python 2 support has been removed.
 <br>The cython modules now compile properly and pass all non-remoting tests.
-<br>The cython modules are no longer optional. I tried to make them optional but I couldn't figure out how to without breaking other stuff.
+<br>Installing this library without the cython modules is supported but it currently breaks things. Set the environment variable 'MINIAMF_NO_CYTHON' to 1 to disable them.
 <br>Use importlib instead of pkg_resources.
 <br>Use datetime.fromtimestamp instead of datetime.utcfromtimestamp.
 <br>cElementTree can no longer be used for xml.
@@ -22,7 +22,7 @@ Python 2 support has been removed.
 
 ## TODO
 Test cython modules on 3.9
-<br>Make cython modules optional
+<br>Fix library when cython modules are not installed.
 <br>Bring back twisted support. (I'm having a bit of trouble with this)
 <br>Add tests for AS3 vectors and dictionaries.
 <br>Fix Django adapters
