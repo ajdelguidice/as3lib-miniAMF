@@ -17,12 +17,34 @@ cdef extern from "stdio.h":
     int SIZEOF_LONG
 
 cdef extern from "Python.h":
+    int PyByteArray_Check(object)
+    char* PyByteArray_AsString(object)
+{{if PY_MAJOR_VERSION > 2}}
+  {{if PY_MINOR_VERSION < 11}}
+    int _PyFloat_Pack4(double, unsigned char *, int) except? -1
+    int _PyFloat_Pack8(double, unsigned char *, int) except? -1
+    double _PyFloat_Unpack4(const unsigned char *, int) except? -1.0
+    double _PyFloat_Unpack8(const unsigned char *, int) except? -1.0
+
+cdef int PyFloat_Pack4(double x, char *p, int le):
+    return _PyFloat_Pack4(x, <unsigned char *>p, le)
+
+cdef int PyFloat_Pack8(double x, char *p, int le):
+    return _PyFloat_Pack8(x, <unsigned char *>p, le)
+
+cdef double PyFloat_Unpack4(const char *p, int le):
+    return _PyFloat_Unpack4(<const unsigned char *>p, le)
+
+cdef double PyFloat_Unpack8(const char *p, int le):
+    return _PyFloat_Unpack8(<const unsigned char *>p, le)
+  {{else}}
     int PyFloat_Pack4(double, char *, int) except? -1
     int PyFloat_Pack8(double, char *, int) except? -1
     double PyFloat_Unpack4(const char *, int) except? -1.0
     double PyFloat_Unpack8(const char *, int) except? -1.0
-    int PyByteArray_Check(object)
-    char* PyByteArray_AsString(object)
+  {{endif}}
+{{endif}}
+
 
 # module constant declarations
 cdef char ENDIAN_NETWORK = "!"
