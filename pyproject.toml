@@ -32,7 +32,7 @@ twisted = ["Twisted"]
 
 
 [tool.setuptools]
-packages=["miniamf", "miniamf._accel", "miniamf.adapters", "miniamf.util"]
+packages=["miniamf", "miniamf._accel", "miniamf.adapters", "miniamf.util", "miniamf.flex", "miniamf.remoting", "miniamf.remoting.client", "miniamf.remoting.gateway"]
 
 [tool.tox]
 requires = ["tox"]
