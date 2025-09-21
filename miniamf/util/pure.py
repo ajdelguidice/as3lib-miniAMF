@@ -88,7 +88,20 @@ class BufferedByteStream(io.BytesIO):
 
         self.endian = endian
         self._len = 0
-        self.append(data)
+
+        if data is None:...
+        elif isinstance(data, (str, bytes)):
+            self.append(data)
+        elif hasattr(data, 'getvalue'):
+            self.append(data.getvalue())
+        elif hasattr(data, 'read') and hasattr(data, 'seek') and hasattr(data, 'tell'):
+            old_pos = data.tell()
+            data.seek(0)
+            self.append(data.read())
+            data.seek(old_pos)
+        else:
+            raise TypeError("Unable to coerce buf->BufferedByteStream")
+
         self._pos = None
 
     def __len__(self):
