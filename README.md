@@ -12,13 +12,12 @@ Python 2 support has been removed.
 <br>The cython modules now compile properly and pass all non-remoting tests.
 <br>Installing this library without the cython modules is supported but it currently breaks things. Set the environment variable 'MINIAMF_NO_CYTHON' to 1 to disable them.
 <br>Use importlib instead of pkg_resources.
-<br>Use datetime.fromtimestamp instead of datetime.utcfromtimestamp.
 <br>cElementTree can no longer be used for xml.
 <br>sol.save and sol.load actually the files they opened.
 <br>Replaces find_module with find_spec and spread load_module out into create_module and exec_module in util.imports.ModuleFinder
 <br>util.pure.BufferedByteStream is now a child of io.BytesIO. I saw no reason not to do this as python 2 is no longer a support target. Excursion has also been removed because it isn't needed anymore.
 <br>Remoting support has been partially brought back. The gateways currently available are wsgi and django. The adapters currently available are Django and SQLAlchemy.
-<br>A utcnow function has been added to miniamf.util because remoting support requires it
+<br>The functions utcnow and utcfromtimestamp have been added to miniamf.util because miniamf relies on their behaviour.
 
 ## TODO
 Test cython modules on 3.9
