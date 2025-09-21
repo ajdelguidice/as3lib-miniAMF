@@ -36,7 +36,7 @@ packages=["miniamf", "miniamf._accel", "miniamf.adapters", "miniamf.util", "mini
 
 [tool.tox]
 requires = ["tox"]
-env_list = ["py3","py13","py12","py11"]
+env_list = ["py3","py312","py311","py310"]
 skip_missing_interpreters = true
 
 [tool.tox.env_run_base]
