@@ -66,10 +66,7 @@ def decode(stream, strict=True):
 
     values = {}
 
-    while 1:
-        if stream.at_eof():
-            break
-
+    while not stream.at_eof():
         name = decoder.readString()
         value = decoder.readElement()
 
