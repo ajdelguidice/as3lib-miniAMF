@@ -78,7 +78,6 @@ cdef double system_neginf
 cdef object miniamf_NaN = PyFloat_FromDouble(1e300000 / -1e300000)
 cdef object miniamf_NegInf = PyFloat_FromDouble(-1e300000)
 cdef object miniamf_PosInf = PyFloat_FromDouble(1e300000)
-cdef object empty_unicode = u''
 
 @cython.profile(False)
 cdef int _memcpy_ensure_endian(void *src, void *dest, unsigned int size) nogil:
@@ -746,7 +745,7 @@ cdef class cBufferedByteStream(object):
         cdef object ret
 
         if l == 0:
-            return empty_unicode
+            return u''
 
         self.read(&buf, l)
         ret = PyUnicode_DecodeUTF8(buf, l, 'strict')
@@ -762,7 +761,7 @@ cdef class cBufferedByteStream(object):
         """
         cdef object encoded_string = obj
         cdef char *buf = NULL
-        cdef Py_ssize_t l = -1
+        cdef Py_ssize_t size = -1
 
         if PyUnicode_Check(obj):
             encoded_string = PyUnicode_AsUTF8String(obj)
@@ -771,8 +770,8 @@ cdef class cBufferedByteStream(object):
         elif not PyBytes_Check(obj):
             raise TypeError('value must be Unicode or str')
 
-        PyBytes_AsStringAndSize(encoded_string, &buf, &l)
-        self.write(buf, l)
+        PyBytes_AsStringAndSize(encoded_string, &buf, &size)
+        self.write(buf, size)
 
         return 0
 
@@ -931,16 +930,12 @@ cdef class BufferedByteStream(cBufferedByteStream):
     """
 
     def __init__(self, buf=None, min_buf_size=512):
-        cdef Py_ssize_t i
-        cdef cBufferedByteStream x
-
         self.min_buf_size = min_buf_size
 
         if buf is None:
             pass
         elif isinstance(buf, cBufferedByteStream):
-            x = <cBufferedByteStream>buf
-            self.write(x.getvalue())
+            self.write((<cBufferedByteStream>buf).getvalue())
         elif isinstance(buf, (str, unicode)):
             self.write(PyBytes_FromString(buf))
         elif isinstance(buf, bytes):
