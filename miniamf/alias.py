@@ -88,10 +88,10 @@ class ClassAlias(object):
                 " no __writeamf__ attribute was found for %r" % (k,)
             )
 
-        if not hasattr(k.__readamf__, '__call__'):
+        if not callable(k.__readamf__):
             raise TypeError("%s.__readamf__ must be callable" % (k.__name__,))
 
-        if not hasattr(k.__writeamf__, '__call__'):
+        if not callable(k.__writeamf__):
             raise TypeError("%s.__writeamf__ must be callable" % (k.__name__,))
 
     def compile(self):
@@ -347,15 +347,13 @@ class ClassAlias(object):
         @since: 0.4
         """
         # Check for __new__ support.
-        if hasattr(klass, '__new__') and hasattr(klass.__new__, '__call__'):
+        if hasattr(klass, '__new__') and callable(klass.__new__):
             # Should be good to go.
             return
 
         # Check that the constructor of the class doesn't require any additonal
         # arguments.
-        if not (
-            hasattr(klass, '__init__') and hasattr(klass.__init__, '__call__')
-        ):
+        if not hasattr(klass, '__init__') and callable(klass.__init__):
             return
 
         klass_func = klass.__init__.__func__
