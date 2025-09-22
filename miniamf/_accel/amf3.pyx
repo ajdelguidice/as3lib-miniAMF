@@ -161,10 +161,10 @@ cdef class Context(codec.Context):
         codec.Context.clear(self)
 
         self.strings.clear()
-        self.proxied_objects.clear()
-
         self.classes = {}
         self.class_ref = {}
+        self.proxied_objects.clear()
+
         self.class_idx = 0
 
         return 0
@@ -1121,12 +1121,12 @@ cdef class Encoder(codec.Encoder):
             self.writeElement(value)
 
     cdef int writeXML(self, obj) except -1:
+        cdef Py_ssize_t ref = self.context.getObjectReference(obj)
+
         self.writeType(TYPE_XMLSTRING)
 
-        i = self.context.getObjectReference(obj)
-
-        if i != -1:
-            _encode_integer(self.stream, i << 1)
+        if ref != -1:
+            _encode_integer(self.stream, ref << 1)
 
             return 0
 
@@ -1137,10 +1137,10 @@ cdef class Encoder(codec.Encoder):
         if not PyUnicode_CheckExact(s):
             raise TypeError('Expected string from xml serialization')
 
-        i = PyUnicode_GetLength(s)
+        ref = PyUnicode_GetLength(s)
 
-        _encode_integer(self.stream, (i << 1) | REFERENCE_BIT)
-        self.stream.write(PyUnicode_AsUTF8String(s), i)
+        _encode_integer(self.stream, (ref << 1) | REFERENCE_BIT)
+        self.stream.write(PyUnicode_AsUTF8String(s), ref)
 
         return 0
 
