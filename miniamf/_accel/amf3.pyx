@@ -25,24 +25,24 @@ except ImportError:
     zlib = None
 
 
-cdef char TYPE_UNDEFINED = '\x00'
-cdef char TYPE_NULL = '\x01'
-cdef char TYPE_BOOL_FALSE = '\x02'
-cdef char TYPE_BOOL_TRUE = '\x03'
-cdef char TYPE_INTEGER = '\x04'
-cdef char TYPE_NUMBER = '\x05'
-cdef char TYPE_STRING = '\x06'
-cdef char TYPE_XML = '\x07'
-cdef char TYPE_DATE = '\x08'
-cdef char TYPE_ARRAY = '\x09'
-cdef char TYPE_OBJECT = '\x0A'
-cdef char TYPE_XMLSTRING = '\x0B'
-cdef char TYPE_BYTEARRAY = '\x0C'
-cdef char TYPE_INT_VECTOR = '\x0D'
-cdef char TYPE_UINT_VECTOR = '\x0E'
+cdef char TYPE_UNDEFINED     = '\x00'
+cdef char TYPE_NULL          = '\x01'
+cdef char TYPE_BOOL_FALSE    = '\x02'
+cdef char TYPE_BOOL_TRUE     = '\x03'
+cdef char TYPE_INTEGER       = '\x04'
+cdef char TYPE_NUMBER        = '\x05'
+cdef char TYPE_STRING        = '\x06'
+cdef char TYPE_XML           = '\x07'
+cdef char TYPE_DATE          = '\x08'
+cdef char TYPE_ARRAY         = '\x09'
+cdef char TYPE_OBJECT        = '\x0A'
+cdef char TYPE_XMLSTRING     = '\x0B'
+cdef char TYPE_BYTEARRAY     = '\x0C'
+cdef char TYPE_INT_VECTOR    = '\x0D'
+cdef char TYPE_UINT_VECTOR   = '\x0E'
 cdef char TYPE_DOUBLE_VECTOR = '\x0F'
 cdef char TYPE_OBJECT_VECTOR = '\x10'
-cdef char TYPE_DICTIONARY = '\x11'
+cdef char TYPE_DICTIONARY    = '\x11'
 
 cdef unsigned int REFERENCE_BIT = 0x01
 cdef char REF_CHAR = '\x01'
@@ -53,22 +53,21 @@ cdef long MAX_29B_INT = 0x0FFFFFFF
 #: The minimum that can be represented by an signed 29 bit integer.
 cdef long MIN_29B_INT = -0x10000000
 
-cdef int OBJECT_ENCODING_STATIC = 0x00
+cdef int OBJECT_ENCODING_STATIC   = 0x00
 cdef int OBJECT_ENCODING_EXTERNAL = 0x01
-cdef int OBJECT_ENCODING_DYNAMIC = 0x02
-cdef int OBJECT_ENCODING_PROXY = 0x03
+cdef int OBJECT_ENCODING_DYNAMIC  = 0x02
+cdef int OBJECT_ENCODING_PROXY    = 0x03
 
-cdef object ByteArrayType = amf3.ByteArray
-cdef object DataInput = amf3.DataInput
-cdef object DataOutput = amf3.DataOutput
-cdef object VectorType = amf3.BaseVector
-cdef object IntVectorType = amf3.IntVector
-cdef object UintVectorType = amf3.UintVector
+cdef object ByteArrayType    = amf3.ByteArray
+cdef object DataInput        = amf3.DataInput
+cdef object DataOutput       = amf3.DataOutput
+cdef object VectorType       = amf3.BaseVector
+cdef object IntVectorType    = amf3.IntVector
+cdef object UintVectorType   = amf3.UintVector
 cdef object DoubleVectorType = amf3.DoubleVector
 cdef object ObjectVectorType = amf3.ObjectVector
-cdef object DictionaryType = amf3.ASDictionary
-cdef unicode empty_unicode = u''
-cdef object undefined = miniamf.Undefined
+cdef object DictionaryType   = amf3.ASDictionary
+cdef object undefined        = miniamf.Undefined
 
 
 cdef class ClassDefinition(object):
@@ -302,7 +301,7 @@ cdef class Decoder(codec.Decoder):
         ref >>= 1
 
         if ref == 0:
-            return empty_unicode
+            return u''
 
         cdef char *buf = NULL
 
