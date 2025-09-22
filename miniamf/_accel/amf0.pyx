@@ -213,14 +213,14 @@ cdef class Decoder(codec.Decoder):
         return d
 
     cdef object readLongString(self, bint bytes=0):
-        cdef unsigned long size = 0
+        cdef Py_ssize_t size = 0
         cdef char *buf = NULL
         cdef object s
 
         size = self.stream.read_ulong()
 
         self.stream.read(&buf, size)
-        s = PyBytes_FromStringAndSize(buf, <Py_ssize_t>size)
+        s = PyBytes_FromStringAndSize(buf, size)
 
         if bytes:
             return s
