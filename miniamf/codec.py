@@ -487,11 +487,7 @@ class Encoder(_Codec):
         """
         Iterates over a generator object and encodes all that is returned.
         """
-        while True:
-            try:
-                self.writeElement(next(gen))
-            except StopIteration:
-                break
+        [self.writeElement(i) for i in gen]
 
     def getTypeFunc(self, data):
         """
