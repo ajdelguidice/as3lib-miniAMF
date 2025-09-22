@@ -22,8 +22,7 @@ The remoting stuff below will not be brought back:
 - Google AppEngine (SDK no longer easily accessible)
 
 ## TODO
-Test cython modules on 3.9
-<br>Fix library when cython modules are not installed.
+Fix library when cython modules are not installed.
 <br>Bring back twisted support. (I'm having a bit of trouble with this)
 <br>Add tests for AS3 vectors and dictionaries.
 <br>Fix Django adapters
