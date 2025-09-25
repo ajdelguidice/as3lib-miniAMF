@@ -7,6 +7,7 @@ Remoting client implementation.
 @since: 0.1
 """
 
+from io import BytesIO
 from gzip import GzipFile
 from urllib.error import URLError
 from urllib.parse import urlparse
@@ -14,8 +15,6 @@ from urllib.request import Request, urlopen
 
 import miniamf
 from miniamf import remoting
-
-from io import BytesIO
 
 
 #: Default user agent is `MiniAMF/x.x(.x)`.
@@ -473,10 +472,9 @@ class RemotingService(object):
             self.logger.debug('Read %d bytes for the response', len(bytes))
 
         if content_encoding and content_encoding.strip().lower() == 'gzip':
-            compressedstream = BytesIO(bytes)
-            gzipper = GzipFile(fileobj=compressedstream, mode="rb")
-            bytes = gzipper.read()
-            gzipper.close()
+            with BytesIO(bytes) as compressedstream:
+                with GzipFile(fileobj=compressedstream, mode="rb") as gzipper:
+                    bytes = gzipper.read()
 
         response = remoting.decode(bytes, strict=self.strict)
 
