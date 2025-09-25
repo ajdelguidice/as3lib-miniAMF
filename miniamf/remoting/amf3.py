@@ -15,12 +15,12 @@ import calendar
 import time
 import uuid
 import sys
+import traceback
+from io import StringIO
 
 import miniamf
 from miniamf import remoting
 from miniamf.flex import messaging
-
-from io import StringIO
 
 
 class BaseServerError(miniamf.BaseError):
@@ -58,7 +58,6 @@ def generate_error(request, cls, e, tb, include_traceback=False):
     Builds an L{ErrorMessage<miniamf.flex.messaging.ErrorMessage>} based on the
     last traceback and the request that was sent.
     """
-    import traceback
 
     if hasattr(cls, '_amf_code'):
         code = cls._amf_code

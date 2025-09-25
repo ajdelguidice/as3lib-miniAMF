@@ -14,6 +14,7 @@ import traceback
 
 import miniamf
 from miniamf import remoting, util
+from miniamf.remoting import amf3, amf0
 
 try:
     from platform import python_implementation
@@ -391,12 +392,8 @@ class BaseGateway(object):
         @type request: L{Request<remoting.Request>}
         """
         if request.target == 'null' or not request.target:
-            from miniamf.remoting import amf3
-
             return amf3.RequestProcessor(self)
         else:
-            from miniamf.remoting import amf0
-
             return amf0.RequestProcessor(self)
 
     def getResponse(self, amf_request):

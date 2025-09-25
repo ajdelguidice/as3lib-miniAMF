@@ -7,17 +7,13 @@ Remoting client implementation.
 @since: 0.1
 """
 
+from gzip import GzipFile
 from urllib.error import URLError
 from urllib.parse import urlparse
 from urllib.request import Request, urlopen
 
 import miniamf
 from miniamf import remoting
-
-try:
-    from gzip import GzipFile
-except ImportError:
-    GzipFile = False
 
 from io import BytesIO
 
@@ -477,13 +473,8 @@ class RemotingService(object):
             self.logger.debug('Read %d bytes for the response', len(bytes))
 
         if content_encoding and content_encoding.strip().lower() == 'gzip':
-            if not GzipFile:
-                raise remoting.RemotingError(
-                    'Decompression of Content-Encoding: %s not available.' % (
-                        content_encoding,))
-
             compressedstream = BytesIO(bytes)
-            gzipper = GzipFile(fileobj=compressedstream)
+            gzipper = GzipFile(fileobj=compressedstream, mode="rb")
             bytes = gzipper.read()
             gzipper.close()
 
