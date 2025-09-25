@@ -587,7 +587,7 @@ class BaseVector(list):
                                self._get_attributes())
 
     def _get_attributes(self):
-        return 'fixed=%s' % repr(self.fixed)
+        return 'fixed=%r' % (self.fixed,)
 
 
 class IntVector(BaseVector):
@@ -632,7 +632,7 @@ class ObjectVector(BaseVector):
 
     def _get_attributes(self):
         return (super(ObjectVector, self)._get_attributes() +
-                ', classname=' + repr(self.classname))
+                ', classname=%r' % (self.classname,))
 
 
 class ASDictionary(dict):
@@ -1059,7 +1059,7 @@ class Decoder(codec.Decoder):
 
         # Set weak-keys property
         weak_keys = self.stream.read_uchar()
-        assert weak_keys in (0x00, 0x01)
+        assert weak_keys in {0x00, 0x01}
         result.weak_keys = bool(weak_keys)
 
         # Read key-value pairs
@@ -1114,11 +1114,8 @@ class Decoder(codec.Decoder):
             obj[attr] = self.readElement()
 
     def _readDynamic(self, class_def, obj):
-        attr = self.readString()
-
-        while attr:
+        while (attr := self.readString()):
             obj[attr] = self.readElement()
-            attr = self.readString()
 
     def readObject(self):
         """
@@ -1142,9 +1139,7 @@ class Decoder(codec.Decoder):
 
             return obj
 
-        ref >>= 1
-
-        class_def = self._getClassDefinition(ref)
+        class_def = self._getClassDefinition(ref >> 1)
         alias = class_def.alias
 
         obj = alias.createInstance(codec=self)

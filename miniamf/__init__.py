@@ -473,11 +473,11 @@ def _get_amf_module(version, use_ext):
     module_name = '.amf%s' % (version,)
 
     if use_ext is None:
-        packages = ['miniamf._accel', 'miniamf']
+        packages = ('miniamf._accel', 'miniamf')
     elif use_ext:
-        packages = ['miniamf._accel']
+        packages = ('miniamf._accel',)
     else:
-        packages = ['miniamf']
+        packages = ('miniamf',)
 
     exc = None
     for pkg in packages:
@@ -538,12 +538,10 @@ def blaze_loader(alias):
         ISmallMessage.html>}
     @since: 0.5
     """
-    if alias not in ('DSC', 'DSK'):
-        return
+    if alias in {'DSC', 'DSK'}:
+        import miniamf.flex.messaging  # noqa
 
-    import miniamf.flex.messaging  # noqa
-
-    return CLASS_CACHE[alias]
+        return CLASS_CACHE[alias]
 
 
 def flex_loader(alias):
@@ -706,7 +704,7 @@ def remove_error_class(klass):
             raise ValueError('Class %s is not registered' % (klass,))
 
     if not isinstance(klass, str):
-        raise TypeError("Expected class or string, not %r" % klass)
+        raise TypeError("Expected class or string, not %r" % (klass,))
 
     try:
         del ERROR_CLASS_MAP[klass]
