@@ -11,7 +11,8 @@ from Cython.Build import cythonize
 def localpath():
     return os.path.abspath(os.path.join(os.path.dirname(__file__)))
 
-def get_extensions(ext_list:list):
+
+def get_extensions(ext_list: list):
     exts = []
     for ext in ext_list:
         raw_path = Path(localpath()).joinpath(ext).resolve()
@@ -27,25 +28,39 @@ def get_extensions(ext_list:list):
         else:
             current_text = ''
 
-        new_text = Tempita.sub(file.read_text(), PY_MAJOR_VERSION=int(python_version_tuple()[0]), PY_MINOR_VERSION=int(python_version_tuple()[1]))
+        new_text = Tempita.sub(file.read_text(),
+                               PY_MAJOR_VERSION=int(python_version_tuple()[0]),
+                               PY_MINOR_VERSION=int(python_version_tuple()[1])
+                               )
         if new_text != current_text:
             tempfile.write_text(new_text, 'utf-8')
 
-        exts.append(Extension(name=ext.replace('/','.'), sources=[f'{ext}.temp.pyx']))
+        exts.append(Extension(name=ext.replace('/', '.'),
+                              sources=[f'{ext}.temp.pyx']
+                              ))
     return exts
+
 
 class Build(build_ext):
     def run(self):
-        self.extensions = self.distribution.ext_modules = cythonize(get_extensions(["miniamf/_accel/util","miniamf/_accel/codec","miniamf/_accel/amf3","miniamf/_accel/amf0"]))
+        exts = get_extensions([
+            "miniamf/_accel/util",
+            "miniamf/_accel/codec",
+            "miniamf/_accel/amf3",
+            "miniamf/_accel/amf0"
+        ])
+
+        self.extensions = self.distribution.ext_modules = cythonize(exts)
 
         self.swig_opts = None
         self.finalize_options()
         super().run()
 
-if os.environ.get('MINIAMF_NO_CYTHON',"0") == "1":
+
+if os.environ.get('MINIAMF_NO_CYTHON', "0") == "1":
     setup()
 else:
     setup(
-        ext_modules=[Extension('miniamf.x',['x.c'],optional=True)],
+        ext_modules=[Extension('miniamf.x', ['x.c'], optional=True)],
         cmdclass={'build_ext': Build}
     )
