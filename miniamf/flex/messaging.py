@@ -14,8 +14,8 @@ This module contains the message classes used with Flex Data Services.
 
 import uuid
 
-import miniamf.util
-from miniamf import amf3
+import miniamf
+from miniamf import util, amf3
 
 
 __all__ = (
@@ -133,7 +133,7 @@ class AbstractMessage(object):
         obj = input.readObject()
 
         if attr in {'timestamp', 'timeToLive'}:
-            return miniamf.util.get_datetime(obj / 1000.0)
+            return util.get_datetime(obj / 1000.0)
 
         return obj
 
@@ -147,7 +147,7 @@ class AbstractMessage(object):
             return obj
 
         if attr in {'timestamp', 'timeToLive'}:
-            return miniamf.util.get_timestamp(obj) * 1000.0
+            return util.get_timestamp(obj) * 1000.0
         elif attr in {'clientId', 'messageId'}:
             if isinstance(obj, uuid.UUID):
                 return None
@@ -283,7 +283,7 @@ class AsyncMessage(AbstractMessage):
             output.writeObject(self.correlationId)
         else:
             output.writeUnsignedByte(0x02)
-            output.writeObject(miniamf.amf3.ByteArray(self.correlationId.bytes))
+            output.writeObject(amf3.ByteArray(self.correlationId.bytes))
 
     def getSmallMessage(self):
         """
