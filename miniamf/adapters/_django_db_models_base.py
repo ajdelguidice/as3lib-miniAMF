@@ -186,9 +186,7 @@ class DjangoClassAlias(miniamf.ClassAlias):
             if name in attrs.keys():
                 attrs[name] = self._encodeValue(prop, getattr(obj, name))
 
-        keys = attrs.keys()
-
-        for key in keys:
+        for key in attrs.keys():
             if key.startswith('_'):
                 del attrs[key]
 
