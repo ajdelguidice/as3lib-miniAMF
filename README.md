@@ -1,5 +1,5 @@
 # as3lib-miniAMF
-This is a fork of <a href="https://pypi.org/project/Mini-AMF/">Mini-AMF</a> that aims to bring back some of the cut/broken functionality and work properly on newer python versions.
+This is a fork of <a href="https://pypi.org/project/Mini-AMF/">Mini-AMF</a> that aims to bring back some of the cut/broken functionality and work properly on newer python versions. I have been trying to bring the python requirement down but 3.9 seems like the lowest this can support while still supporting 3.13+.
 
 This package uses the same directories as miniamf. They should not be installed together.
 
@@ -19,10 +19,11 @@ This package uses the same directories as miniamf. They should not be installed 
 
 The remoting stuff below will not be brought back:
 - Elixir (never updated to python 3)
-- Google AppEngine (SDK no longer easily accessible)
 
 ## TODO
 Fix library when cython modules are not installed.
 <br>Bring back twisted support. (I'm having a bit of trouble with this)
+<br>Bring back appengine support (I was mistaken in thinking that it wasn't accessible any more, it just moved a couple of times and isn't easy to find)
 <br>Add tests for AS3 vectors and dictionaries.
 <br>Fix Django adapters
+<br>Update docs
