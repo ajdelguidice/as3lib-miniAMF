@@ -9,6 +9,8 @@ Test utilities.
 
 import copy
 import unittest
+import os
+from importlib.util import find_spec
 
 import miniamf
 
@@ -226,6 +228,13 @@ class NullFileDescriptor(object):
 
 def get_fqcn(klass):
     return '%s.%s' % (klass.__module__, klass.__name__)
+
+
+def expectedFailureIfAppengine(func):
+    if (find_spec('google.appengine') is None or
+       os.environ.get('SERVER_SOFTWARE', None) is None):
+        return func
+    return unittest.expectedFailure(func)
 
 
 def _join(parts):
