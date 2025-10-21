@@ -3,7 +3,7 @@
 
 from django.contrib.auth import models
 
-import miniamf.adapters
+import miniamf
 
 
 models.User.__amf__ = {
