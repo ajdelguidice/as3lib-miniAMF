@@ -178,8 +178,8 @@ def check_buffer(buf, parts, inner=False):
 
                 buf = buf[len(part):]
         else:
-            for k in parts[:]:
-                for p in parts[:]:
+            for k in parts.copy():
+                for p in parts.copy():
                     if isinstance(p, (tuple, list)):
                         buf = check_buffer(buf, p, inner=True)
                     else:
