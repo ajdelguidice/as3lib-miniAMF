@@ -376,8 +376,7 @@ cdef class Decoder(codec.Decoder):
 
     cdef object readASDictionary(self):
         cdef int size = _read_ref(self.stream)
-        cdef object res
-        cdef object key
+        cdef object res, key
 
         if size & REFERENCE_BIT == 0:
             raise miniamf.DecodeError(
@@ -604,7 +603,7 @@ cdef class Decoder(codec.Decoder):
             self.stream.read(&tmp, 1) # Discard because we know it is a string
             obj.classname = self.readString()
 
-        for i in range(ref >> 1):
+        for i from 0 <= i < (ref >> 1):
             obj.append(obj.reader(self)())
 
         self.context.addObject(obj)
@@ -859,7 +858,7 @@ cdef class Encoder(codec.Encoder):
         # Make sure the integer keys are within range
         l = PyList_Size(int_keys)
 
-        for x in int_keys:
+        for x in int_keys.copy():
             if l < x <= 0:
                 # treat as a string key
                 str_keys.append(x)
@@ -923,7 +922,7 @@ cdef class Encoder(codec.Encoder):
         # Make sure the integer keys are within range
         l = len(int_keys)
 
-        for x in int_keys:
+        for x in int_keys.copy():
             if l < x <= 0:
                 # treat as a string key
                 str_keys.append(x)
@@ -933,7 +932,7 @@ cdef class Encoder(codec.Encoder):
 
         # If integer keys don't start at 0, they will be treated as strings
         if len(int_keys) > 0 and int_keys[0] != 0:
-            for x in int_keys:
+            for x in int_keys.copy():
                 str_keys.append(str(x))
                 del int_keys[int_keys.index(x)]
 
@@ -1175,23 +1174,19 @@ cdef class Encoder(codec.Encoder):
         return self.writeObject(self.context.getProxyForObject(obj), 1)
 
     cdef int handleBasicTypes(self, object element, object py_type) except -1:
-        cdef int ret = codec.Encoder.handleBasicTypes(self, element, py_type)
-
-        if ret == 1: # not handled
-            if py_type is ByteArrayType:
-                return self.writeByteArray(element)
-            elif isinstance(element, ObjectVectorType):
-                return self.writeObjectVector(element)
-            elif isinstance(element, DoubleVectorType):
-                return self.writeDoubleVector(element)
-            elif isinstance(element, UintVectorType):
-                return self.writeUintVector(element)
-            elif isinstance(element, IntVectorType):
-                return self.writeIntVector(element)
-            elif py_type is DictionaryType:
-                return self.writeASDictionary(element)
-
-        return ret
+        if py_type is ByteArrayType:
+            return self.writeByteArray(element)
+        elif isinstance(element, ObjectVectorType):
+            return self.writeObjectVector(element)
+        elif isinstance(element, DoubleVectorType):
+            return self.writeDoubleVector(element)
+        elif isinstance(element, UintVectorType):
+            return self.writeUintVector(element)
+        elif isinstance(element, IntVectorType):
+            return self.writeIntVector(element)
+        elif py_type is DictionaryType:
+            return self.writeASDictionary(element)
+        return codec.Encoder.handleBasicTypes(self, element, py_type)
 
 
 cdef int encode_int(long i, char **buf) except -1:
