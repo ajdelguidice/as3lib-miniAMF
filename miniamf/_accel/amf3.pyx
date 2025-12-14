@@ -750,12 +750,10 @@ cdef class Encoder(codec.Encoder):
         _encode_integer(self.stream, x)
 
     cdef int writeLong(self, object n) except -1:
-        cdef long x
-
-        try:
-            x = PyLong_AsLong(n)
-        except:
+        if not PyLong_Check(n):
             return self.writeNumber(float(n))
+
+        cdef long x = PyLong_AsLong(n)
 
         if x < MIN_29B_INT or x > MAX_29B_INT:
             return self.writeNumber(float(n))
@@ -847,8 +845,6 @@ cdef class Encoder(codec.Encoder):
 
         definition.writeReference(self.stream)
 
-        # TODO: Split key sorting into a separate function because it is used
-        # in multiple functions
         cdef list int_keys = [], str_keys = []
 
         for x in obj.keys():
@@ -912,8 +908,7 @@ cdef class Encoder(codec.Encoder):
         self.context.addObject(n)
 
         # The AMF3 spec demands that all str based indicies be listed first
-        int_keys = []
-        str_keys = []
+        cdef list int_keys = [], str_keys = []
 
         for x in n.keys():
             if isinstance(x, int):
@@ -1125,15 +1120,15 @@ cdef class Encoder(codec.Encoder):
 
         self.context.addObject(obj)
 
-        s = xml.tostring(obj).decode('utf-8')
+        s = xml.tostring(obj)
 
-        if not PyUnicode_CheckExact(s):
-            raise TypeError('Expected string from xml serialization')
+        if not PyBytes_CheckExact(s):
+            raise TypeError('Expected bytes from xml serialization')
 
-        ref = PyUnicode_GetLength(s)
+        ref = PyBytes_GET_SIZE(s)
 
         _encode_integer(self.stream, (ref << 1) | REFERENCE_BIT)
-        self.stream.write(PyUnicode_AsUTF8String(s), ref)
+        self.stream.write(PyBytes_AsString(s), ref)
 
         return 0
 
