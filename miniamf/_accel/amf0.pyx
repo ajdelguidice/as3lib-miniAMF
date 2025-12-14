@@ -97,10 +97,8 @@ cdef class Decoder(codec.Decoder):
         return self.context.getBytesForString(self.readString())
 
     cpdef object readString(self):
-        cdef Py_ssize_t size
         cdef char *buf = NULL
-
-        size = self.stream.read_ushort()
+        cdef Py_ssize_t size = self.stream.read_ushort()
 
         self.stream.read(&buf, size)
 
@@ -132,6 +130,7 @@ cdef class Decoder(codec.Decoder):
 
     cdef object readTypedObject(self):
         cdef object class_alias = self.readString()
+        cdef object alias, obj
 
         try:
             alias = self.context.getClassAlias(class_alias)
@@ -153,10 +152,8 @@ cdef class Decoder(codec.Decoder):
         return obj
 
     cdef object readReference(self):
-        cdef unsigned short idx
-
-        idx = self.stream.read_ushort()
-        o = self.context.getObject(idx)
+        cdef Py_ssize_t idx = self.stream.read_ushort()
+        cdef object o = self.context.getObject(idx)
 
         if o is None:
             raise miniamf.ReferenceError('Unknown reference %d' % (idx,))
@@ -164,9 +161,9 @@ cdef class Decoder(codec.Decoder):
         return o
 
     cdef object readMixedArray(self):
+        cdef object obj = miniamf.MixedArray()
         cdef dict attrs = {}
 
-        obj = miniamf.MixedArray()
         self.context.addObject(obj)
 
         self.stream.read_ulong() #length
@@ -185,14 +182,13 @@ cdef class Decoder(codec.Decoder):
 
     cdef object readList(self):
         cdef list obj = []
-        cdef unsigned long size
-        cdef unsigned long i
+        cdef Py_ssize_t size = self.stream.read_ulong()
 
         self.context.addObject(obj)
-        size = self.stream.read_ulong()
 
+        cdef Py_ssize_t i
         for i from 0 <= i < size:
-            PyList_Append(obj, self.readElement())
+            obj.append(self.readElement())
 
         return obj
 
@@ -213,11 +209,9 @@ cdef class Decoder(codec.Decoder):
         return d
 
     cdef object readLongString(self, bint bytes=0):
-        cdef Py_ssize_t size = 0
         cdef char *buf = NULL
         cdef object s
-
-        size = self.stream.read_ulong()
+        cdef Py_ssize_t size = self.stream.read_ulong()
 
         self.stream.read(&buf, size)
         s = PyBytes_FromStringAndSize(buf, size)
@@ -336,38 +330,36 @@ cdef class Encoder(codec.Encoder):
         """
         Write array to the stream.
         """
-        cdef Py_ssize_t size = -1, i = -1
-
         if self.writeReference(a) != -1:
             return 0
+
+        cdef Py_ssize_t size = PyList_GET_SIZE(a)
 
         self.context.addObject(a)
 
         self.writeType(TYPE_ARRAY)
-        size = PyList_GET_SIZE(a)
 
         self.stream.write_ulong(size)
 
-        for i from 0 <= i < size:
-            self.writeElement(<object>PyList_GET_ITEM(a, i))
+        for i in a:
+            self.writeElement(i)
 
         return 0
 
     cdef int writeTuple(self, object a) except -1:
-        cdef Py_ssize_t size = -1, i = -1
-
         if self.writeReference(a) != -1:
             return 0
+
+        cdef Py_ssize_t size = PyTuple_GET_SIZE(a)
 
         self.context.addObject(a)
 
         self.writeType(TYPE_ARRAY)
-        size = PyTuple_GET_SIZE(a)
 
         self.stream.write_ulong(size)
 
-        for i from 0 <= i < size:
-            self.writeElement(<object>PyTuple_GET_ITEM(a, i))
+        for i in a:
+            self.writeElement(i)
 
         return 0
 
@@ -434,16 +426,16 @@ cdef class Encoder(codec.Encoder):
         """
         self.writeType(TYPE_XML)
 
-        data = xml.tostring(e).decode('utf-8')
+        data = xml.tostring(e)
 
-        if not PyUnicode_CheckExact(data):
-            raise TypeError('expected str from xml.tostring')
+        if not PyBytes_CheckExact(data):
+            raise TypeError('expected bytes from xml.tostring')
 
-        cdef Py_ssize_t size = PyUnicode_GetLength(data)
+        cdef Py_ssize_t size = PyBytes_GET_SIZE(data)
 
         self.stream.write_ulong(size)
 
-        return self.stream.write(PyUnicode_AsUTF8String(data), size) #!Might be wrong
+        return self.stream.write(PyBytes_AsString(data), size)
 
     cdef int writeDateTime(self, d) except -1:
         if self.timezone_offset is not None:
