@@ -393,6 +393,7 @@ cdef class Decoder(codec.Decoder):
         elif wk == TYPE_BOOL_TRUE:
             res.weak_keys = True
 
+        cdef Py_ssize_t i
         for i from 0 <= i < size:
             key = self.readElement()
             res[key] = self.readElement()
@@ -440,7 +441,6 @@ cdef class Decoder(codec.Decoder):
     @cython.boundscheck(False)
     cdef int _readStatic(self, ClassDefinition class_def, dict obj) except -1:
         cdef Py_ssize_t i
-
         for 0 <= i < class_def.attr_len:
             obj[class_def.static_properties[i]] = self.readElement()
 
@@ -566,7 +566,7 @@ cdef class Decoder(codec.Decoder):
                 except zlib.error:
                     pass
 
-        s = (<object>ByteArrayType)(s)
+        s = ByteArrayType(s)  # This used type casts for some reason
 
         self.context.addObject(s)
 
@@ -600,9 +600,12 @@ cdef class Decoder(codec.Decoder):
         obj.fixed = self.stream.read_uchar()
 
         if isinstance(obj, ObjectVectorType):
-            self.stream.read(&tmp, 1) # Discard because we know it is a string
+            # Discard type byte because it should always be a string
+            self.stream.read(&tmp, 1)
+
             obj.classname = self.readString()
 
+        cdef Py_ssize_t i
         for i from 0 <= i < (ref >> 1):
             obj.append(obj.reader(self)())
 
@@ -770,7 +773,6 @@ cdef class Encoder(codec.Encoder):
 
     cpdef int writeList(self, object n, bint is_proxy=0) except -1:
         cdef Py_ssize_t ref = self.context.getObjectReference(n)
-        cdef Py_ssize_t i
 
         if self.use_proxies == 1 and not is_proxy:
             # Encode lists as ArrayCollections
@@ -788,6 +790,7 @@ cdef class Encoder(codec.Encoder):
 
         self.writeType('\x01')
 
+        cdef Py_ssize_t i
         for i from 0 <= i < ref:
             self.writeElement(<object>PyList_GET_ITEM(n, i))
 
@@ -795,7 +798,6 @@ cdef class Encoder(codec.Encoder):
 
     cdef int writeTuple(self, object n) except -1:
         cdef Py_ssize_t ref = self.context.getObjectReference(n)
-        cdef Py_ssize_t i
 
         self.writeType(TYPE_ARRAY)
 
@@ -809,6 +811,7 @@ cdef class Encoder(codec.Encoder):
         _encode_integer(self.stream, (ref << 1) | REFERENCE_BIT)
         self.writeType('\x01')
 
+        cdef Py_ssize_t i
         for i from 0 <= i < ref:
             self.writeElement(<object>PyTuple_GET_ITEM(n, i))
 
@@ -824,7 +827,7 @@ cdef class Encoder(codec.Encoder):
         # Pure python writes TYPE_ARRAY here but that doesn't work here
         self.writeType(TYPE_OBJECT)
 
-        ref = self.context.getObjectReference(obj)
+        cdef Py_ssize_t ref = self.context.getObjectReference(obj)
 
         if ref != -1:
             _encode_integer(self.stream, ref << 1)
@@ -844,14 +847,15 @@ cdef class Encoder(codec.Encoder):
 
         definition.writeReference(self.stream)
 
-        int_keys = PyList_New(0)
-        str_keys = PyList_New(0)
+        # TODO: Split key sorting into a separate function because it is used
+        # in multiple functions
+        cdef list int_keys = [], str_keys = []
 
         for x in obj.keys():
             if isinstance(x, int):
-                PyList_Append(int_keys, x)
+                int_keys.append(x)
             elif isinstance(x, str):
-                PyList_Append(str_keys, x)
+                str_keys.append(x)
             else:
                 raise ValueError("Non integer/string key value found in dict")
 
@@ -864,17 +868,17 @@ cdef class Encoder(codec.Encoder):
                 str_keys.append(x)
                 del int_keys[int_keys.index(x)]
 
-        PyList_Sort(int_keys)
+        int_keys.sort()
 
         # If integer keys don't start at 0, they will be treated as strings
         if len(int_keys) > 0 and int_keys[0] != 0:
             for x in int_keys.copy():
-                PyList_Append(str_keys, str(x))
+                str_keys.append(str(x))
                 del int_keys[int_keys.index(x)]
 
         _encode_integer(self.stream, PyList_Size(int_keys) << 1 | REFERENCE_BIT)
 
-        PyList_Sort(str_keys)
+        str_keys.sort()
 
         for x in str_keys:
             self.serialiseString(x)
@@ -900,7 +904,7 @@ cdef class Encoder(codec.Encoder):
 
         self.writeType(TYPE_ARRAY)
 
-        ref = self.context.getObjectReference(n)
+        cdef Py_ssize_t ref = self.context.getObjectReference(n)
 
         if ref != -1:
             return _encode_integer(self.stream, ref << 1)
@@ -949,13 +953,10 @@ cdef class Encoder(codec.Encoder):
 
     cpdef int writeObject(self, object obj, bint is_proxy=0) except -1:
         cdef Py_ssize_t ref
-        cdef object kls
         cdef ClassDefinition definition
         cdef object alias = None
         cdef int class_ref = 0
-        cdef PyObject *key
-        cdef PyObject *value
-        cdef object attrs
+        cdef object value, attrs, kls
 
         if self.use_proxies and not is_proxy:
             return self.writeProxy(obj)
@@ -1013,27 +1014,20 @@ cdef class Encoder(codec.Encoder):
                     self.serialiseString(attr)
 
             for attr in definition.static_properties:
-                value = PyDict_GetItem(attrs, attr)
-
-                if value == NULL:
-                    raise KeyError
+                value = attrs[attr]
 
                 if PyDict_DelItem(attrs, attr) == -1:
                     return -1
 
-                self.writeElement(<object>value)
+                self.writeElement(value)
 
             if definition.encoding == OBJECT_ENCODING_STATIC:
                 return 0
 
         if definition.encoding == OBJECT_ENCODING_DYNAMIC:
-            ref = 0
-            key = NULL
-            value = NULL
-
-            while PyDict_Next(attrs, &ref, &key, &value):
-                self.serialiseString(<object>key)
-                self.writeElement(<object>value)
+            for key, value in attrs.items():
+                self.serialiseString(key)
+                self.writeElement(value)
 
             self.stream.write(&REF_CHAR, 1)
 
@@ -1087,8 +1081,8 @@ cdef class Encoder(codec.Encoder):
         if isinstance(obj, ObjectVectorType):
             self.writeString(obj.classname)
 
-        for i from 0 <= i < ref:
-            obj.writer(self)(<object>PyList_GET_ITEM(obj, i))
+        for i in obj:
+            obj.writer(self)(i)
 
     cdef int writeIntVector(self, obj):
         self.writeType(TYPE_INT_VECTOR)
@@ -1115,7 +1109,7 @@ cdef class Encoder(codec.Encoder):
         _encode_integer(self.stream, len(obj) << 1 | REFERENCE_BIT)
         self.stream.write_uchar(0x01 if obj.weak_keys else 0x00)
 
-        for key, value in PyDict_Items(obj):
+        for key, value in obj.items():
             self.writeElement(key)
             self.writeElement(value)
 
