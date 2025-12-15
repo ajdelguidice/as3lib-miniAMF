@@ -97,9 +97,9 @@ def get_adapter(mod):
     Usage::
         adapter = miniamf.get_adapter('collections')
     """
-    base_name = '_' + mod.replace('.', '_')
+    base_name = mod.replace('.', '_')
 
-    full_import = f'{__name__}.{base_name}'
+    full_import = f'{__name__}._{base_name}'
 
     ret = __import__(full_import)
 
