@@ -8,6 +8,7 @@ packages. This includes registering classes, setting up type maps etc.
 @since: 0.1.0
 """
 
+from importlib import import_module
 import os.path
 import glob
 
@@ -101,9 +102,4 @@ def get_adapter(mod):
 
     full_import = f'{__name__}._{base_name}'
 
-    ret = __import__(full_import)
-
-    for attr in full_import.split('.')[1:]:
-        ret = getattr(ret, attr)
-
-    return ret
+    return import_module(full_import)
