@@ -15,14 +15,13 @@ This package uses the same directories as miniamf. They should not be installed 
 - util.pure.BufferedByteStream has been rewritten as a child of io.BytesIO. This shouldn't break things more than they already were.
 - util.pure.Excursion has been removed because it is no longer needed.
 - The functions utcnow and utcfromtimestamp were added to the util module as future proofing for when they are removed from datetime.
-- Flex and remoting support have been mostly brought back. The gateways and adapters currently available are wsgi, Django (partially broken), and SQLAlchemy.
+- Flex and remoting support have been mostly brought back. The gateways and adapters currently available are wsgi, Django (partially broken), SQLAlchemy, and twisted (<a href="https://github.com/StdCarrot/Py3AMF/commit/5a9963f2ee5622b638dcccb374fdc3c70fdc567d">this commit</a> was used as a reference to fix the tests).
 
 The remoting stuff below will not be brought back:
 - Elixir (never updated to python 3)
 
 ## TODO
 Fix library when cython modules are not installed.
-<br>Bring back twisted support. (I'm having a bit of trouble with this)
 <br>Bring back appengine support (I was mistaken in thinking that it wasn't accessible any more, it just moved a couple of times and isn't easy to find)
 <br>Add tests for AS3 vectors and dictionaries.
 <br>Fix Django adapters
