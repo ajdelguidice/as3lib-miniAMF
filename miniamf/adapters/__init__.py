@@ -9,13 +9,11 @@ packages. This includes registering classes, setting up type maps etc.
 """
 
 from importlib import import_module
+from importlib.resources import files
 import os.path
 import glob
 
 from miniamf.util import imports
-import importlib.resources as importlib_resources
-from contextlib import ExitStack
-import atexit
 
 
 __all__ = [
@@ -50,15 +48,10 @@ def register_adapters():
     if adapters_registered is True:
         return
 
-    file_manager = ExitStack()
-    atexit.register(file_manager.close)
-    ref = importlib_resources.files('miniamf') / 'adapters'
-    packageDir = file_manager.enter_context(importlib_resources.as_file(ref))
-
-    for f in glob.glob(os.path.join(packageDir, '*.py')):
+    for f in glob.iglob(os.path.join(files('miniamf'), 'adapters', '_*.py')):
         mod = os.path.basename(f).split(os.path.extsep, 1)[0]
 
-        if mod == '__init__' or not mod.startswith('_'):
+        if mod == '__init__':
             continue
 
         try:
@@ -85,7 +78,7 @@ def register_adapter(mod, func):
     @type func: callable
     @raise TypeError: C{func} must be callable
     """
-    if not hasattr(func, '__call__'):
+    if not callable(func):
         raise TypeError('func must be callable')
 
     imports.when_imported(mod, func)
