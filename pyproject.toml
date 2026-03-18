@@ -33,6 +33,12 @@ twisted = ["Twisted"]
 
 [tool.setuptools]
 packages=["miniamf", "miniamf._accel", "miniamf.adapters", "miniamf.util", "miniamf.flex", "miniamf.remoting", "miniamf.remoting.client", "miniamf.remoting.gateway"]
+ext-modules = [
+    {name = "miniamf._accel.util", sources = ["miniamf/_accel/util.pyx"]},
+    {name = "miniamf._accel.codec", sources = ["miniamf/_accel/codec.pyx"]},
+    {name = "miniamf._accel.amf3", sources = ["miniamf/_accel/amf3.pyx"]},
+    {name = "miniamf._accel.amf0", sources = ["miniamf/_accel/amf0.pyx"]}
+]
 
 [tool.tox]
 requires = ["tox"]
