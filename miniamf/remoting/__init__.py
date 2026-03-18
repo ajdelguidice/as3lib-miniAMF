@@ -238,10 +238,10 @@ class Request(Message):
         )
 
     def __eq__(self, other):
-        if not super(Request, self).__eq__(other):
-            return False
+        if super(Request, self).__eq__(other):
+            return self.target == other.target
 
-        return self.target == other.target
+        return False
 
 
 class Response(Message):
