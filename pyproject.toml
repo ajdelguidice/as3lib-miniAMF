@@ -25,6 +25,7 @@ dependencies = [
 Homepage = "https://github.com/ajdelguidice/as3lib-miniAMF"
 
 [pyproject.optional-dependencies]
+appengine = ["appengine-python-standard"]
 docs = ["sphinx >= 1.5"]
 django = ["Django"]
 sqlachemy = ["SQLAlchemy"]
