@@ -148,9 +148,9 @@ class AbstractMessage(object):
 
         if attr in {'timestamp', 'timeToLive'}:
             return util.get_timestamp(obj) * 1000.0
-        elif attr in {'clientId', 'messageId'}:
-            if isinstance(obj, uuid.UUID):
-                return None
+
+        if attr in {'clientId', 'messageId'} and isinstance(obj, uuid.UUID):
+            return None
 
         return obj
 
@@ -278,12 +278,12 @@ class AsyncMessage(AbstractMessage):
     def __writeamf__(self, output):
         AbstractMessage.__writeamf__(self, output)
 
-        if not isinstance(self.correlationId, uuid.UUID):
-            output.writeUnsignedByte(0x01)
-            output.writeObject(self.correlationId)
-        else:
+        if isinstance(self.correlationId, uuid.UUID):
             output.writeUnsignedByte(0x02)
             output.writeObject(amf3.ByteArray(self.correlationId.bytes))
+        else:
+            output.writeUnsignedByte(0x01)
+            output.writeObject(self.correlationId)
 
     def getSmallMessage(self):
         """

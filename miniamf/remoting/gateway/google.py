@@ -23,8 +23,7 @@ try:
 except ValueError:
     pass
 
-google = __import__('google.appengine.ext.webapp')
-webapp = google.appengine.ext.webapp
+from google.appengine.ext import webapp
 
 __all__ = ['WebAppGateway']
 

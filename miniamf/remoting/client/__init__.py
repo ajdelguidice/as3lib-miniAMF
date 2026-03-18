@@ -95,13 +95,10 @@ class ServiceProxy(object):
             response = self._gw.execute_single(request)
 
             if response.status == remoting.STATUS_ERROR:
-                if hasattr(response.body, 'raiseException'):
-                    try:
-                        response.body.raiseException()
-                    except Exception:
-                        raise
-                else:
+                if not hasattr(response.body, 'raiseException'):
                     raise remoting.RemotingError
+
+                response.body.raiseException()  # This can raise
 
             return response.body
 
@@ -158,11 +155,11 @@ class RequestWrapper(object):
         Returns the result of the called remote request. If the request has not
         yet been called, an C{AttributeError} exception is raised.
         """
-        if not hasattr(self, '_result'):
-            raise AttributeError(
-                "'RequestWrapper' object has no attribute 'result'")
+        if hasattr(self, '_result'):
+            return self._result
 
-        return self._result
+        raise AttributeError(
+            "'RequestWrapper' object has no attribute 'result'")
 
     def _set_result(self, result):
         self._result = result
@@ -278,10 +275,10 @@ class RemotingService(object):
         @rtype: L{ServiceProxy}
         @raise TypeError: Unexpected type for string C{name}.
         """
-        if not isinstance(name, str):
-            raise TypeError('string type required')
+        if isinstance(name, str):
+            return ServiceProxy(self, name, auto_execute)
 
-        return ServiceProxy(self, name, auto_execute)
+        raise TypeError('string type required')
 
     def getRequest(self, id_):
         """

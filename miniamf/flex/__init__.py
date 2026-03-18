@@ -235,7 +235,8 @@ def unproxy_object(obj):
     """
     if isinstance(obj, ArrayCollection):
         return list(obj)
-    elif isinstance(obj, ObjectProxy):
+
+    if isinstance(obj, ObjectProxy):
         return obj._amf_object
 
     return obj

@@ -107,10 +107,8 @@ class StubCollection(object):
         stub.__class__ = klass
 
         for k, v in attrs.items():
-            if not isinstance(v, EntityStub):
-                continue
-
-            self.transform(v)
+            if isinstance(v, EntityStub):
+                self.transform(v)
 
         if key is None:
             stub.__init__(**attrs)
@@ -119,14 +117,14 @@ class StubCollection(object):
 
         ds_entity = self.fetched_entities.get(key, None)
 
-        if not ds_entity:
-            attrs['key'] = key
-            stub.__init__(**attrs)
-        else:
+        if ds_entity:
             stub.__dict__.update(ds_entity.__dict__)
 
             for k, v in attrs.items():
                 setattr(stub, k, v)
+        else:
+            attrs['key'] = key
+            stub.__init__(**attrs)
 
     def transform(self, stub=None):
         if self.fetched_entities is None:

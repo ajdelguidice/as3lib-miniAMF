@@ -99,11 +99,11 @@ class ServiceWrapper(object):
                 raise InvalidServiceMethodError(
                     "Calls to private methods are not allowed")
 
-            try:
-                func = getattr(service, method)
-            except AttributeError:
+            if not hasattr(service, method):
                 raise UnknownServiceMethodError(
                     "Unknown method %s" % (method,))
+
+            func = getattr(service, method)
 
             if not callable(func):
                 raise InvalidServiceMethodError(
@@ -144,7 +144,7 @@ class ServiceWrapper(object):
         for name in dir(self.service):
             method = getattr(self.service, name)
 
-            if not name.startswith('_') or  callable(method):
+            if not name.startswith('_') or callable(method):
                 callables[name] = method
 
         return callables
@@ -393,8 +393,8 @@ class BaseGateway(object):
         """
         if request.target == 'null' or not request.target:
             return amf3.RequestProcessor(self)
-        else:
-            return amf0.RequestProcessor(self)
+
+        return amf0.RequestProcessor(self)
 
     def getResponse(self, amf_request):
         """
