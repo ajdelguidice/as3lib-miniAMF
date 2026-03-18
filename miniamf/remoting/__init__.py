@@ -212,10 +212,9 @@ class Message(object):
     headers = property(_get_headers)
 
     def __eq__(self, other):
-        if not isinstance(other, self.__class__):
-            return False
-
-        return self.body == other.body
+        if isinstance(other, self.__class__):
+            return self.body == other.body
+        return False
 
 
 class Request(Message):
@@ -265,10 +264,9 @@ class Response(Message):
         )
 
     def __eq__(self, other):
-        if not super(Response, self).__eq__(other):
-            return False
-
-        return self.status == other.status
+        if super(Response, self).__eq__(other):
+            return self.status == other.status
+        return False
 
 
 class BaseFault(object):
@@ -410,11 +408,13 @@ def _read_body(stream, decoder, strict=False, logger=None):
         type_byte = stream.peek(1)
 
         if type_byte == b'\x11':
-            if not decoder.use_amf3:
-                raise miniamf.DecodeError(
-                    "Unexpected AMF3 type with incorrect message type")
+            if decoder.use_amf3:
+                return decoder.readElement()
 
-            return decoder.readElement()
+            raise miniamf.DecodeError(
+                "Unexpected AMF3 type with incorrect message type")
+
+
 
         if type_byte != b'\x0a':
             raise miniamf.DecodeError("Array type required for request body")

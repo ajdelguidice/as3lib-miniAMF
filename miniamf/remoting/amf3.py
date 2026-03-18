@@ -103,10 +103,9 @@ class RequestProcessor(object):
 
     @property
     def logger(self):
-        if not self.gateway.logger:
-            return None
-
-        return self.gateway.logger
+        if self.gateway.logger:
+            return self.gateway.logger
+        return None
 
     def buildErrorResponse(self, request, error=None):
         """
@@ -117,10 +116,10 @@ class RequestProcessor(object):
         @return: The AMF response
         @rtype: L{Response<miniamf.remoting.Response>}
         """
-        if error is not None:
-            cls, e, tb = error
-        else:
+        if error is None:
             cls, e, tb = sys.exc_info()
+        else:
+            cls, e, tb = error
 
         return generate_error(request, cls, e, tb, self.gateway.debug)
 
@@ -134,20 +133,19 @@ class RequestProcessor(object):
                 ro_request,
                 **kwargs
             )
-        elif isinstance(ro_request, messaging.RemotingMessage):
+        if isinstance(ro_request, messaging.RemotingMessage):
             return self._processRemotingMessage(
                 amf_request,
                 ro_request,
                 **kwargs
             )
-        elif isinstance(ro_request, messaging.AsyncMessage):
+        if isinstance(ro_request, messaging.AsyncMessage):
             return self._processAsyncMessage(
                 amf_request,
                 ro_request,
                 **kwargs
             )
-        else:
-            raise ServerCallFailed("Unknown request: %s" % ro_request)
+        raise ServerCallFailed("Unknown request: %s" % ro_request)
 
     def _processCommandMessage(self, amf_request, ro_request, **kwargs):
         """
@@ -162,16 +160,16 @@ class RequestProcessor(object):
             ro_response.body = True
 
             return remoting.Response(ro_response)
-        elif operation == messaging.CommandMessage.LOGIN_OPERATION:
+        if operation == messaging.CommandMessage.LOGIN_OPERATION:
             raise ServerCallFailed(
                 "Authorization is not supported in RemoteObject"
             )
-        elif operation == messaging.CommandMessage.DISCONNECT_OPERATION:
+        if operation == messaging.CommandMessage.DISCONNECT_OPERATION:
             return remoting.Response(ro_response)
-        else:
-            raise ServerCallFailed("Unknown Command operation %s" % (
-                operation,
-            ))
+
+        raise ServerCallFailed("Unknown Command operation %s" % (
+            operation,
+        ))
 
     def _processAsyncMessage(self, amf_request, ro_request, **kwargs):
         ro_response = generate_acknowledgement(ro_request)

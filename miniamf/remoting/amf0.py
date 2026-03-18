@@ -20,10 +20,9 @@ class RequestProcessor(object):
 
     @property
     def logger(self):
-        if not self.gateway.logger:
-            return None
-
-        return self.gateway.logger
+        if self.gateway.logger:
+            return self.gateway.logger
+        return None
 
     def authenticateRequest(self, request, service_request, *args, **kwargs):
         """
@@ -57,10 +56,10 @@ class RequestProcessor(object):
         @return: The AMF response
         @rtype: L{Response<miniamf.remoting.Response>}
         """
-        if error is not None:
-            cls, e, tb = error
-        else:
+        if error is None:
             cls, e, tb = sys.exc_info()
+        else:
+            cls, e, tb = error
 
         fault = build_fault(cls, e, tb, self.gateway.debug)
 
