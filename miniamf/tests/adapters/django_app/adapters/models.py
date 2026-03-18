@@ -51,7 +51,7 @@ class NotSaved(models.Model):
 class Publication(models.Model):
     title = models.CharField(max_length=30)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     class Meta:
@@ -63,8 +63,8 @@ class Reporter(models.Model):
     last_name = models.CharField(max_length=30)
     email = models.EmailField()
 
-    def __unicode__(self):
-        return u"%s %s" % (self.first_name, self.last_name)
+    def __str__(self):
+        return "%s %s" % (self.first_name, self.last_name)
 
 
 class Article(models.Model):
@@ -73,7 +73,7 @@ class Article(models.Model):
     reporter = models.ForeignKey(Reporter, null=True, on_delete=func,
                                  db_constraint=False)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.headline
 
     class Meta:
