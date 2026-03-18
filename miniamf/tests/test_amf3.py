@@ -1817,7 +1817,7 @@ class VectorTestCase(unittest.TestCase):
 
 
 class ASDictionaryTestCase(unittest.TestCase):
-    def test_int_vector_encode_decode(self):
+    def test_dictionary_encode_decode(self):
         a = amf3.ASDictionary()
         a['1'] = 100
         a[2] = 'test'
