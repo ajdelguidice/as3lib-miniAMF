@@ -395,7 +395,7 @@ class StructuredTestCase(google.BaseTestCase):
 
         bytes = (
             b'\n\x0b\x13SPContact\t_key\x06aagx0ZXN0YmVkLXRlc3RyFAsSCVNQQ29udG',
-            b'FjdCIFZ3VpZG8M\x13addresses\t\x05\x01\n\x0b\x13SPAddress\x02\x01,'
+            b'FjdCIFZ3VpZG8M\x13addresses\t\x05\x01\n\x0b\x13SPAddress\x02\x01',
             b'\tcity\x06\x13Amsterdam\rstreet\x01\ttype\x06\thome\x01\n\x05',
             b'\x02\x01\n\x06\x05SF\x0e\x06\x11Spear St\x10\x06\twork\x01\tname',
             b'\x06\x0bGuido\x01'
