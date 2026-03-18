@@ -530,11 +530,10 @@ def _get_status(status):
     @see: L{STATUS_CODES}
     @raise ValueError: Unknown C{status} code.
     """
-    if status not in STATUS_CODES:
-        # TODO print that status code..
-        raise ValueError("Unknown status code")
+    if status in STATUS_CODES:
+        return STATUS_CODES[status]
 
-    return STATUS_CODES[status]
+    raise ValueError('Unknown status code "%s"' % status)
 
 
 def get_fault_class(level, **kwargs):
