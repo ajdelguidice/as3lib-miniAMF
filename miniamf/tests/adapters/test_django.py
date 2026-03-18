@@ -375,8 +375,8 @@ class ForeignKeyTestCase(BaseTestCase):
         self.assertFalse('reporter' in a._state.fields_cache)
         self.assertEqual(
             miniamf.encode(a, encoding=miniamf.AMF3).getvalue(),
-            b'\n\x0b\x01\x11headline\x06\x1dThis is a test\x05id\x04%s'
-            b'\x19publications\t\x01\x01\x01' % chr(article_id).encode()
+            b'\n\x0b\x01\x11headline\x06\x1dThis is a test\x05id\x04'
+            b'%s\x19publications\t\x01\x01\x01' % chr(article_id).encode()
         )
 
         del a
