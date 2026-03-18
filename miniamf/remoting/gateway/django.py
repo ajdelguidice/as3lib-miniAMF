@@ -45,15 +45,14 @@ class DjangoGateway(gateway.BaseGateway):
     def __init__(self, *args, **kwargs):
         kwargs['expose_request'] = kwargs.get('expose_request', True)
 
-        try:
-            tz = conf.settings.AMF_TIME_OFFSET
-        except AttributeError:
-            tz = None
+        tz = None
+        debug = False
 
-        try:
-            debug = conf.settings.DEBUG
-        except AttributeError:
-            debug = False
+        if hasattr(conf, 'settings'):
+            if hasattr(conf.settings, 'AMF_TIME_OFFSET'):
+                tz = conf.settings.AMF_TIME_OFFSET
+            if hasattr(conf.settings, 'DEBUG'):
+                debug = conf.settings.DEBUG
 
         kwargs['timezone_offset'] = kwargs.get('timezone_offset', tz)
         kwargs['debug'] = kwargs.get('debug', debug)
@@ -91,9 +90,9 @@ class DjangoGateway(gateway.BaseGateway):
         stream = None
         timezone_offset = self._get_timezone_offset()
 
-        try:
+        if hasattr(http_request, 'body'):
             body = http_request.body
-        except AttributeError:
+        else:
             body = http_request.raw_post_data
 
         # Decode the request
