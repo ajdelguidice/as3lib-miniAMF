@@ -1,7 +1,7 @@
 # as3lib-miniAMF
-This is a fork of <a href="https://pypi.org/project/Mini-AMF/">Mini-AMF</a> that aims to bring back some of the cut/broken functionality and work properly on newer python versions. I have been trying to bring the python requirement down but 3.9 seems like the lowest this can support while still supporting 3.13+.
+This is a fork of <a href="https://pypi.org/project/Mini-AMF/">Mini-AMF</a> that aims to bring back some of the cut/broken functionality and work properly on newer python versions. Python 3.9 is the lowest version that this library can support while still supporting newer versions.
 
-This package uses the same directories as miniamf. They should not be installed together.
+This package uses the same directories as miniamf. Installing them together will break both of them.
 
 ## Changes
 - Python 2 support has been removed
@@ -15,14 +15,13 @@ This package uses the same directories as miniamf. They should not be installed 
 - util.pure.BufferedByteStream has been rewritten as a child of io.BytesIO. This shouldn't break things more than they already were.
 - util.pure.Excursion has been removed because it is no longer needed.
 - The functions utcnow and utcfromtimestamp were added to the util module as future proofing for when they are removed from datetime.
-- Flex and remoting support have been mostly brought back. The gateways and adapters currently available are wsgi, Django (partially broken), SQLAlchemy, and twisted (<a href="https://github.com/StdCarrot/Py3AMF/commit/5a9963f2ee5622b638dcccb374fdc3c70fdc567d">this commit</a> was used as a reference to fix the tests).
+- Flex and remoting support have been brought back. Every gateway/adapter has been brought back except for Elixir. NOTE: <a href="https://github.com/StdCarrot/Py3AMF/commit/5a9963f2ee5622b638dcccb374fdc3c70fdc567d">this commit</a> was used as a reference to fix the twisted tests.
 
-The remoting stuff below will not be brought back:
-- Elixir (never updated to python 3)
+Elixir support will not be brought back due to being the project being abandoned.
 
 ## TODO
 Fix library when cython modules are not installed.
-<br>Bring back appengine support (I was mistaken in thinking that it wasn't accessible any more, it just moved a couple of times and isn't easy to find)
+<br>Fix unclosed SQL database warnings when cython modules are used
+<br>Fix the remaining test failures (django and appengine). These only fail sometimes, which is weird.
 <br>Add tests for AS3 vectors and dictionaries.
-<br>Fix Django adapters
 <br>Update docs
