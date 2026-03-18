@@ -9,6 +9,7 @@ AMF Utilities.
 
 import calendar
 import datetime
+from importlib import import_module
 import inspect
 
 import miniamf
@@ -206,10 +207,4 @@ def get_module(mod_name):
     if mod_name == '':
         raise ImportError('Unable to import empty module')
 
-    mod = __import__(mod_name)
-    components = mod_name.split('.')
-
-    for comp in components[1:]:
-        mod = getattr(mod, comp)
-
-    return mod
+    return import_module(mod_name)
