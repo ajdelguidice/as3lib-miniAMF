@@ -19,32 +19,12 @@ cdef extern from "stdio.h":
 cdef extern from "Python.h":
     int PyByteArray_Check(object)
     char* PyByteArray_AsString(object)
-{{if PY_MAJOR_VERSION > 2}}
-  {{if PY_MINOR_VERSION < 11}}
-    int _PyFloat_Pack4(double, unsigned char *, int) except? -1
-    int _PyFloat_Pack8(double, unsigned char *, int) except? -1
-    double _PyFloat_Unpack4(const unsigned char *, int) except? -1.0
-    double _PyFloat_Unpack8(const unsigned char *, int) except? -1.0
 
-cdef int PyFloat_Pack4(double x, char *p, int le):
-    return _PyFloat_Pack4(x, <unsigned char *>p, le)
-
-cdef int PyFloat_Pack8(double x, char *p, int le):
-    return _PyFloat_Pack8(x, <unsigned char *>p, le)
-
-cdef double PyFloat_Unpack4(const char *p, int le):
-    return _PyFloat_Unpack4(<const unsigned char *>p, le)
-
-cdef double PyFloat_Unpack8(const char *p, int le):
-    return _PyFloat_Unpack8(<const unsigned char *>p, le)
-  {{else}}
+cdef extern from "PyFloat_Compat.h":
     int PyFloat_Pack4(double, char *, int) except? -1
     int PyFloat_Pack8(double, char *, int) except? -1
     double PyFloat_Unpack4(const char *, int) except? -1.0
     double PyFloat_Unpack8(const char *, int) except? -1.0
-  {{endif}}
-{{endif}}
-
 
 # module constant declarations
 cdef char ENDIAN_NETWORK = "!"
@@ -474,8 +454,6 @@ cdef class cBufferedByteStream(object):
         """
         Unpacks a long from C{buf}.
         """
-        cdef Py_ssize_t nb
-
         if num_bytes > 4:
             raise ValueError('Max 4 bytes to unpack')
 
@@ -484,6 +462,7 @@ cdef class cBufferedByteStream(object):
 
         cdef unsigned long x = 0
         cdef unsigned char *bytes = <unsigned char *>(self.buffer + self.pos)
+        cdef Py_ssize_t nb
 
         if is_big_endian(self.endian):
             for 0 <= nb < num_bytes:
