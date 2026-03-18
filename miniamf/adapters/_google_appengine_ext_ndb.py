@@ -54,10 +54,10 @@ class NDBClassAlias(gae_base.BaseDatastoreClassAlias):
     def encode_key(self, obj):
         key = obj.key
 
-        if not key:
-            return None
+        if key:
+            return key.urlsafe()
 
-        return key.urlsafe()
+        return None
 
     def decode_key(self, key):
         return ndb.Key(urlsafe=key)
