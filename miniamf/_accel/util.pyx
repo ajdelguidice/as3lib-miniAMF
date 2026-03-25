@@ -179,16 +179,13 @@ cdef inline int swap_bytes(char *buffer, Py_ssize_t size) nogil:
 cdef bint is_broken_float() except -1:
     cdef double test = PyFloat_Unpack8(NaN, 0)
 
-    cdef int result
     cdef char *buf = <char *>&test
 
     if not is_big_endian(SYSTEM_ENDIAN):
         if swap_bytes(buf, 8) == -1:
             PyErr_NoMemory()
 
-    result = memcmp(NaN, buf, 8)
-
-    return result != 0
+    return memcmp(NaN, buf, 8) != 0
 
 
 cdef class cBufferedByteStream(object):
