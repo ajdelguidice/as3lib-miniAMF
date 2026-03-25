@@ -25,7 +25,7 @@ dependencies = [
 Homepage = "https://github.com/ajdelguidice/as3lib-miniAMF"
 
 [pyproject.optional-dependencies]
-appengine = ["appengine-python-standard"]
+appengine = ["appengine-python-standard", "rsa"]
 docs = ["sphinx >= 1.5"]
 django = ["Django"]
 sqlachemy = ["SQLAlchemy"]
@@ -48,7 +48,7 @@ skip_missing_interpreters = true
 
 [tool.tox.env_run_base]
 runner = "uv-venv-runner"
-deps = ["flake8","defusedxml","Django","SQLAlchemy","Twisted","appengine-python-standard"]
+deps = ["flake8","defusedxml","Django","SQLAlchemy","Twisted","appengine-python-standard","rsa"]
 commands = [["python","-m","unittest","discover","miniamf/tests"]]
 
 [tool.tox.env.py3]
