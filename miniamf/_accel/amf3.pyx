@@ -16,7 +16,6 @@ from miniamf._accel.util cimport cBufferedByteStream, BufferedByteStream
 from miniamf._accel cimport codec
 import miniamf
 from miniamf import util, amf3, xml, flex
-import types
 
 
 try:
