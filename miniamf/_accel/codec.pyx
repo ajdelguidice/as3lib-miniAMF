@@ -141,13 +141,7 @@ cdef class IndexedCollection(object):
         return self.length - 1
 
     def __iter__(self):
-        cdef list x = []
-        cdef Py_ssize_t idx
-
-        for idx from 0 <= idx < self.length:
-            x.append(<object>self.data[idx])
-
-        return iter(x)
+        return (<object>self.data[i] for i in range(0, self.length))
 
     def __len__(self):
         return self.length
