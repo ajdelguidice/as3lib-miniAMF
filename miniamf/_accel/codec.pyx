@@ -9,6 +9,7 @@ C-extension for L{miniamf.amf3} Python module in L{Mini-AMF<miniamf>}.
 """
 
 from cpython cimport *
+from miniamf._accel.util cimport cBufferedByteStream, BufferedByteStream
 
 cdef extern from "datetime.h":
     void PyDateTime_IMPORT()
@@ -16,18 +17,13 @@ cdef extern from "datetime.h":
     int PyDate_CheckExact(object)
     int PyTime_CheckExact(object)
 
-from miniamf._accel.util cimport cBufferedByteStream, BufferedByteStream
-
-import types
 import miniamf
 from miniamf import util, xml
 import datetime
-
+from types import BuiltinFunctionType, GeneratorType
 
 cdef object MixedArray = miniamf.MixedArray
 cdef object Undefined = miniamf.Undefined
-cdef object BuiltinFunctionType = types.BuiltinFunctionType
-cdef object GeneratorType = types.GeneratorType
 
 PyDateTime_IMPORT
 
