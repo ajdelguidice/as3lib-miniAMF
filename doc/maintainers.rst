@@ -1,13 +1,11 @@
 Maintainers
 ===========
 
-Mini-AMF is lightly maintained by `Zack Weinberg
-<https://www.owlfolio.org/>`_.  To report bugs in Mini-AMF, please
-use `Github issues <https://github.com/zackw/mini-amf/issues>`_.
-
-Mini-AMF is **not supported** by anyone.  We do not have the
-manpower to help you *use* it, nor to help you debug your program that
-uses it.
+as3lib-miniAMF is a fork of Mini-AMF `Mini-AMF
+<https://github.com/zackw/mini-amf>`_. as3lib-miniAMF is meant to be
+used with `as3lib <https://github.com/ajdelguidice/python-as3lib>`_
+but can be used without it. I will be maintaining as3lib-miniAMF as
+long as as3lib is.
 
 
 Former PyAMF maintainers

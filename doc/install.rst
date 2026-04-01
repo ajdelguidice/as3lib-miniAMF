@@ -2,15 +2,15 @@
  Installation Guide
 =====================
 
-Mini-AMF requires Python_ 2.7 or 3.4+, and DefusedXML_.
+as3lib-miniAMF requires Python_ 3.9+, and DefusedXML_.
 
 
 Easy Installation
 =================
 
-The easiest way to install Mini-AMF is with ``pip``::
+The easiest way to install as3lib-miniAMF is with ``pip``::
 
-    pip install mini-amf
+    pip install as3lib-miniAMF
 
 
 Manual Installation
@@ -20,14 +20,10 @@ First install DefusedXML_.  If you wish to build the C accelerator
 module, you will also need a C compiler and the libraries for
 compiling Python extensions.
 
-:doc:`download` and unpack the Mini-AMF archive of your choice::
+:doc:`download` the as3lib-miniAMF archive of your choice and install it
+using ``pip``::
 
-    tar zxfv Mini-AMF-<version>.tar.gz
-    cd Mini-AMF-<version>
-
-Then install using the ``setup.py`` script::
-
-    python setup.py install
+    pip install as3lib-miniamf-<version>.tar.gz
 
 This will byte-compile the Python source code and install it in the
 ``site-packages`` directory of your Python installation.
@@ -36,23 +32,24 @@ This will byte-compile the Python source code and install it in the
 Unit Tests
 ==========
 
-Unit tests can also be run via ``setup.py``.  No additional modules
-are required::
+Unit tests for as3lib-miniAMF require uv_. I will not go over installing
+uv because it has much better instructions. Once uv is installed, you
+need to install tox as a uv tool which can be done using the following
+command::
 
-    python setup.py test
+    uv tool install tox --with tox-uv
+
+Once tox is installed, you can run the unit tests by running the following
+command from the source directory::
+
+    uv tool run tox
 
 
 C Accelerator Module
 ====================
 
-The C accelerator module is broken, and will not be compiled or
-installed by default.  If you want to experiment with it, supply
-the ``--with-accel`` option::
+The C accelerator modules are currently not optional.
 
-    python setup.py --with-accel test
-
-You will need Cython_ to build the module, and do not be surprised
-when the test runner crashes.
 
 Documentation
 =============
