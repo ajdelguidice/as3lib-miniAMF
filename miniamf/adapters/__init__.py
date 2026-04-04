@@ -9,11 +9,21 @@ packages. This includes registering classes, setting up type maps etc.
 """
 
 from importlib import import_module
-from importlib.resources import files
 import os.path
 import glob
 
 from miniamf.util import imports
+
+try:
+    from importlib.resources import files
+
+    def __getAdapters():
+        return glob.iglob(os.path.join(files('miniamf'), 'adapters', '_*.py'))
+except:  # Python 3.4 - 3.9 compatibility
+    from importlib.util import find_spec
+
+    def __getAdapters():
+        return glob.iglob(os.path.join(os.path.dirname(find_spec('miniamf').origin), 'adapters', '_*.py'))
 
 
 __all__ = [
@@ -48,7 +58,7 @@ def register_adapters():
     if adapters_registered is True:
         return
 
-    for f in glob.iglob(os.path.join(files('miniamf'), 'adapters', '_*.py')):
+    for f in __getAdapters():
         mod = os.path.basename(f).split(os.path.extsep, 1)[0]
 
         if mod == '__init__':
