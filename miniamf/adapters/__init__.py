@@ -19,7 +19,7 @@ try:
 
     def __getAdapters():
         return glob.iglob(os.path.join(files('miniamf'), 'adapters', '_*.py'))
-except:  # Python 3.4 - 3.9 compatibility
+except ImportError:  # Python 3.4 - 3.9 compatibility
     from importlib.util import find_spec
 
     def __getAdapters():
