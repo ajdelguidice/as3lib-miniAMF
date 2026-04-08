@@ -39,3 +39,6 @@ def get_version(elements):
         first = False
 
     return "".join(v)
+
+
+version = Version(*(0, 9, 5))  # version 4
