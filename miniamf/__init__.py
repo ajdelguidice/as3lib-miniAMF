@@ -350,10 +350,10 @@ def unregister_class_loader(loader):
     @raise LookupError: The C{loader} was not registered.
     @see: L{register_class_loader}
     """
-    try:
-        CLASS_LOADERS.remove(loader)
-    except ValueError:
+    if loader not in CLASS_LOADERS:
         raise LookupError("loader not registered")
+
+    CLASS_LOADERS.remove(loader)
 
 
 def _load_class_from_module(alias):
@@ -555,14 +555,14 @@ def flex_loader(alias):
     if not alias.startswith('flex.'):
         return
 
-    try:
-        if alias.startswith('flex.messaging.messages'):
-            import miniamf.flex.messaging
-        elif alias.startswith('flex.messaging.io'):
-            import miniamf.flex
-        elif alias.startswith('flex.data.messages'):
-            import miniamf.flex.data  # noqa
+    if alias.startswith('flex.messaging.messages'):
+        import miniamf.flex.messaging
+    elif alias.startswith('flex.messaging.io'):
+        import miniamf.flex
+    elif alias.startswith('flex.data.messages'):
+        import miniamf.flex.data  # noqa
 
+    try:
         return CLASS_CACHE[alias]
     except KeyError:
         raise UnknownClassAlias(alias)
