@@ -153,10 +153,10 @@ def load(name_or_file):
     if isinstance(name_or_file, str):
         with open(name_or_file, "rb") as f:
             return _load(f)
-    elif not hasattr(f, "read"):
-        raise ValueError("Readable stream expected")
-    else:
+    elif hasattr(f, "read"):
         return _load(f)
+    else:
+        raise ValueError("Readable stream expected")
 
 
 def save(sol, name_or_file, encoding=miniamf.AMF0):
@@ -172,10 +172,10 @@ def save(sol, name_or_file, encoding=miniamf.AMF0):
     if isinstance(name_or_file, str):
         with open(name_or_file, "wb+") as f:
             f.write(encoded)
-    elif not hasattr(f, "write"):
-        raise ValueError("Writable stream expected")
-    else:
+    elif hasattr(f, "write"):
         f.write(encoded)
+    else:
+        raise ValueError("Writable stream expected")
 
 
 class SOL(dict):
