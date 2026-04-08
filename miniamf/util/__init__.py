@@ -22,6 +22,8 @@ except (ImportError, ModuleNotFoundError):
 
 __all__ = [
     'BufferedByteStream',
+    'utcfromtimestamp',
+    'utcnow',
     'get_timestamp',
     'get_datetime',
     'get_properties',
