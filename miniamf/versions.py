@@ -14,9 +14,7 @@ class Version(tuple):
     _version = None
 
     def __new__(cls, *args):
-        x = tuple.__new__(cls, args)
-
-        return x
+        return tuple.__new__(cls, args)
 
     def __str__(self):
         if not self._version:
