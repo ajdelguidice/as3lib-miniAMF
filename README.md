@@ -1,5 +1,5 @@
 # as3lib-miniAMF
-This is a fork of <a href="https://pypi.org/project/Mini-AMF/">Mini-AMF</a> that aims to bring back some of the cut/broken functionality and work properly on newer python versions. Python 3.9 is the current minimum version but this fork should work all the way back to python 3.4.
+This is a fork of <a href="https://pypi.org/project/Mini-AMF/">Mini-AMF</a> which brings back the cut functionality and works properly on newer python versions. Python 3.9 is the current minimum version but this fork should work all the way back to python 3.4.
 
 This package uses the same directories as miniamf. Installing them together will break both of them.
 
@@ -19,6 +19,8 @@ Elixir support will not be brought back due to being the project being abandoned
 
 ## TODO
 Fix library when cython modules are not installed.
+<br>Rename to as3lib-AMF
+<br>Change package directory to as3lib.AMF
 <br>Fix build script on python 3.4 - 3.8.
 <br>Fix unclosed SQL database warnings when cython modules are used
 <br>Fix the remaining test failures (django and appengine).
