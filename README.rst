@@ -24,13 +24,13 @@ Elixir support will not be brought back due to being the project being abandoned
 TODO
 ~~~~
 
-Fix library when cython modules are not installed.
-<br>Rename to as3lib-AMF
-<br>Change package directory to as3lib.AMF
-<br>Fix build script on python 3.4 - 3.8.
-<br>Fix unclosed SQL database warnings when cython modules are used
-<br>Fix the remaining test failures (django and appengine).
-<br>Add tests for AS3 vectors and dictionaries.
-<br>Update docs
-<br>Don't use epydoc for docs
-<br>Convert readme back to rst to make docs work
+| Fix library when cython modules are not installed.
+| Rename to as3lib-AMF
+| Change package directory to as3lib.AMF
+| Fix build script on python 3.4 - 3.8.
+| Fix unclosed SQL database warnings when cython modules are used
+| Fix the remaining test failures (django and appengine).
+| Add tests for AS3 vectors and dictionaries.
+| Update docs
+| Don't use epydoc for docs
+| Convert readme back to rst to make docs work
