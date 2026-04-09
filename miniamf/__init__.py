@@ -14,9 +14,10 @@ is compatible with the Adobe U{Flash Player
 import inspect
 from importlib import import_module
 
-from . import util, _version
+from . import util
 from .adapters import register_adapters, get_adapter
 from .alias import ClassAlias, UnknownClassAlias
+from .versions import version
 
 
 __all__ = [
@@ -30,7 +31,7 @@ __all__ = [
 ]
 
 #: Mini-AMF version number.
-__version__ = version = _version.version
+__version__ = version
 
 #: Class alias mapping support. Contains two types of keys: The string alias
 #: related to the class and the class object itself. Both point to the linked
