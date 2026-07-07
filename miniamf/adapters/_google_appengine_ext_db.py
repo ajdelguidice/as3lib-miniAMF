@@ -111,12 +111,12 @@ class DataStoreClassAlias(gae_base.BaseDatastoreClassAlias):
                 obj, attr, codec=codec,
             )
 
-        try:
-            prop = self.reference_properties[attr]
-        except KeyError:
+        if attr not in self.reference_properties:
             return super(DataStoreClassAlias, self).getAttribute(
                 obj, attr, codec=codec,
             )
+
+        prop = self.reference_properties[attr]
 
         key = prop.get_value_for_datastore(obj)
 
@@ -167,9 +167,9 @@ class DataStoreClassAlias(gae_base.BaseDatastoreClassAlias):
                 if not prop:
                     continue
 
-                try:
+                if name in attrs:
                     value = attrs[name]
-                except KeyError:
+                else:
                     value = self.getAttribute(obj, name, codec=codec)
 
                 attrs[name] = models.encode_model_property(

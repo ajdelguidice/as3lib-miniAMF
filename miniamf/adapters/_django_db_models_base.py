@@ -95,10 +95,9 @@ class DjangoClassAlias(miniamf.ClassAlias):
 
         for field in self.meta.parents.values():
             parent_fields.append(field.attname)
-            try:
+
+            if field.name in self.relations:
                 del self.relations[field.name]
-            except KeyError:
-                continue
 
         self.exclude_attrs.update(parent_fields)
 
@@ -211,13 +210,10 @@ class DjangoClassAlias(miniamf.ClassAlias):
 
         if self.decodable_properties:
             for n in self.decodable_properties:
-                if n in self.relations:
+                if n in self.relations or n not in self.fields:
                     continue
 
-                try:
-                    f = self.fields[n]
-                except KeyError:
-                    continue
+                f = self.fields[n]
 
                 attrs[f.attname] = self._decodeValue(f, attrs[n])
 
@@ -244,11 +240,8 @@ class DjangoClassAlias(miniamf.ClassAlias):
         if not getattr(obj, pk_attr):
             for name, relation in self.relations.items():
                 if isinstance(relation, related.ManyToManyField):
-                    try:
-                        if len(attrs[name]) == 0:
-                            del attrs[name]
-                    except KeyError:
-                        pass
+                    if name in attrs and len(attrs[name]) == 0:
+                        del attrs[name]
 
         return attrs
 
@@ -302,9 +295,7 @@ def getDjangoObjects(context):
     c = context.extra
     k = 'django_objects'
 
-    try:
-        return c[k]
-    except KeyError:
+    if k not in c:
         c[k] = DjangoReferenceCollection()
 
     return c[k]
