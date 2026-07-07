@@ -2,7 +2,6 @@ include *.rst
 include *.txt
 include *.ini
 include *.yml
-include miniamf/_accel/PyFloat_Compat.h
 recursive-include miniamf *.pyx
 recursive-include miniamf *.pxd
 recursive-include miniamf *.py
@@ -13,4 +12,5 @@ prune doc/_build
 prune .tox
 global-exclude *.pyc
 global-exclude *.c
+global-exclude *.h
 global-exclude __pycache__
