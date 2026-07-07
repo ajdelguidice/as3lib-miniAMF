@@ -3,6 +3,77 @@ Changelog
 
 This document contains a detailed log of the history of Mini-AMF.
 
+0.9.5 (???)
+------------------
+- Use mini-AMF version scheme
+- Removals:
+
+  - miniamf.util.get_module
+
+- Reintroduced features:
+
+  - appengine
+  - twisted
+
+- Lower Python requirement to 3.9
+- Fix more Flake8 complaints
+- Use callable builtin instead of checking for __call__
+- Use importlib.import_module instead of doing it manually with __import__ in adapters.__init__.get_adapter
+- Properly add PyFloat_* compatibility to _accel modules using `inline c <https://cython.readthedocs.io/en/latest/src/userguide/external_C_code.html#including-verbatim-c-code>`__
+- Add experimental compatibility for python 3.4 - 3.8 (Edits to the build script are required to get it to work)
+
+
+0.9.4 (2025-09-21)
+------------------
+(Previously versioned as 3)
+- Removals:
+
+  - util.pure.Excursion
+
+- Fix some Flake8 complaints
+- Remove Django 0.x and 1.x compatibility
+- Make util.pure.BufferedByteStream a child of io.BytesIO
+- Add util.utcfromtimestamp to prep for python remove it from datetime
+- Fix _accel modules on python 3.10
+
+
+0.9.3 (2025-09-11)
+------------------
+(Previously versioned as 2)
+- Reintroduced features:
+
+  - Flex
+  - Remoting
+  - SQLAlchemy
+  - wsgi
+  - Django
+
+- Add util.utcnow to prep for python remove it from datetime
+- Add AS3 vector and dictionary support
+
+
+0.9.2 (2025-07-14)
+------------------
+(Previously versioned as 1)
+- First as3lib-miniAMF release
+- Removed dependencies:
+
+  - six
+  - setuptools
+
+- Removed python 2 support
+- Bump python requirement to >=3.11
+- Fix cython module compilation and make them pass all tests
+- Cython modules are no longer optional
+- Replace pkg_resouces with importlib.resources
+- Remove cElementTree from xml stuff
+- Properly handle files in sol.save and sol.load
+- Use find_spec, create_module, and exec_module in util.imports.ModuleFinder instead of find_module and load_module
+- Replace setup.py with pyproject.toml
+- Migrate tox.ini to pyproject.toml
+- Remove most "from __future__ import absolute_import" imports.
+
+
 0.9.1 (2017-03-07)
 ------------------
 - Corrections to the documentation and the way the documentation is
