@@ -11,11 +11,13 @@ Tests for XML library integration
 
 
 import defusedxml
+from importlib import import_module
+from importlib.util import find_spec
 import unittest
 
 import miniamf
 import miniamf.xml
-from miniamf import util
+from miniamf.util import BufferedByteStream
 
 
 class _BaseTestCase(unittest.TestCase):
@@ -24,10 +26,10 @@ class _BaseTestCase(unittest.TestCase):
     """
 
     def setUp(self):
-        try:
-            self.etree = util.get_module(self.mod)
-        except ImportError:
+        if find_spec(self.mod) is None:
             self.skipTest('%r is not available' % (self.mod,))
+
+        self.etree = import_module(self.mod)
 
         previous_etree = miniamf.set_default_etree(self.etree)
 
@@ -45,7 +47,7 @@ class _BaseTestCase(unittest.TestCase):
         return new_cls
 
     def check_amf0(self, bytes, xml):
-        b = util.BufferedByteStream(bytes)
+        b = BufferedByteStream(bytes)
 
         self.assertEqual(b.read_char(), 15)
 
@@ -55,7 +57,7 @@ class _BaseTestCase(unittest.TestCase):
         self.assertEqual(b.read(), xml)
 
     def check_amf3(self, bytes, xml):
-        b = util.BufferedByteStream(bytes)
+        b = BufferedByteStream(bytes)
 
         self.assertEqual(b.read_char(), 11)
 
