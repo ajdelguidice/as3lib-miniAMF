@@ -4,22 +4,16 @@ extern "C" {
 
 #include <Python.h>
 
-#ifdef _PyFloat_Pack4
+#if PY_VERSION_HEX < 0x030b0000
 int PyFloat_Pack4(double x, char *p, int le) {
     return _PyFloat_Pack4(x, (unsigned char *)p, le);
 }
-#endif
-#ifdef _PyFloat_Pack8
 int PyFloat_Pack8(double x, char *p, int le) {
     return _PyFloat_Pack8(x, (unsigned char *)p, le);
 }
-#endif
-#ifdef _PyFloat_Unpack4
 double PyFloat_Unpack4(const char *p, int le) {
     return _PyFloat_Unpack4((const unsigned char*)p, le);
 }
-#endif
-#ifdef _PyFloat_Unpack8
 double PyFloat_Unpack8(const char *p, int le) {
     return _PyFloat_Unpack8((const unsigned char*)p, le);
 }
