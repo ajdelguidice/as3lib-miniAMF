@@ -33,7 +33,7 @@ twisted = ["Twisted"]
 
 
 [tool.setuptools]
-packages=["miniamf", "miniamf._accel", "miniamf.adapters", "miniamf.util", "miniamf.flex", "miniamf.remoting", "miniamf.remoting.client", "miniamf.remoting.gateway"]
+packages=["miniamf", "miniamf._accel", "miniamf.adapters", "miniamf.util", "miniamf.flex", "miniamf.remoting", "miniamf.remoting.client", "miniamf.remoting.gateway", "miniamf.tests", "miniamf.tests.adapters", "miniamf.tests.adapters.django_app", "miniamf.tests.adapters.django_app.adapters", "miniamf.tests.adapters.google", "miniamf.tests.imports", "miniamf.tests.remoting", "miniamf.tests.remoting.gateway"]
 ext-modules = [
     {name = "miniamf._accel.util", sources = ["miniamf/_accel/util.pyx"]},
     {name = "miniamf._accel.codec", sources = ["miniamf/_accel/codec.pyx"]},
@@ -51,8 +51,9 @@ skip_missing_interpreters = true
 
 [tool.tox.env_run_base]
 runner = "uv-venv-runner"
-deps = ["flake8","defusedxml","Django","SQLAlchemy","Twisted","appengine-python-standard","rsa"]
+deps = ["defusedxml","Django","SQLAlchemy","Twisted","appengine-python-standard","rsa"]
 commands = [["python","-m","unittest","discover","miniamf/tests"]]
 
 [tool.tox.env.py3]
-commands = [["-","flake8","--exclude","build,dist,doc,.tox"],["python","-m","unittest","discover","miniamf/tests"]]
+deps = ["flake8"]
+commands = [["-","flake8","--exclude","build,dist,doc,.tox"]]
