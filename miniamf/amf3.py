@@ -1748,10 +1748,8 @@ def encode_int(n):
     @return: The encoded string
     @raise OverflowError: C{c} is out of range.
     """
-    try:
+    if n in ENCODED_INT_CACHE:
         return ENCODED_INT_CACHE[n]
-    except KeyError:
-        pass
 
     if n < MIN_29B_INT or n > MAX_29B_INT:
         raise OverflowError("Out of range")

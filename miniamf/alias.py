@@ -515,10 +515,8 @@ class ClassAlias(object):
             context = codec.context
 
             for k in self.proxy_attrs:
-                try:
+                if k in attrs:
                     v = attrs[k]
-                except KeyError:
-                    continue
 
                 attrs[k] = context.getObjectForProxy(v)
 
