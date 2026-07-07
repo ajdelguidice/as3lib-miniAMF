@@ -18,6 +18,7 @@ Changes
 - Refactored util.pure.BufferedByteStream to remove util.pure.Excursion. It is now a child of io.BytesIO.
 - Added utcnow and utcfromtimestamp to the util module in preperation for their removal from datetime.
 - Brought back the flex and remoting support that was cut in miniamf. Everything except Elixir is present. NOTE: `this commit <https://github.com/StdCarrot/Py3AMF/commit/5a9963f2ee5622b638dcccb374fdc3c70fdc567d>`__ was used as a reference to fix the twisted tests.
+- Removed miniamf.util.get_module. Using importlib instead removes the need for except handling and is faster in every case where it was used.
 
 Elixir support will not be brought back due to being the project being abandoned.
 
@@ -33,4 +34,3 @@ TODO
 | Add tests for AS3 vectors and dictionaries.
 | Update docs
 | Don't use epydoc for docs
-| Convert readme back to rst to make docs work
