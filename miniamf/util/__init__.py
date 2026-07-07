@@ -9,7 +9,6 @@ AMF Utilities.
 
 import calendar
 import datetime
-from importlib import import_module
 import inspect
 
 import miniamf
@@ -31,7 +30,6 @@ __all__ = [
     'get_class_alias',
     'is_class_sealed',
     'get_class_meta',
-    'get_module',
 ]
 
 
@@ -200,13 +198,3 @@ def get_class_meta(klass):
             meta[prop + '_attrs'] = get_func(prop)
 
     return meta
-
-
-def get_module(mod_name):
-    """
-    Load and return a module based on C{mod_name}.
-    """
-    if mod_name == '':
-        raise ImportError('Unable to import empty module')
-
-    return import_module(mod_name)
