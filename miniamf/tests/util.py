@@ -230,9 +230,16 @@ def get_fqcn(klass):
     return '%s.%s' % (klass.__module__, klass.__name__)
 
 
+def has_appengine_sdk():
+    """
+    Whether or not the Google AppEnging SDK is bootstrapped.
+    """
+    return find_spec('.appengine', 'google') is not None
+
+
 def expectedFailureIfAppengine(func):
-    if (find_spec('.appengine', 'google') is None or
-       os.environ.get('SERVER_SOFTWARE', None) is None):
+    if (not has_appengine_sdk() or
+        os.environ.get('SERVER_SOFTWARE', None) is None):
         return func
     return unittest.expectedFailure(func)
 
