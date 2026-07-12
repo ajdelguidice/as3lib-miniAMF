@@ -231,7 +231,7 @@ def get_fqcn(klass):
 
 
 def expectedFailureIfAppengine(func):
-    if (find_spec('google.appengine') is None or
+    if (find_spec('.appengine', 'google') is None or
        os.environ.get('SERVER_SOFTWARE', None) is None):
         return func
     return unittest.expectedFailure(func)
@@ -243,9 +243,11 @@ def _join(parts):
     for p in parts:
         if isinstance(p, int):
             ret.append(p)
-        elif not isinstance(p, str):
-            ret.extend(_join(p))
-        else:
+        elif isinstance(p, str):
+            ret.extend(p.encode('utf-8'))
+        elif isinstance(p, bytes):
             ret.extend(p)
+        else:
+            ret.extend(_join(p))
 
     return bytes(ret)
