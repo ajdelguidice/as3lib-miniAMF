@@ -28,7 +28,7 @@ class BaseTestCase(util.ClassCacheClearingTestCase):
     ]
 
     def setUp(self):
-        if not has_appengine_sdk():
+        if not util.has_appengine_sdk():
             self.skipTest('google appengine sdk not found')
 
         from google.appengine.ext import testbed
@@ -46,10 +46,3 @@ class BaseTestCase(util.ClassCacheClearingTestCase):
             func()
 
         self.addCleanup(self.testbed.deactivate)
-
-
-def has_appengine_sdk():
-    """
-    Whether or not the Google AppEnging SDK is bootstrapped.
-    """
-    return find_spec('google.appengine') is not None
