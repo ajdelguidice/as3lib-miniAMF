@@ -11,93 +11,25 @@ import unittest
 import sys
 import os
 import datetime
+from importlib.util import find_spec
 from shutil import rmtree
 from tempfile import mkdtemp
 
 import miniamf
 from miniamf.tests import util
 
-try:
-    import django
-except ImportError:
-    django = None
 
-if django and django.VERSION < (1, 0):
-    # don't support Django < 1.0
-    django = None
-
-
-# django specific imports
-setup_test_environment = None
-teardown_test_environment = None
-create_test_db = None
-destroy_test_db = None
-
-context = None
 storage = None
+context = None
 
-# will be miniamf.adapters._django_db_models_base
-adapter = None
-
-models = None
-
-# required for django <1.6 + python2.6
-__path__ = []
+django = None
+django_test_utils = None
 
 
-def init_django():
-    """
-    Bootstrap Django and initialise this module
-    """
-    global create_test_db, destroy_test_db, setup_test_environment
-    global teardown_test_environment, adapter
-
-    if not django:
-        return
-
-    sys.path.insert(0, os.path.dirname(__file__))
-    os.environ['DJANGO_SETTINGS_MODULE'] = (
-        'django_app.settings'
-    )
-
-    from django.conf import settings
-
-    from django_app import settings as app_settings
-
-    app_settings.INSTALLED_APPS = tuple(
-        list(app_settings.INSTALLED_APPS) + [__name__]
-    )
-
-    try:
-        settings.configure(**app_settings.__dict__)
-    except (RuntimeError, TypeError):
-        for attr in dir(app_settings):
-            if not attr.isupper():
-                continue
-
-            setattr(settings, attr, getattr(app_settings, attr))
-
-    try:
-        django.setup()
-    except AttributeError:
-        pass
-
-    from django.test.utils import setup_test_environment  # noqa
-    from django.test.utils import teardown_test_environment  # noqa
-
-    adapter = miniamf.get_adapter('django.db.models.base')
-
-    try:
-        from django.test.utils import create_test_db, destroy_test_db
-    except ImportError:
-        from django.db import connection
-
-        create_test_db = connection.creation.create_test_db
-        destroy_test_db = connection.creation.destroy_test_db
-
-        del connection
-
-    return True
+if find_spec('django'):
+    import django
+    import miniamf.adapters._django_db_models_base as adapter
+    import django.test.utils as django_test_utils
 
 
 def setUpModule():
@@ -110,19 +42,46 @@ def setUpModule():
     global context, models, storage
 
     context = {
-        'sys.path': sys.path[:],
+        'sys.path': sys.path.copy(),
         'sys.modules': sys.modules.copy(),
         'os.environ': os.environ.copy(),
     }
 
-    if init_django():
-        from django.core.files.storage import FileSystemStorage
-        from django_app.adapters import models  # noqa
+    sys.path.insert(0, os.path.dirname(__file__))
+    os.environ['DJANGO_SETTINGS_MODULE'] = (
+        'django_app.settings'
+    )
 
-        setup_test_environment()
+    from django.conf import settings
+    from django_app import settings as app_settings
 
-        context['DB_NAME'] = create_test_db(verbosity=0, autoclobber=True)
-        storage = FileSystemStorage(mkdtemp())
+    app_settings.INSTALLED_APPS = (*app_settings.INSTALLED_APPS, __name__)
+
+    try:
+        settings.configure(**app_settings.__dict__)
+    except (RuntimeError, TypeError):
+        for attr in dir(app_settings):
+            if not attr.isupper():
+                continue
+
+            setattr(settings, attr, getattr(app_settings, attr))
+
+    if hasattr(django, 'setup'):
+        django.setup()
+
+    if hasattr(django_test_utils, 'create_test_db'):
+        create_test_db = django_test_utils.create_test_db
+    else:
+        from django.db import connection
+        create_test_db = connection.creation.create_test_db
+
+    django_test_utils.setup_test_environment()
+
+    from django_app.adapters import models
+    from django.core.files.storage import FileSystemStorage
+
+    context['DB_NAME'] = create_test_db(verbosity=0, autoclobber=True)
+    storage = FileSystemStorage(mkdtemp())
 
 
 def tearDownModule():
@@ -130,11 +89,15 @@ def tearDownModule():
         return
 
     # remove all the stuff that django installed
-    if teardown_test_environment:
-        teardown_test_environment()
+    django_test_utils.teardown_test_environment()
 
-    if destroy_test_db:
-        destroy_test_db(context['DB_NAME'], verbosity=0)
+    if hasattr(django_test_utils, 'destroy_test_db'):
+        destroy_test_db = django_test_utils.destroy_test_db
+    else:
+        from django.db import connection
+        destroy_test_db = connection.creation.destroy_test_db
+
+    destroy_test_db(context['DB_NAME'], verbosity=0)
 
     if storage:
         rmtree(storage.location, ignore_errors=True)
@@ -691,9 +654,7 @@ class ImageTestCase(BaseTestCase):
     """
 
     def setUp(self):
-        try:
-            import PIL  # noqa
-        except ImportError:
+        if not find_spec('PIL'):
             self.skipTest("'PIL' is not available")
 
         BaseTestCase.setUp(self)
