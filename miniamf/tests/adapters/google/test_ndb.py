@@ -6,9 +6,10 @@ import datetime
 
 import miniamf
 from miniamf.tests.adapters import google
+from miniamf.tests.util import has_appengine_sdk
 
 
-if google.has_appengine_sdk():
+if has_appengine_sdk():
     from google.appengine.ext import ndb
 
     from . import _ndb_models as models
