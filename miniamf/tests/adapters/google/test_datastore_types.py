@@ -4,9 +4,10 @@ Tests for PyAMF integration with L{google.appengine.api.datastore_types}
 
 import miniamf
 from miniamf.tests.adapters import google
+from miniamf.tests.util import has_appengine_sdk
 
 
-if google.has_appengine_sdk():
+if has_appengine_sdk():
     from google.appengine.api import datastore_types
 
     adapter = miniamf.get_adapter('google.appengine.api.datastore_types')

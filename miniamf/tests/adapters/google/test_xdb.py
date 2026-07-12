@@ -13,13 +13,11 @@ import struct
 import miniamf
 from miniamf import amf3
 
-from miniamf.tests import util
 from miniamf.tests.adapters import google
+from miniamf.tests.util import has_appengine_sdk, Spam
 
-Spam = util.Spam
 
-
-if google.has_appengine_sdk():
+if has_appengine_sdk():
     from google.appengine.ext import db
     from google.appengine.ext.db import polymodel
 
