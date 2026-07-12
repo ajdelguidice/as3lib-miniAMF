@@ -21,11 +21,13 @@ This document contains a detailed log of the history of Mini-AMF.
 - Use importlib.import_module instead of doing it manually with __import__ in adapters.__init__.get_adapter
 - Properly add PyFloat_* compatibility to _accel modules using `inline c <https://cython.readthedocs.io/en/latest/src/userguide/external_C_code.html#including-verbatim-c-code>`__
 - Add experimental compatibility for python 3.4 - 3.8 (Edits to the build script are required to get it to work)
+- Clean up django adapter test harness
 
 
 0.9.4 (2025-09-21)
 ------------------
 (Previously versioned as 3)
+
 - Removals:
 
   - util.pure.Excursion
@@ -40,6 +42,7 @@ This document contains a detailed log of the history of Mini-AMF.
 0.9.3 (2025-09-11)
 ------------------
 (Previously versioned as 2)
+
 - Reintroduced features:
 
   - Flex
@@ -55,6 +58,7 @@ This document contains a detailed log of the history of Mini-AMF.
 0.9.2 (2025-07-14)
 ------------------
 (Previously versioned as 1)
+
 - First as3lib-miniAMF release
 - Removed dependencies:
 
