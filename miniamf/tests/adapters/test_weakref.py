@@ -99,14 +99,6 @@ class WeakSetTestCase(BaseTestCase):
     """
     Tests for L{weakref.WeakSet}
     """
-
-    def setUp(self):
-        # WeakSet is Python 2.7+
-        if not hasattr(weakref, 'WeakSet'):
-            self.skipTest('No weakref.WeakSet available')
-
-        BaseTestCase.setUp(self)
-
     def getReferent(self):
         return Foo(), Foo(), Foo()
 
