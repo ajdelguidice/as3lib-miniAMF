@@ -6,9 +6,6 @@ This document contains a detailed log of the history of Mini-AMF.
 0.9.5 (???)
 ------------------
 - Use mini-AMF version scheme
-- Removals:
-
-  - miniamf.util.get_module
 
 - Reintroduced features:
 
@@ -22,6 +19,7 @@ This document contains a detailed log of the history of Mini-AMF.
 - Properly add PyFloat_* compatibility to _accel modules using `inline c <https://cython.readthedocs.io/en/latest/src/userguide/external_C_code.html#including-verbatim-c-code>`__
 - Add experimental compatibility for python 3.4 - 3.8 (Edits to the build script are required to get it to work)
 - Clean up django adapter test harness
+- miniamf.util.get_module no longer raises an exception. Instead, it returns None if module can not be imported.
 
 
 0.9.4 (2025-09-21)
