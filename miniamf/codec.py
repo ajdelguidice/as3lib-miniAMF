@@ -9,7 +9,7 @@ import types
 import datetime
 
 import miniamf
-from miniamf import util, xml
+from miniamf import OBJECT_NOT_FOUND, util, xml
 
 
 __all__ = [
@@ -218,10 +218,9 @@ class Context(object):
         @param klass: A class object or string alias.
         @return: The L{miniamf.ClassAlias} instance that describes C{klass}
         """
-        try:
-            return self._class_aliases[klass]
-        except KeyError:
-            pass
+        x = self._class_aliases.get(klass, OBJECT_NOT_FOUND)
+        if x is not OBJECT_NOT_FOUND:
+            return x
 
         try:
             alias = self._class_aliases[klass] = miniamf.get_class_alias(klass)
@@ -553,11 +552,9 @@ class Encoder(_Codec):
         type, then L{miniamf.EncodeError} will be raised.
         """
         key = type(data)
-        func = None
 
-        try:
-            func = self._func_cache[key]
-        except KeyError:
+        func = self._func_cache.get(key, OBJECT_NOT_FOUND)
+        if func is OBJECT_NOT_FOUND:
             func = self.getTypeFunc(data)
 
             if func is None:
