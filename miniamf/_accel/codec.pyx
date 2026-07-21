@@ -18,7 +18,7 @@ cdef extern from "datetime.h":
     int PyTime_CheckExact(object)
 
 import miniamf
-from miniamf import util, xml
+from miniamf import OBJECT_NOT_FOUND, util, xml
 import datetime
 from types import BuiltinFunctionType, GeneratorType
 
@@ -125,7 +125,7 @@ cdef class IndexedCollection(object):
         if p is None:
             return -1
 
-        return <Py_ssize_t>PyLong_AsLong(<object>p)
+        return <Py_ssize_t>PyLong_AsLong(p)
 
     cpdef Py_ssize_t append(self, object obj) except -1:
         self._increase_size()
@@ -252,10 +252,9 @@ cdef class Context(object):
         @param klass: The class object.
         @return: The L{ClassAlias} that is linked to C{klass}
         """
-        try:
-            return self.class_aliases[klass]
-        except KeyError:
-            pass
+        x = self.class_aliases.get(klass, OBJECT_NOT_FOUND)
+        if x is not OBJECT_NOT_FOUND:
+            return x
 
         try:
             alias = miniamf.get_class_alias(klass)
@@ -383,10 +382,10 @@ cdef class Decoder(Codec):
         """
         Reads an element from the data stream.
         """
-        cdef Py_ssize_t pos = self.stream.tell()
-
         if self.stream.at_eof():
             raise miniamf.EOStream
+
+        cdef Py_ssize_t pos = self.stream.tell()
 
         try:
             return self.readConcreteElement(self.stream.read_char())
@@ -636,10 +635,10 @@ cdef class Encoder(Codec):
         cdef Py_ssize_t start_pos, end_pos
         cdef char *buf = NULL
 
-        try:
-            element = self.bucket.pop(0)
-        except IndexError:
+        if not self.bucket:
             raise StopIteration
+
+        element = self.bucket.pop(0)
 
         start_pos = self.stream.tell()
 
