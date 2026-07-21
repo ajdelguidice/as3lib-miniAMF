@@ -10,12 +10,13 @@ AMF Utilities.
 import calendar
 import datetime
 import inspect
+from importlib.util import find_spec
 
 import miniamf
 
-try:
+if find_spec('.util', 'miniamf._accel'):
     from .._accel.util import BufferedByteStream
-except (ImportError, ModuleNotFoundError):
+else:
     from .pure import BufferedByteStream
 
 
@@ -198,3 +199,10 @@ def get_class_meta(klass):
             meta[prop + '_attrs'] = get_func(prop)
 
     return meta
+
+
+def is_module_importable(name, package=None):
+    try:
+        return find_spec(name, package) is not None
+    except Exception:
+        return False
