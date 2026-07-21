@@ -15,13 +15,9 @@ cimport cython
 from miniamf._accel.util cimport cBufferedByteStream, BufferedByteStream
 from miniamf._accel cimport codec
 import miniamf
-from miniamf import util, amf3, xml, flex
+from miniamf import OBJECT_NOT_FOUND, util, amf3, xml, flex
 
-
-try:
-    import zlib
-except ImportError:
-    zlib = None
+zlib = util.get_module('zlib')
 
 
 cdef char TYPE_UNDEFINED     = '\x00'
@@ -877,10 +873,13 @@ cdef class Encoder(codec.Encoder):
 
         for x in str_keys:
             self.serialiseString(x)
-            try:
-                self.writeElement(obj[x])
-            except KeyError:
+
+            k = obj.get(x, OBJECT_NOT_FOUND)
+
+            if k is OBJECT_NOT_FOUND:
                 self.writeElement(obj[int(x)])
+            else:
+                self.writeElement(k)
 
         if class_ref == 0:
             self.stream.write(&REF_CHAR, 1)
