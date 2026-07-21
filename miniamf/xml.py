@@ -7,8 +7,7 @@ Provides XML support.
 @since: 0.6
 """
 
-from importlib import import_module
-from importlib.util import find_spec
+from miniamf.util import get_module
 
 #: list of supported third party packages that support the C{etree}
 #: interface. At least enough for our needs anyway.
@@ -60,10 +59,10 @@ def find_libs():
     mapping = {}
 
     for mod in ETREE_MODULES:
-        if find_spec(mod) is None:
-            continue
+        etree = get_module(mod)
 
-        etree = import_module(mod)
+        if etree is None:
+            continue
 
         t = _get_etree_type(etree)
 
@@ -122,9 +121,9 @@ def _bootstrap():
         types, modules = find_libs()
 
     if ET is None:
-        try:
+        if len(types):
             etree = modules[types[0]]
-        except IndexError:
+        else:
             _no_et()
 
         set_default_interface(etree)
