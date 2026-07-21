@@ -203,13 +203,13 @@ def get_class_meta(klass):
     return meta
 
 
-def get_module(mod_name):
+def get_module(mod_name, package=None):
     '''
     Load and return a module based on C{mod_name}
 
     If module is not found, return None
     '''
     try:
-        return import_module(mod_name)
+        return import_module(mod_name, package)
     except Exception:
         return None
