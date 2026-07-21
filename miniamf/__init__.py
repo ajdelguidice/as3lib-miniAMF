@@ -81,6 +81,10 @@ ENCODING_TYPES = (AMF0, AMF3)
 #: Default encoding
 DEFAULT_ENCODING = AMF3
 
+#: Internal object for detecting if something is not found. Used when None can
+#: be used. Not meant to be used outside of this library
+OBJECT_NOT_FOUND = object()
+
 
 class UndefinedType(object):
     """
@@ -142,10 +146,10 @@ class ASObject(dict):
         dynamic = True
 
     def __getattr__(self, k):
-        try:
-            return self[k]
-        except KeyError:
+        x = self.get(k, OBJECT_NOT_FOUND)
+        if x is OBJECT_NOT_FOUND:
             raise AttributeError('Unknown attribute \'%s\'' % (k,))
+        return x
 
     def __setattr__(self, k, v):
         self[k] = v
@@ -279,9 +283,9 @@ def unregister_class(alias):
 
     @raise UnknownClassAlias: Unknown alias.
     """
-    try:
-        x = CLASS_CACHE[alias]
-    except KeyError:
+    x = CLASS_CACHE.get(alias, OBJECT_NOT_FOUND)
+
+    if x is OBJECT_NOT_FOUND:
         raise UnknownClassAlias('Unknown alias %r' % (alias,))
 
     if not x.anonymous:
@@ -301,12 +305,12 @@ def get_class_alias(klass_or_alias):
 
     @raise UnknownClassAlias: Unknown alias
     """
-    try:
-        return CLASS_CACHE[klass_or_alias]
-    except KeyError:
+    alias = CLASS_CACHE.get(klass_or_alias, OBJECT_NOT_FOUND)
+    if alias is OBJECT_NOT_FOUND:
         if isinstance(klass_or_alias, str):
             return load_class(klass_or_alias)
         raise UnknownClassAlias('Unknown alias for %r' % (klass_or_alias,))
+    return alias
 
 
 def register_class_loader(loader):
@@ -396,10 +400,9 @@ def load_class(alias):
     @rtype: C{classobj}
     """
     # Try the CLASS_CACHE first
-    try:
-        return CLASS_CACHE[alias]
-    except KeyError:
-        pass
+    x = CLASS_CACHE.get(alias, OBJECT_NOT_FOUND)
+    if x is not OBJECT_NOT_FOUND:
+        return x
 
     for loader in CLASS_LOADERS:
         klass = loader(alias)
@@ -480,15 +483,12 @@ def _get_amf_module(version, use_ext):
     else:
         packages = ('miniamf',)
 
-    exc = None
     for pkg in packages:
-        try:
-            return import_module(module_name, pkg)
+        mod = util.get_module(module_name, pkg)
+        if mod is not None:
+            return mod
 
-        except ImportError as e:
-            exc = e
-
-    raise exc
+    raise ImportError(f'No amf module found for version {version} in {packages}.')
 
 
 def get_decoder(encoding, *args, **kwargs):
@@ -563,10 +563,12 @@ def flex_loader(alias):
     elif alias.startswith('flex.data.messages'):
         import miniamf.flex.data  # noqa
 
-    try:
-        return CLASS_CACHE[alias]
-    except KeyError:
+    x = CLASS_CACHE.get(alias, OBJECT_NOT_FOUND)
+
+    if x is OBJECT_NOT_FOUND:
         raise UnknownClassAlias(alias)
+
+    return x
 
 
 def add_type(type_, func=None):
