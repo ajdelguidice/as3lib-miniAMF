@@ -13,7 +13,6 @@ is compatible with the Adobe U{Flash Player
 
 import inspect
 from importlib import import_module
-from importlib.util import find_spec
 
 from . import util
 from .adapters import register_adapters, get_adapter
@@ -371,10 +370,10 @@ def _load_class_from_module(alias):
     module = '.'.join(mod_class[:-1])
     klass = mod_class[-1]
 
-    if find_spec(module) is None:
-        return None
+    module = util.get_module(module)
 
-    module = import_module(module)
+    if module is None:
+        return None
 
     return getattr(module, klass)
 
