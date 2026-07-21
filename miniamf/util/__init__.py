@@ -10,6 +10,7 @@ AMF Utilities.
 import calendar
 import datetime
 import inspect
+from importlib import import_module
 from importlib.util import find_spec
 
 import miniamf
@@ -31,6 +32,7 @@ __all__ = [
     'get_class_alias',
     'is_class_sealed',
     'get_class_meta',
+    'get_module'
 ]
 
 
@@ -201,8 +203,13 @@ def get_class_meta(klass):
     return meta
 
 
-def is_module_importable(name, package=None):
+def get_module(mod_name):
+    '''
+    Load and return a module based on C{mod_name}
+
+    If module is not found, return None
+    '''
     try:
-        return find_spec(name, package) is not None
+        return import_module(mod_name)
     except Exception:
-        return False
+        return None
