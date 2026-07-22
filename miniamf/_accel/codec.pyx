@@ -529,6 +529,12 @@ cdef class Encoder(Codec):
 
         return self.writeList(list(iterable))
 
+    cdef int writeSet(self, object o) except -1:
+        """
+        Encodes a set. Writes a sorted list by default.
+        """
+        return self.writeList(sorted(o))
+
     cpdef int writeObject(self, object o, bint is_proxy=0) except -1:
         raise NotImplementedError
 
@@ -551,6 +557,8 @@ cdef class Encoder(Codec):
             return self.writeLong(element)
         elif PyFloat_CheckExact(element):
             return self.writeNumber(element)
+        elif PyAnySet_CheckExact(element):
+            return self.writeSet(element)
         elif PyList_CheckExact(element):
             return self.writeList(element)
         elif PyTuple_CheckExact(element):

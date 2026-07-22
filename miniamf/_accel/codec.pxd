@@ -119,6 +119,7 @@ cdef class Encoder(Codec):
     cpdef int writeList(self, object o, bint is_proxy=?) except -1
     cdef int writeTuple(self, object o) except -1
     cdef int writeSequence(self, object iterable) except -1
+    cdef int writeSet(self, object o) except -1
     cpdef int writeObject(self, object o, bint is_proxy=?) except -1
     cdef int writeDict(self, dict o) except -1
     cdef int writeMixedArray(self, object o) except -1
