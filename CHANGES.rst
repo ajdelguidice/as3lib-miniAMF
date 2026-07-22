@@ -6,6 +6,9 @@ This document contains a detailed log of the history of Mini-AMF.
 0.9.5 (???)
 ------------------
 - Use mini-AMF version scheme
+- Removals:
+
+  - adapters._sets
 
 - Reintroduced features:
 
@@ -20,6 +23,7 @@ This document contains a detailed log of the history of Mini-AMF.
 - Add experimental compatibility for python 3.4 - 3.8 (Edits to the build script are required to get it to work)
 - Clean up django adapter test harness
 - miniamf.util.get_module no longer raises an exception. Instead, it returns None if module can not be imported.
+- Add support for sets directly in the encoders.
 
 
 0.9.4 (2025-09-21)
