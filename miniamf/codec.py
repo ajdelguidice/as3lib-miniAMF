@@ -482,6 +482,12 @@ class Encoder(_Codec):
         else:
             self.writeList(list(iterable))
 
+    def writeSet(self, obj):
+        """
+        Encodes a set. Writes a sorted list by default.
+        """
+        self.writeList(sorted(obj))
+
     def writeGenerator(self, gen):
         """
         Iterates over a generator object and encodes all that is returned.
@@ -509,6 +515,8 @@ class Encoder(_Codec):
             return self.writeNumber
         if t is int:
             return self.writeNumber
+        if t in (set, frozenset):
+            return self.writeSet
         if t in (list, tuple):
             return self.writeList
         if t is types.GeneratorType:  # flake8: noqa
