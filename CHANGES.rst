@@ -6,6 +6,8 @@ This document contains a detailed log of the history of Mini-AMF.
 0.9.5 (???)
 ------------------
 - Use mini-AMF version scheme
+- Lower Python requirement to 3.9
+
 - Removals:
 
   - adapters._sets
@@ -13,9 +15,8 @@ This document contains a detailed log of the history of Mini-AMF.
 - Reintroduced features:
 
   - appengine
-  - twisted
+  - twisted (Based off of `this commit <https://github.com/StdCarrot/Py3AMF/commit/5a9963f2ee5622b638dcccb374fdc3c70fdc567d>`__)
 
-- Lower Python requirement to 3.9
 - Fix more Flake8 complaints
 - Use callable builtin instead of checking for __call__
 - Use importlib.import_module instead of doing it manually with __import__ in adapters.__init__.get_adapter
@@ -54,7 +55,7 @@ This document contains a detailed log of the history of Mini-AMF.
   - Django
 
 - Add util.utcnow to prep for python remove it from datetime
-- Add AS3 vector and dictionary support
+- Add partial support for AS3 Dictionaries and Vectors. Implementation adapted from `this commit <https://github.com/fmoo/pyamf/commit/67d2bf2a0da9b940d96cff6cc98156349cad276f>`__.
 
 
 0.9.2 (2025-07-14)
@@ -62,17 +63,21 @@ This document contains a detailed log of the history of Mini-AMF.
 (Previously versioned as 1)
 
 - First as3lib-miniAMF release
+- Bump python requirement to >=3.11
+
+- Removals:
+
+  - Python 2 support
+  - cElementTree support
+
 - Removed dependencies:
 
   - six
   - setuptools
 
-- Removed python 2 support
-- Bump python requirement to >=3.11
 - Fix cython module compilation and make them pass all tests
 - Cython modules are no longer optional
 - Replace pkg_resouces with importlib.resources
-- Remove cElementTree from xml stuff
 - Properly handle files in sol.save and sol.load
 - Use find_spec, create_module, and exec_module in util.imports.ModuleFinder instead of find_module and load_module
 - Replace setup.py with pyproject.toml
