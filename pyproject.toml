@@ -51,7 +51,7 @@ skip_missing_interpreters = true
 
 [tool.tox.env_run_base]
 runner = "uv-venv-runner"
-deps = ["defusedxml","Django","SQLAlchemy","Twisted","appengine-python-standard","rsa"]
+deps = ["Django","SQLAlchemy","Twisted","appengine-python-standard","rsa"]
 commands = [["python","-m","unittest","discover","miniamf/tests"]]
 
 [tool.tox.env.py3]
