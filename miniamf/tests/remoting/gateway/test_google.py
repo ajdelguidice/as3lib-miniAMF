@@ -13,10 +13,14 @@ import unittest
 
 from io import StringIO
 
-try:
+from miniamf.tests.util import has_appengine_sdk
+
+if has_appengine_sdk():
+    # TODO: appengine.ext.webapp is python 2 only
+    # https://docs.cloud.google.com/appengine/docs/standard/python3/services/access#web_frameworks
     from google.appengine.ext import webapp
     from miniamf.remoting.gateway import google
-except ImportError:
+else:
     webapp = None
 
 

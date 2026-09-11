@@ -15,12 +15,14 @@ import os
 import types
 
 from io import BytesIO
+from miniamf.util import get_module
 
-try:
-    import django as _django
+_django = get_module('django')
+
+if _django is not None:
     from django import http
     from miniamf.remoting.gateway import django
-except ImportError:
+else:
     django = None
 
 import miniamf

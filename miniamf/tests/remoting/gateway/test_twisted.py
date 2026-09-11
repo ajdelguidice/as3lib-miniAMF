@@ -7,20 +7,21 @@ Twisted gateway tests.
 @since: 0.1.0
 """
 
-try:
+from importlib.util import find_spec
+
+if find_spec('twisted'):
     from twisted.internet import reactor, defer
     from twisted.python import failure
     from twisted.web import http, server, client, error, resource, http_headers
     from twisted.trial import unittest
 
     from twisted.internet.defer import succeed
-    from twisted.internet.protocol import Protocol
     from twisted.web.iweb import IBodyProducer
 
     from zope.interface import implementer
 
     from miniamf.remoting.gateway import twisted
-except ImportError:
+else:
     twisted = None
 
     import unittest
