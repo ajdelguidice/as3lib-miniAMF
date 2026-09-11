@@ -744,7 +744,7 @@ class RecordSet(object):
 
         try:
             # TODO nick: find relevant service and link in here.
-            self.service = dict(name=val['serviceName'])
+            self.service = {'name': val['serviceName']}
         except KeyError:
             self.service = None
 
