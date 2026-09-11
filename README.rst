@@ -12,7 +12,7 @@ TODO
 ~~~~
 
 | Add a way to not install the Cython modules
-| Fix the remaining test failures (Cython fail:8 skip:5, noCython fail:2 skip:9).
+| Fix the remaining test failures (Cython fail:8 skip:1, noCython fail:2 err:1 skip:4).
 | Rename to as3lib-AMF
 | Change package directory to as3lib.AMF
 | Fix build script on python 3.4 - 3.8.

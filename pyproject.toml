@@ -31,7 +31,6 @@ django = ["Django"]
 sqlachemy = ["SQLAlchemy"]
 twisted = ["Twisted"]
 
-
 [tool.setuptools]
 packages=["miniamf", "miniamf._accel", "miniamf.adapters", "miniamf.util", "miniamf.flex", "miniamf.remoting", "miniamf.remoting.client", "miniamf.remoting.gateway", "miniamf.tests", "miniamf.tests.adapters", "miniamf.tests.adapters.django_app", "miniamf.tests.adapters.django_app.adapters", "miniamf.tests.adapters.google", "miniamf.tests.imports", "miniamf.tests.remoting", "miniamf.tests.remoting.gateway"]
 ext-modules = [
