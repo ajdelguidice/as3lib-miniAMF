@@ -9,8 +9,11 @@ PyAMF SQLAlchemy adapter tests.
 
 import unittest
 
-try:
-    import sqlalchemy
+from miniamf.util import get_module
+
+sqlalchemy = get_module('sqlalchemy')
+
+if sqlalchemy is not None:
     from sqlalchemy import __version__
     from sqlalchemy import MetaData, Table, Column, Integer, String
     from sqlalchemy import ForeignKey, create_engine
@@ -26,8 +29,6 @@ try:
         mapper = reg.map_imperatively
 
     from miniamf.adapters import _sqlalchemy_orm as adapter
-except ImportError:
-    sqlalchemy = None
 
 import miniamf.flex
 from miniamf.tests.util import Spam

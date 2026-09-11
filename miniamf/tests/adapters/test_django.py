@@ -16,18 +16,17 @@ from shutil import rmtree
 from tempfile import mkdtemp
 
 import miniamf
+from miniamf.util import get_module
 from miniamf.tests import util
 
 
 storage = None
 context = None
 
-django = None
-django_test_utils = None
+django = get_module('django')
 
 
-if find_spec('django'):
-    import django
+if django is not None:
     import miniamf.adapters._django_db_models_base as adapter
     import django.test.utils as django_test_utils
 
