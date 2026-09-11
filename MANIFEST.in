@@ -13,4 +13,5 @@ prune .tox
 global-exclude *.pyc
 global-exclude *.c
 global-exclude *.h
+global-exclude *.so
 global-exclude __pycache__

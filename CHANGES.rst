@@ -3,7 +3,7 @@ Changelog
 
 This document contains a detailed log of the history of Mini-AMF.
 
-0.9.5 (???)
+0.9.5 (2026-09-11)
 ------------------
 - Use mini-AMF version scheme
 - Lower Python requirement to 3.9
@@ -18,10 +18,17 @@ This document contains a detailed log of the history of Mini-AMF.
   - twisted (Based off of `this commit <https://github.com/StdCarrot/Py3AMF/commit/5a9963f2ee5622b638dcccb374fdc3c70fdc567d>`__)
 
 - Fix more Flake8 complaints
+- Remove some more python 2 remnants
 - Use callable builtin instead of checking for __call__
-- Use importlib.import_module instead of doing it manually with __import__ in adapters.__init__.get_adapter
+- Make {codec, _accel.codec}.Encoder.writeGenerator faster
+- Remove unnecessary type casts in cython modules
+- Moved flake8 config to pyproject.toml
+- Use .copy() instead of [:] in more places
+- Remove a bunch of unnecessary try/except statements
+- Use importlib.import_module instead of custom implementations in adapters.__init__.get_adapter, util.__init__.get_module
 - Properly add PyFloat_* compatibility to _accel modules using `inline c <https://cython.readthedocs.io/en/latest/src/userguide/external_C_code.html#including-verbatim-c-code>`__
 - Add experimental compatibility for python 3.4 - 3.8 (Edits to the build script are required to get it to work)
+- Move has_appengine_sdk from tests.adapters.google.__init__ to tests.util
 - Clean up django adapter test harness
 - miniamf.util.get_module no longer raises an exception. Instead, it returns None if module can not be imported.
 - Add support for sets directly in the encoders.
