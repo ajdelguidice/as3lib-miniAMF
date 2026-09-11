@@ -21,8 +21,7 @@ def _get_endian_system():
         return ENDIAN_BIG
     elif encoded == b'\x04\x03\x02\x01':
         return ENDIAN_LITTLE
-    else:
-        raise ValueError("unrecognized system endianness: %r" % (encoded,))
+    raise ValueError("unrecognized system endianness: %r" % (encoded,))
 
 
 #: Network byte order
@@ -144,13 +143,13 @@ class BufferedByteStream(io.BytesIO):
 
         if length == -1:
             return super().read()
-        else:
-            if self.tell() + length > len(self):
-                raise IOError(
-                    "Attempted to read %d bytes from the buffer but only %d "
-                    "remain" % (length, len(self) - self.tell())
-                )
-            return super().read(length)
+
+        if self.tell() + length > len(self):
+            raise IOError(
+                "Attempted to read %d bytes from the buffer but only %d "
+                "remain" % (length, len(self) - self.tell())
+            )
+        return super().read(length)
 
     def peek(self, size=1):
         """
