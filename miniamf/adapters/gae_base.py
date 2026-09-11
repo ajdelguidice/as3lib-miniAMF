@@ -1,6 +1,6 @@
 import collections
 
-import miniamf
+from miniamf import ClassAlias
 
 
 class EntityStub(object):
@@ -141,7 +141,7 @@ class StubCollection(object):
             self.transformStub(stub, klass, key)
 
 
-class BaseDatastoreClassAlias(miniamf.ClassAlias):
+class BaseDatastoreClassAlias(ClassAlias):
     """
     """
 
@@ -156,10 +156,10 @@ class BaseDatastoreClassAlias(miniamf.ClassAlias):
             # can't compile these classes, so this is as far as we go
             return
 
-        miniamf.ClassAlias._compile_base_class(self, klass)
+        ClassAlias._compile_base_class(self, klass)
 
     def _finalise_compile(self):
-        miniamf.ClassAlias._finalise_compile(self)
+        ClassAlias._finalise_compile(self)
 
         self.shortcut_decode = False
 
@@ -201,8 +201,8 @@ class BaseDatastoreClassAlias(miniamf.ClassAlias):
         return stubs
 
     def getEncodableAttributes(self, obj, codec=None):
-        attrs = super(BaseDatastoreClassAlias, self).getEncodableAttributes(
-            obj, codec=codec
+        attrs = ClassAlias.getEncodableAttributes(
+            self, obj, codec=codec
         )
 
         for k in list(attrs.keys()):
@@ -221,7 +221,8 @@ class BaseDatastoreClassAlias(miniamf.ClassAlias):
         if key:
             key = self.decode_key(key)
 
-        attrs = super(BaseDatastoreClassAlias, self).getDecodableAttributes(
+        attrs = ClassAlias.getDecodableAttributes(
+            self,
             obj,
             attrs,
             codec=codec

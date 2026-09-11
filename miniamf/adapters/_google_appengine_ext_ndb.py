@@ -11,12 +11,13 @@ from google.appengine.ext import ndb
 from google.appengine.ext.ndb import polymodel
 
 import miniamf
-from miniamf.adapters import models, gae_base, util
+from miniamf.adapters import models, util
+from miniamf.adapters.gae_base import BaseDatastoreClassAlias, EntityReferenceCollection, StubCollection
 
 NDB_STUB_NAME = 'gae_ndb_stub'
 
 
-class NDBReferenceCollection(gae_base.EntityReferenceCollection):
+class NDBReferenceCollection(EntityReferenceCollection):
     """
     This helper class holds a dict of klass to key/objects loaded from the
     Datastore.
@@ -27,12 +28,12 @@ class NDBReferenceCollection(gae_base.EntityReferenceCollection):
     base_classes = (ndb.Model, ndb.Expando)
 
 
-class NDBStubCollection(gae_base.StubCollection):
+class NDBStubCollection(StubCollection):
     def fetchEntities(self):
         return dict(zip(self.to_fetch, ndb.get_multi(self.to_fetch)))
 
 
-class NDBClassAlias(gae_base.BaseDatastoreClassAlias):
+class NDBClassAlias(BaseDatastoreClassAlias):
     """
     This class contains all the business logic to interact with Google's
     Datastore API's. Any C{ndb.Model} or C{ndb.Expando} classes will use this
@@ -104,8 +105,8 @@ class NDBClassAlias(gae_base.BaseDatastoreClassAlias):
         self.computed_properties = computed_props or None
 
     def getDecodableAttributes(self, obj, attrs, codec=None):
-        attrs = super(NDBClassAlias, self).getDecodableAttributes(
-            obj, attrs, codec=codec
+        attrs = BaseDatastoreClassAlias.getDecodableAttributes(
+            self, obj, attrs, codec=codec
         )
 
         if self.repeated_properties:
@@ -159,8 +160,8 @@ class NDBClassAlias(gae_base.BaseDatastoreClassAlias):
         return value
 
     def getEncodableAttributes(self, obj, codec=None):
-        attrs = super(NDBClassAlias, self).getEncodableAttributes(
-            obj, codec=codec
+        attrs = BaseDatastoreClassAlias.getEncodableAttributes(
+            self, obj, codec=codec
         )
 
         if self.model_properties:

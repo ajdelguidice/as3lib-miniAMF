@@ -18,7 +18,8 @@ from google.appengine.ext import db
 from google.appengine.ext.db import polymodel
 
 import miniamf
-from miniamf.adapters import models, gae_base, util
+from miniamf.adapters import models, util
+from miniamf.adapters.gae_base import BaseDatastoreClassAlias, EntityReferenceCollection, StubCollection
 
 __all__ = [
     'DataStoreClassAlias',
@@ -28,16 +29,16 @@ XDB_CONTEXT_NAME = 'gae_xdb_context'
 XDB_STUB_NAME = 'gae_xdb_stubs'
 
 
-class XDBReferenceCollection(gae_base.EntityReferenceCollection):
+class XDBReferenceCollection(EntityReferenceCollection):
     base_classes = (db.Model, db.Expando)
 
 
-class XDBStubCollection(gae_base.StubCollection):
+class XDBStubCollection(StubCollection):
     def fetchEntities(self):
         return dict(zip(self.to_fetch, db.get(self.to_fetch)))
 
 
-class DataStoreClassAlias(gae_base.BaseDatastoreClassAlias):
+class DataStoreClassAlias(BaseDatastoreClassAlias):
     """
     This class contains all the business logic to interact with Google's
     Datastore API's. Any C{db.Model} or C{db.Expando} classes will use this
@@ -102,18 +103,18 @@ class DataStoreClassAlias(gae_base.BaseDatastoreClassAlias):
 
     def getAttribute(self, obj, attr, codec=None):
         if codec is None:
-            return super(DataStoreClassAlias, self).getAttribute(
-                obj, attr, codec=codec,
+            return BaseDatastoreClassAlias.getAttribute(
+                self, obj, attr, codec=codec,
             )
 
         if not self.reference_properties:
-            return super(DataStoreClassAlias, self).getAttribute(
-                obj, attr, codec=codec,
+            return BaseDatastoreClassAlias.getAttribute(
+                self, obj, attr, codec=codec,
             )
 
         if attr not in self.reference_properties:
-            return super(DataStoreClassAlias, self).getAttribute(
-                obj, attr, codec=codec,
+            return BaseDatastoreClassAlias.getAttribute(
+                self, obj, attr, codec=codec,
             )
 
         prop = self.reference_properties[attr]
@@ -121,8 +122,8 @@ class DataStoreClassAlias(gae_base.BaseDatastoreClassAlias):
         key = prop.get_value_for_datastore(obj)
 
         if key is None:
-            return super(DataStoreClassAlias, self).getAttribute(
-                obj, attr, codec=codec,
+            return BaseDatastoreClassAlias.getAttribute(
+                self, obj, attr, codec=codec,
             )
 
         klass = prop.reference_class
@@ -134,8 +135,8 @@ class DataStoreClassAlias(gae_base.BaseDatastoreClassAlias):
             pass
 
         try:
-            ref_obj = super(DataStoreClassAlias, self).getAttribute(
-                obj, attr, codec=codec,
+            ref_obj = BaseDatastoreClassAlias.getAttribute(
+                self, obj, attr, codec=codec,
             )
         except db.ReferencePropertyResolveError:
             logging.warn(
@@ -152,7 +153,8 @@ class DataStoreClassAlias(gae_base.BaseDatastoreClassAlias):
         return ref_obj
 
     def getEncodableAttributes(self, obj, codec=None):
-        attrs = super(DataStoreClassAlias, self).getEncodableAttributes(
+        attrs = BaseDatastoreClassAlias.getEncodableAttributes(
+            self,
             obj,
             codec=codec
         )
@@ -181,7 +183,8 @@ class DataStoreClassAlias(gae_base.BaseDatastoreClassAlias):
         return attrs
 
     def getDecodableAttributes(self, obj, attrs, codec=None):
-        attrs = super(DataStoreClassAlias, self).getDecodableAttributes(
+        attrs = BaseDatastoreClassAlias.getDecodableAttributes(
+            self,
             obj,
             attrs,
             codec=codec
