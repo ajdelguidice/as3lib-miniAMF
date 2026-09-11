@@ -32,11 +32,7 @@ class ClassAlias(object):
         if not isinstance(klass, type):
             raise TypeError("klass must be a class type, got %r" % klass)
 
-        # In Python 2, both byte and Unicode string types have .decode
-        # methods.  In Python 3, only byte strings do.
-        if alias is None or isinstance(alias, str):
-            pass
-        elif hasattr(alias, "decode"):
+        if isinstance(alias, bytes):
             alias = alias.decode("utf-8")
 
         self.checkClass(klass)
@@ -515,8 +511,10 @@ class ClassAlias(object):
             context = codec.context
 
             for k in self.proxy_attrs:
-                if k in attrs:
-                    v = attrs[k]
+                if k not in attrs:
+                    continue
+
+                v = attrs[k]
 
                 attrs[k] = context.getObjectForProxy(v)
 
