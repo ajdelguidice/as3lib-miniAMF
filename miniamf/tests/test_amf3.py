@@ -68,6 +68,11 @@ class TypesTestCase(unittest.TestCase):
         self.assertEqual(amf3.TYPE_OBJECT, b'\x0a')
         self.assertEqual(amf3.TYPE_XMLSTRING, b'\x0b')
         self.assertEqual(amf3.TYPE_BYTEARRAY, b'\x0c')
+        self.assertEqual(amf3.TYPE_INT_VECTOR, b'\x0d')
+        self.assertEqual(amf3.TYPE_UINT_VECTOR, b'\x0e')
+        self.assertEqual(amf3.TYPE_DOUBLE_VECTOR, b'\x0f')
+        self.assertEqual(amf3.TYPE_OBJECT_VECTOR, b'\x10')
+        self.assertEqual(amf3.TYPE_DICTIONARY, b'\x11')
 
 
 class ContextTestCase(ClassCacheClearingTestCase):
