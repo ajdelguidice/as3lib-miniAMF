@@ -3,6 +3,8 @@
 
 from django.db import models
 
+from miniamf.util import get_module
+
 
 def func(*args):
     print(args)
@@ -125,14 +127,12 @@ class FileModel(models.Model):
     text = models.CharField(max_length=64)
 
 
-try:
-    import PIL
+PIL = get_module('PIL')
 
+if PIL is not None:
     class Profile(models.Model):
         file = models.ImageField(upload_to='profile')
         text = models.CharField(max_length=64)
-except ImportError:
-    PIL = None
 
 
 class DBColumnModel(models.Model):
